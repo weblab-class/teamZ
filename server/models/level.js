@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const LevelSchema = new mongoose.Schema({
   title: String,
   creator: ObjectId, // of User
+  emptyTile: ObjectId, // of Tile
   rows: Number,
   cols: Number,
   gridTiles: [ObjectId], // of Tile, length should be exactly rows * cols

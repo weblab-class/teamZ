@@ -11,6 +11,8 @@ const express = require("express");
 
 // import models so we can interact with the database
 const User = require("./models/user");
+const Tile = require("./models/tile");
+const Level = require("./models/level");
 
 // import authentication library
 const auth = require("./auth");
@@ -34,13 +36,46 @@ router.get("/whoami", (req, res) => {
 
 router.post("/initsocket", (req, res) => {
   // do nothing if user not logged in
-  if (req.user) socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
+  if (req.user)
+    socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
   res.send({});
 });
 
 // |------------------------------|
 // | write your API methods below!|
 // |------------------------------|
+
+/**
+ * req.body contains attributes of tile
+ */
+router.post("/newTile", async (req, res) => {
+  if (req.body.layer === "None") {
+    // try to find an existing empty tile
+    const emptyTile = await Tile.findOne({ layer: "None" });
+    if (emptyTile) {
+      res.send(emptyTile);
+      return;
+    }
+  }
+  const newTile = new Tile({ ...req.body });
+  newTile.save().then((tile) => res.send(tile));
+});
+
+/**
+ * req.body contains attributes of the level (i.e. title, rows, cols, etc)
+ */
+router.post("/newLevel", (req, res) => {
+  // request should have attributes of level
+  const newLevel = new Level({ ...req.body });
+  newLevel.save().then((level) => res.send(level));
+});
+
+/**
+ * req.query is the query
+ */
+router.get("/levels", (req, res) => {
+  Level.find({ ...req.query }).then((levels) => res.send(levels));
+});
 
 // anything else falls to this "not found" case
 router.all("*", (req, res) => {

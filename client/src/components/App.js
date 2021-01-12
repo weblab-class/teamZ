@@ -47,7 +47,7 @@ class App extends Component {
   };
 
   render() {
-    if( this.state.userId === undefined) {
+    if (this.state.userId === undefined) {
       return (
         <>
           <Landing
