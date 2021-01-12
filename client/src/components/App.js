@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Router } from "@reach/router";
 import NotFound from "./pages/NotFound.js";
 import Skeleton from "./pages/Skeleton.js";
+import Landing from "./pages/Landing.js";
+import Test from "./pages/Test.js";
 
 import "../utilities.css";
 
@@ -45,11 +47,29 @@ class App extends Component {
   };
 
   render() {
+    if( this.state.userId === undefined) {
+      return (
+        <>
+          <Landing
+            path="/"
+            handleLogin={this.handleLogin}
+            handleLogout={this.handleLogout}
+            userId={this.state.userId}
+          />
+        </>
+      );
+    }
     return (
       <>
         <Router>
-          <Skeleton
+          <Test
             path="/"
+            handleLogin={this.handleLogin}
+            handleLogout={this.handleLogout}
+            userId={this.state.userId}
+          />
+          <Skeleton
+            path="/skeleton"
             handleLogin={this.handleLogin}
             handleLogout={this.handleLogout}
             userId={this.state.userId}
