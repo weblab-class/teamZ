@@ -3,12 +3,12 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const LevelSchema = new mongoose.Schema({
   title: String,
-  creator: ObjectId, // of User
-  emptyTile: ObjectId, // of Tile
+  creator: { type: ObjectId, ref: "user" },
+  emptyTile: { type: ObjectId, ref: "tile" },
   rows: Number,
   cols: Number,
-  gridTiles: [ObjectId], // of Tile, length should be exactly rows * cols
-  availableTiles: [ObjectId], // of Tile
+  gridTiles: [{ type: ObjectId, ref: "tile" }], // of Tile, length should be exactly rows * cols
+  availableTiles: [{ type: ObjectId, ref: "tile" }], // of Tile
   // startX: Number, // x_cor of character spawn point
   // startY: Number, // y_cor of character spawn point
 });
