@@ -34,12 +34,7 @@ class Test extends Component {
   newLevel = async () => {
     const rows = 10;
     const cols = 10;
-    //create an empty tile first for the level
-    const emptyTile = await post("/api/newTile", {
-      name: "emptyTile",
-      layer: "None",
-      image: null,
-    });
+    const emptyTile = await post("/api/emptyTile");
     const gridTiles = [];
     for (let i = 0; i < rows * cols; i++) {
       gridTiles.push(emptyTile._id);
@@ -47,7 +42,6 @@ class Test extends Component {
     await post("/api/newLevel", {
       title: this.state.newLevelTitle,
       creator: this.props.userId,
-      emptyTile: emptyTile._id,
       rows: rows,
       cols: cols,
       gridTiles: gridTiles,

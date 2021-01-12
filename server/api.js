@@ -46,17 +46,23 @@ router.post("/initsocket", (req, res) => {
 // |------------------------------|
 
 /**
+ * Sends back an empty tile (i.e. tile with layer "None")
+ */
+router.post("/emptyTile", async (req, res) => {
+  // try to find an existing empty tile
+  const emptyTile = await Tile.findOne({ layer: "None" });
+  if (emptyTile) {
+    res.send(emptyTile);
+  } else {
+    const newTile = new Tile({ name: "emptyTile", layer: "None", image: null });
+    newTile.save().then((tile) => res.send(tile));
+  }
+});
+
+/**
  * req.body contains attributes of tile
  */
-router.post("/newTile", async (req, res) => {
-  if (req.body.layer === "None") {
-    // try to find an existing empty tile
-    const emptyTile = await Tile.findOne({ layer: "None" });
-    if (emptyTile) {
-      res.send(emptyTile);
-      return;
-    }
-  }
+router.post("/newTile", (req, res) => {
   const newTile = new Tile({ ...req.body });
   newTile.save().then((tile) => res.send(tile));
 });
