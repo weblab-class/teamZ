@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
+import { Link } from "@reach/router";
 
 import "../../utilities.css";
 
@@ -57,7 +58,11 @@ class Test extends Component {
   };
 
   render() {
-    let levels = this.state.levels.map((level, i) => <li key={i}>{level.title}</li>);
+    let levels = this.state.levels.map((level, i) => (
+      <li key={i}>
+        <Link to={"/edit/" + level._id}>{level.title}</Link>
+      </li>
+    ));
     return (
       <>
         {this.props.userId ? (
@@ -88,6 +93,7 @@ class Test extends Component {
             Create level
           </button>
         </div>
+        Edit levels by clicking links in the list below:
         <ul>{levels}</ul>
       </>
     );
