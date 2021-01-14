@@ -11,7 +11,7 @@ const editState = {
   // don't need to store creator, since that won't change. might store collaborators later
   rows: 0,
   cols: 0,
-  // gridTiles: [], // row-major array of the ids of tiles
+  gridTiles: [], // row-major array of the ids of tiles
   // availableTiles: {}, // consider changing this to a dictionary of objectId --> tile object
   // ........
   // player-specific information:
@@ -135,10 +135,19 @@ const updateCameras = () => {
   });
 };
 
+const corsInGrid = (x, y) => {
+  return x >= 0 && y >= 0 && x < editState.cols * tileSize && y < editState.rows * tileSize;
+};
 // place down tiles
 const updateTiles = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
+    const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
+    if (player.mouseDown && corsInGrid(player.mouseX, player.mouseY)) {
+      const row = Math.floor(player.mouseY / tileSize);
+      const col = Math.floor(player.mouseX / tileSize);
+      editState.gridTiles[row * editState.cols + col] = tileIdToPlace;
+    }
   });
 };
 
