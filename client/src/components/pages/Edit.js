@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
+import { socket } from "../../client-socket";
+import { drawEditCanvas } from "../../editCanvasManager";
+import "../../editInput";
 
 import "../../utilities.css";
 import "./Edit.css";
@@ -21,7 +24,20 @@ class Edit extends Component {
   componentDidMount() {
     // api calls here
     // fetch level with _id this.props.levelId, and load into state.
+    //
+    // set socket instructions here ...
+    //
+    // socket.on("update", (update) => {
+    //   this.processUpdate(update);
+    // });
   }
+
+  // processUpdate = (update) => { // update is new `game` state
+  //   if (update.winner) {
+  //     this.setState({ winner: update.winner });
+  //   }
+  //   drawCanvas(update);
+  // };
 
   render() {
     return (

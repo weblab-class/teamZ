@@ -1,3 +1,5 @@
+// const editLogic = require("./editLogic");
+
 let io;
 
 const userToSocketMap = {}; // maps user ID to socket object
@@ -7,6 +9,8 @@ const getSocketFromUserID = (userid) => userToSocketMap[userid];
 const getUserFromSocketID = (socketid) => socketToUserMap[socketid];
 const getSocketFromSocketID = (socketid) => io.sockets.connected[socketid];
 
+// add what editLogic should do when new user enters or leaves, in
+// addUser and removeUser respectively.
 const addUser = (user, socket) => {
   const oldSocket = userToSocketMap[user._id];
   if (oldSocket && oldSocket.id !== socket.id) {
@@ -25,6 +29,15 @@ const removeUser = (user, socket) => {
   delete socketToUserMap[socket.id];
 };
 
+// // send the current game state every 1/60 of a second.
+// setInterval(() => {
+//   sendGameState();
+// }, 1000 / 60);
+
+// const sendGameState = () => {
+//   io.emit("update", logic.gameState);
+// };
+
 module.exports = {
   init: (http) => {
     io = require("socket.io")(http);
@@ -35,6 +48,11 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         removeUser(user, socket);
       });
+      // // adds listeners to messages from client.
+      // socket.on("move", (dir) => {
+      //   const user = getUserFromSocketID(socket.id);
+      //   if (user) logic.movePlayer(user._id, dir);
+      // });
     });
   },
 
