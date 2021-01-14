@@ -161,6 +161,8 @@ const update = () => {
   updateCameras();
 };
 
+// TODO: function to send state to clients like getStateForPlayer(id)
+
 module.exports = {
   editState, // replace with fn like getStateForPlayer(id)
   registerKeyDown,
