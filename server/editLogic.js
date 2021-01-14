@@ -7,17 +7,20 @@ const keys = ["w", "a", "s", "d", "SHIFT"];
 const editState = {
   // ........
   // non-player-specific information:
-  title: "",
+  levels: {}, // maps levelId to level information consisting of
+  // title, rows, cols, gridTiles, availableTiles, etc
+  // title: "",
   // don't need to store creator, since that won't change. might store collaborators later
-  rows: 0,
-  cols: 0,
-  gridTiles: [], // row-major array of the ids of tiles
+  // rows: 0,
+  // cols: 0,
+  // gridTiles: [], // row-major array of the ids of tiles
   // availableTiles: {}, // consider changing this to a dictionary of objectId --> tile object
   // ........
   // player-specific information:
   players: {},
   // players is dict mapping id of user, containing...
-  /* { camX
+  /* { levelId -- id of level player is currently editing
+       camX
        camY -- coordinates of top left corner of camera of player
        currentTile -- objectIds. can easily access tile properties through availableTiles dictionary
        keyDownMap -- dictionary mapping a keyboard key to boolean -- is player holding down
@@ -59,20 +62,25 @@ const registerMouseUp = (id) => {
 /**
  * change the current tile of player with given id to newTileId.
  * if the player is erasing, newTileId is null
- * @param {*} id
+ * @param {*} id of player
  * @param {*} newTileId
  */
 const changeTile = (id, newTileId) => {
   editState.players[id].currentTile = newTileId;
 };
 
-/** Adds a player to the game state, initialized with a random location */
-const addPlayer = (id) => {
+/**
+ * Adds a new player to a level. If player already has a level, will reset.
+ * @param {*} playerId
+ * @param {*} levelId
+ */
+const addPlayer = (playerId, levelId) => {
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
   }
   editState.players[id] = {
+    levelId: levelId,
     camX: 0,
     camY: 0,
     currentTile: null,
@@ -96,14 +104,15 @@ const clipPadding = 2; // number of tiles
  * else closest coordinate that is valid
  * @param {*} camX
  * @param {*} camY
+ * @param {*} levelId
  */
-const clipCamera = (camX, camY) => {
+const clipCamera = (camX, camY, levelId) => {
   let retX = camX;
   let retY = camY;
   retX = Math.max(-clipPadding * tileSize, retX);
-  retX = Math.min(clipPadding * tileSize + editState.cols * tileSize - 1);
+  retX = Math.min(clipPadding * tileSize + editState.levels[levelId].cols * tileSize - 1);
   retY = Math.max(-clipPadding * tileSize, retY);
-  retY = Math.min(clipPadding * tileSize + editState.cols * tileSize - 1);
+  retY = Math.min(clipPadding * tileSize + editState.levels[levelId].rows * tileSize - 1);
   return {
     x: retX,
     y: retY,
@@ -129,24 +138,29 @@ const updateCameras = () => {
     }
     // we need to make sure the player's camera coordinates are valid
     // apply the clipping helper fn
-    const clippedCors = clipCamera(player.camX, player.camY);
+    const clippedCors = clipCamera(player.camX, player.camY, player.levelId);
     player.camX = clippedCors.x;
     player.camY = clippedCors.y;
   });
 };
 
-const corsInGrid = (x, y) => {
-  return x >= 0 && y >= 0 && x < editState.cols * tileSize && y < editState.rows * tileSize;
+const corsInGrid = (x, y, levelId) => {
+  return (
+    x >= 0 &&
+    y >= 0 &&
+    x < editState.levels[levelId].cols * tileSize &&
+    y < editState.levels[levelId].rows * tileSize
+  );
 };
 // place down tiles
 const updateTiles = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
     const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
-    if (player.mouseDown && corsInGrid(player.mouseX, player.mouseY)) {
+    if (player.mouseDown && corsInGrid(player.mouseX, player.mouseY, player.levelId)) {
       const row = Math.floor(player.mouseY / tileSize);
       const col = Math.floor(player.mouseX / tileSize);
-      editState.gridTiles[row * editState.cols + col] = tileIdToPlace;
+      editState.levels[player.levelId].gridTiles[row * editState.cols + col] = tileIdToPlace;
     }
   });
 };
