@@ -42,7 +42,7 @@ const sendGameState = () => {
     const instructions = editLogic.getInstructions();
     Object.keys(instructions).forEach((playerId) => {
       const sock = getSocketFromUserID(playerId);
-      sock.emit("update", instructions[playerId]);
+      if (sock) sock.emit("update", instructions[playerId]);
     });
   }
   count = (count + 1) % updatePeriod;

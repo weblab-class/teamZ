@@ -124,10 +124,10 @@ const clipPadding = 0; // number of tiles
 const clipCamera = (camX, camY, levelId) => {
   let retX = camX;
   let retY = camY;
-  retX = Math.max(-clipPadding * tileSize, retX);
-  retX = Math.min(clipPadding * tileSize + editState.levels[levelId].cols * tileSize - 1);
-  retY = Math.max(-clipPadding * tileSize, retY);
-  retY = Math.min(clipPadding * tileSize + editState.levels[levelId].rows * tileSize - 1);
+  // retX = Math.max(-clipPadding * tileSize, retX);
+  // retX = Math.min(clipPadding * tileSize + editState.levels[levelId].cols * tileSize - 1);
+  // retY = Math.max(-clipPadding * tileSize, retY);
+  // retY = Math.min(clipPadding * tileSize + editState.levels[levelId].rows * tileSize - 1);
   return {
     x: retX,
     y: retY,
@@ -197,15 +197,17 @@ const update = () => {
 const instructionsForPlayer = (playerId) => {
   const player = editState.players[playerId];
   const ret = {
+    editState: editState,
+    playerId: playerId,
     camX: player.camX,
     camY: player.camY,
     mouseX: player.mouseX,
     mouseY: player.mouseY,
     sliceRowStart: 0, //TODO
     sliceColStart: 0, //TODO
-    sliceRows: 0, //TODO
-    sliceCols: 0, //TODO
-    slice: [], //TODO: row major order of slice
+    sliceRows: 10, //TODO hard code for now
+    sliceCols: 10, //TODO hard code for now
+    slice: editState.levels[player.levelId].gridTiles, //TODO: row major order of slice, hard code for now
   };
   return ret;
 };

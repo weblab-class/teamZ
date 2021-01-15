@@ -15,11 +15,17 @@ const drawBackground = (
 };
 
 /**Draws tile */
-const drawTile = (context, tileImage, x, y) => {
+const drawTile = (canvas, tileImage, x, y) => {
+  console.log(`drawTile(x: ${x}, y: ${y})`);
+  const context = canvas.getContext("2d");
   // TODO: add border to tile?
   // to draw a bitmap image onto context at cors x, y, consult:
   // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage#syntax
-  context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  // context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  // HARD CODE FOR NOW
+  context.strokeStyle = "red";
+  context.lineWidth = 5;
+  context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
 
 /**
@@ -66,16 +72,19 @@ const drawTiles = (canvas, instructions, images) => {
   const canvasXStart = canvasCorsTopLeftTile.x;
   const canvasYStart = canvasCorsTopLeftTile.y;
   // calculate how many tiles across and high I have to draw on canvas
-  const tilesAcross = Math.ceil((canvasWidth - canvasXStart) / tileSizeOnCanvas);
-  const tilesHigh = Math.ceil((canvasHeight - canvasYStart) / tileSizeOnCanvas);
+  // const tilesAcross = Math.ceil((canvasWidth - canvasXStart) / tileSizeOnCanvas);
+  // const tilesHigh = Math.ceil((canvasHeight - canvasYStart) / tileSizeOnCanvas);
+  const tilesAcross = 10;
+  const tilesHigh = 10;
   // start drawing tiles.
   for (let i = colStart; i < colStart + tilesAcross; i++) {
     for (let j = rowStart; j < rowStart + tilesHigh; j++) {
-      const tileId = instructions.slice[iSlice(i, j)];
-      const tileImage = images[tileId];
+      //const tileId = instructions.slice[iSlice(i, j)];
+      // const tileImage = images[tileId];
+      const tileImage = null; // HARD CODED FOR NOW, DELETE LATER TODO
       const canvasX = canvasXStart + i * tileSizeOnCanvas;
       const canvasY = canvasYStart + j * tileSizeOnCanvas;
-      drawTile(context, tileImage, canvasX, canvasY);
+      drawTile(canvas, tileImage, canvasX, canvasY);
     }
   }
 };

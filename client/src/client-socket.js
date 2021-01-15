@@ -14,6 +14,7 @@ socket.on("connect", () => {
 //   socket.emit("move", dir);
 // };
 export const keyDown = (key) => {
+  console.log("registered keyDown, emitting keyDown message");
   socket.emit("keyDown", key);
 };
 

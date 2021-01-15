@@ -24,7 +24,7 @@ class Edit extends Component {
 
   componentDidMount() {
     // api calls here
-    post("/api/joinLevel", { levelId: this.props.levelId }).then(() => {
+    post("/api/joinLevel", { levelId: this.props.levelId }).then((x) => {
       // socket instructions
     });
     // fetch level with _id this.props.levelId, and load into state.
@@ -32,6 +32,7 @@ class Edit extends Component {
     // set socket instructions here ...
     //
     socket.on("update", (update) => {
+      console.log(update);
       this.processUpdate(update);
     });
   }

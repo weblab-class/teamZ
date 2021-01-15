@@ -87,6 +87,7 @@ router.post("/joinLevel", async (req, res) => {
   // assume level has all fields required as specified in editLogic
   editLogic.addPlayer(req.user._id, level, 700, 700);
   // hard code canvas dimensions as 700x700 for now ^
+  res.send({});
 });
 
 /**
