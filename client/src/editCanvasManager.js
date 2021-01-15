@@ -24,7 +24,7 @@ const drawTile = (canvas, tileImage, x, y) => {
   // context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   // HARD CODE FOR NOW
   context.strokeStyle = "red";
-  context.lineWidth = 5;
+  context.lineWidth = 2;
   context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
 
@@ -55,38 +55,64 @@ const drawTiles = (canvas, instructions, images) => {
       (col - instructions.sliceColStart)
     );
   };
-  const getCanvasCor = (absX, absY, camX, camY) => {
+  const getCanvasCor = (absX, absY) => {
     const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = (absX - camX) * canvasToAbstractRatio;
-    const retY = (absY - camY) * canvasToAbstractRatio;
+    const retX = (absX - instructions.camX) * canvasToAbstractRatio;
+    const retY = (absY - instructions.camY) * canvasToAbstractRatio;
     return { x: retX, y: retY };
   };
-  // calculate which tile the camera is on.
-  const rowStart = Math.floor(instructions.camY / tileSize);
-  const colStart = Math.floor(instructions.camX / tileSize);
-  // calculate the top left pixel of camera tile, in abstract coordinates
-  const xStart = colStart * tileSize;
-  const yStart = rowStart * tileSize;
-  // calculate the canvas cors of the camera tile
-  const canvasCorsTopLeftTile = getCanvasCor(xStart, yStart, instructions.camX, instructions.camY);
-  const canvasXStart = canvasCorsTopLeftTile.x;
-  const canvasYStart = canvasCorsTopLeftTile.y;
-  // calculate how many tiles across and high I have to draw on canvas
-  // const tilesAcross = Math.ceil((canvasWidth - canvasXStart) / tileSizeOnCanvas);
-  // const tilesHigh = Math.ceil((canvasHeight - canvasYStart) / tileSizeOnCanvas);
-  const tilesAcross = 10;
-  const tilesHigh = 10;
-  // start drawing tiles.
-  for (let i = colStart; i < colStart + tilesAcross; i++) {
-    for (let j = rowStart; j < rowStart + tilesHigh; j++) {
-      //const tileId = instructions.slice[iSlice(i, j)];
-      // const tileImage = images[tileId];
-      const tileImage = null; // HARD CODED FOR NOW, DELETE LATER TODO
-      const canvasX = canvasXStart + i * tileSizeOnCanvas;
-      const canvasY = canvasYStart + j * tileSizeOnCanvas;
-      drawTile(canvas, tileImage, canvasX, canvasY);
+  const isPixelOnCanvas = (x, y) => {
+    return x >= 0 && y >= 0 && x < canvas.width && y < canvas.height;
+  };
+  const isTileOnCanvas = (row, col) => {
+    // abstract (x,y) topleft of tile is (col * tileSize, row * tileSize)
+    const topLeftTileCanvas = getCanvasCor(col * tileSize, row * tileSize);
+    const bottomRightTileCanvas = getCanvasCor(
+      col * tileSize + tileSize - 1,
+      row * tileSize + tileSize - 1
+    );
+    return (
+      isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
+      isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y)
+    );
+  };
+  for (let i = 0; i < instructions.sliceCols; i++) {
+    for (let j = 0; j < instructions.sliceRows; j++) {
+      const col = i + instructions.sliceColStart;
+      const row = j + instructions.sliceRowStart;
+      const canvasCors = getCanvasCor(col * tileSize, row * tileSize);
+      if (isTileOnCanvas(row, col)) {
+        drawTile(canvas, null, canvasCors.x, canvasCors.y);
+      }
     }
   }
+  // // // old, possibly buggy code below
+  // // calculate which tile the camera is on.
+  // const rowStart = Math.floor(instructions.camY / tileSize);
+  // const colStart = Math.floor(instructions.camX / tileSize);
+  // // calculate the top left pixel of camera tile, in abstract coordinates
+  // const xStart = colStart * tileSize;
+  // const yStart = rowStart * tileSize;
+  // // calculate the canvas cors of the camera tile
+  // const canvasCorsTopLeftTile = getCanvasCor(xStart, yStart);
+  // const canvasXStart = canvasCorsTopLeftTile.x;
+  // const canvasYStart = canvasCorsTopLeftTile.y;
+  // // calculate how many tiles across and high I have to draw on canvas
+  // // const tilesAcross = Math.ceil((canvasWidth - canvasXStart) / tileSizeOnCanvas);
+  // // const tilesHigh = Math.ceil((canvasHeight - canvasYStart) / tileSizeOnCanvas);
+  // const tilesAcross = 10;
+  // const tilesHigh = 10;
+  // // start drawing tiles.
+  // for (let i = colStart; i < colStart + tilesAcross; i++) {
+  //   for (let j = rowStart; j < rowStart + tilesHigh; j++) {
+  //     //const tileId = instructions.slice[iSlice(i, j)];
+  //     // const tileImage = images[tileId];
+  //     const tileImage = null; // HARD CODED FOR NOW, DELETE LATER TODO
+  //     const canvasX = canvasXStart + i * tileSizeOnCanvas;
+  //     const canvasY = canvasYStart + j * tileSizeOnCanvas;
+  //     drawTile(canvas, tileImage, canvasX, canvasY);
+  //   }
+  // }
 };
 
 export const drawEditCanvas = (canvas, instructions, images) => {
