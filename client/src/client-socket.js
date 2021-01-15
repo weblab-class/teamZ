@@ -21,3 +21,16 @@ export const keyDown = (key) => {
 export const keyUp = (key) => {
   socket.emit("keyUp", key);
 };
+
+// cors has x and y attribute
+export const mouseMove = (cors) => {
+  socket.emit("mouseMove", cors);
+};
+
+export const mouseDown = () => {
+  socket.emit("mouseDown");
+};
+
+export const mouseUp = () => {
+  socket.emit("mouseUp");
+};

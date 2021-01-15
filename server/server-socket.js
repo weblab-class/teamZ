@@ -66,6 +66,18 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerKeyUp(user._id, key);
       });
+      socket.on("mouseMove", (cors) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.registerMouseMove(user._id, cors.x, cors.y);
+      });
+      socket.on("mouseDown", () => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.registerMouseDown(user._id);
+      });
+      socket.on("mouseUp", () => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.registerMouseUp(user._id);
+      });
     });
   },
 

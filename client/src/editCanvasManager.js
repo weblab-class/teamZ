@@ -15,7 +15,7 @@ const drawBackground = (
 };
 
 /**Draws tile */
-const drawTile = (canvas, tileImage, x, y) => {
+const drawTile = (canvas, tileImage, x, y, isDarkened) => {
   // console.log(`drawTile(x: ${x}, y: ${y})`);
   const context = canvas.getContext("2d");
   // TODO: add border to tile?
@@ -24,6 +24,7 @@ const drawTile = (canvas, tileImage, x, y) => {
   // context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   // HARD CODE FOR NOW
   context.strokeStyle = "red";
+  if (isDarkened) context.strokeStyle = "green"; // just pretend green is darkened for now
   context.lineWidth = 2;
   context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
@@ -76,13 +77,25 @@ const drawTiles = (canvas, instructions, images) => {
       isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y)
     );
   };
+  // compute the tile under the mouse
+  const getAbstractCor = (canX, canY) => {
+    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+    const retX = canX / canvasToAbstractRatio + instructions.camX;
+    const retY = canY / canvasToAbstractRatio + instructions.camY;
+    return { x: retX, y: retY };
+  };
+  const absMouseCors = getAbstractCor(instructions.mouseX, instructions.mouseY);
+  const colMouse = Math.floor(absMouseCors.x / tileSize);
+  const rowMouse = Math.floor(absMouseCors.y / tileSize);
+  // ---
   for (let i = 0; i < instructions.sliceCols; i++) {
     for (let j = 0; j < instructions.sliceRows; j++) {
       const col = i + instructions.sliceColStart;
       const row = j + instructions.sliceRowStart;
       const canvasCors = getCanvasCor(col * tileSize, row * tileSize);
       if (isTileOnCanvas(row, col)) {
-        drawTile(canvas, null, canvasCors.x, canvasCors.y);
+        const shouldDarken = i === colMouse && j === rowMouse;
+        drawTile(canvas, null, canvasCors.x, canvasCors.y, shouldDarken);
       }
     }
   }

@@ -52,8 +52,11 @@ const registerKeyUp = (playerId, key) => {
 };
 
 const registerMouseMove = (playerId, newX, newY) => {
-  editState.players[playerId].mouseX = newX;
-  editState.players[playerId].mouseY = newY;
+  if (!(playerId in editState.players)) {
+    return;
+  }
+  editState.players[playerId].mouseX = Math.floor(newX);
+  editState.players[playerId].mouseY = Math.floor(newY);
 };
 
 const registerMouseDown = (playerId) => {
@@ -124,6 +127,11 @@ const clipPadding = 0; // number of tiles
 const clipCamera = (camX, camY, levelId) => {
   let retX = camX;
   let retY = camY;
+  retX = Math.max(0, retX);
+  retY = Math.max(0, retY);
+  // lazy bottom-right clipping for now
+  retX = Math.min(retX, tileSize * editState.levels[levelId].cols);
+  retY = Math.min(retY, tileSize * editState.levels[levelId].rows);
   // retX = Math.max(-clipPadding * tileSize, retX);
   // retX = Math.min(clipPadding * tileSize + editState.levels[levelId].cols * tileSize - 1);
   // retY = Math.max(-clipPadding * tileSize, retY);
