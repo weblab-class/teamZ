@@ -1,4 +1,6 @@
-import { tileSize, tileSizeOnCanvas } from "../constants.js";
+// import { tileSize, tileSizeOnCanvas } from "../constants.js";
+const tileSize = 16;
+const tileSizeOnCanvas = 64;
 
 // keys used in level-editor; initialize keys to not-pressed-down
 const keys = ["w", "a", "s", "d", "SHIFT"];

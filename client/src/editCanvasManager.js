@@ -1,4 +1,6 @@
-import { tileSize, tileSizeOnCanvas } from "../../constants.js";
+// import { tileSize, tileSizeOnCanvas } from "../../constants.js";
+const tileSize = 16;
+const tileSizeOnCanvas = 64;
 /** helper functions */
 
 // hard code backgroundImage to be black for now
