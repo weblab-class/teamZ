@@ -15,13 +15,13 @@ import { keyDown, keyUp } from "./client-socket";
 // };
 
 const keyTranslator = {
-  KeyW: "w",
-  KeyA: "a",
-  KeyS: "s",
-  keyD: "d",
+  w: "w",
+  a: "a",
+  s: "s",
+  d: "d",
 };
 const handleKeyDown = (e) => {
-  console.log("handleKeyDown in editInput called");
+  console.log("handleKeyDown in editInput called with key: " + e.key);
   if (e.key in keyTranslator) {
     keyDown(keyTranslator[e.key]);
   }

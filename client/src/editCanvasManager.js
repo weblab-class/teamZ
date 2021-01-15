@@ -16,7 +16,7 @@ const drawBackground = (
 
 /**Draws tile */
 const drawTile = (canvas, tileImage, x, y) => {
-  console.log(`drawTile(x: ${x}, y: ${y})`);
+  // console.log(`drawTile(x: ${x}, y: ${y})`);
   const context = canvas.getContext("2d");
   // TODO: add border to tile?
   // to draw a bitmap image onto context at cors x, y, consult:
