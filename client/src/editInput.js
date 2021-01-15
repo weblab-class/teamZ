@@ -1,5 +1,5 @@
 // // import instructions from client-socket
-// import { move } from "./client-socket";
+import { keyDown, keyUp } from "./client-socket";
 
 /** add other controls here */
 // const handleInput = (e) => {
@@ -14,6 +14,23 @@
 //   }
 // };
 
+const keyTranslator = {
+  KeyW: "w",
+  KeyA: "a",
+  KeyS: "s",
+  keyD: "d",
+};
+const handleKeyDown = (e) => {
+  if (e.key in keyTranslator) {
+    keyDown(keyTranslator[e.key]);
+  }
+};
+const handleKeyUp = (e) => {
+  if (e.key in keyTranslator) {
+    keyUp(keyTranslator[e.key]);
+  }
+};
+
 /**
  * adds a *window* listener for any keydowns.
  *
@@ -21,4 +38,5 @@
  *
  * That this means *any time* you press an arrow key you'll move if you're on the site
  * */
-// window.addEventListener("keydown", handleInput);
+window.addEventListener("keydown", handleKeyDown);
+window.addEventListener("keyup", handleKeyUp);

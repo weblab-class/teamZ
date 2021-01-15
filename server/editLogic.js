@@ -1,4 +1,4 @@
-const tileSize = 16; // number of pixels per tile
+import { tileSize, tileSizeOnCanvas } from "../constants.js";
 
 // keys used in level-editor; initialize keys to not-pressed-down
 const keys = ["w", "a", "s", "d", "SHIFT"];
@@ -7,6 +7,7 @@ const keys = ["w", "a", "s", "d", "SHIFT"];
 const editState = {
   // ........
   // non-player-specific information:
+  tiles: {}, // maps tileId to image
   levels: {}, // maps levelId to level information consisting of
   // title, rows, cols, gridTiles, availableTiles, etc
   // title: "",
@@ -22,6 +23,8 @@ const editState = {
   /* { levelId -- id of level player is currently editing
        camX
        camY -- coordinates of top left corner of camera of player
+       canvasWidth
+       canvasHeight -- number of pixels vertically in canvas
        currentTile -- objectIds. can easily access tile properties through availableTiles dictionary
        keyDownMap -- dictionary mapping a keyboard key to boolean -- is player holding down
                                                          that key at the moment?
@@ -38,48 +41,56 @@ const editState = {
 /**
  * @param key one of the strings in keys
  */
-const registerKeyDown = (id, key) => {
-  editState.players[id].keyDownMap[key] = true;
+const registerKeyDown = (playerId, key) => {
+  editState.players[playerId].keyDownMap[key] = true;
 };
 
-const registerKeyUp = (id, key) => {
-  editState.players[id].keyDownMap[key] = false;
+const registerKeyUp = (playerId, key) => {
+  editState.players[playerId].keyDownMap[key] = false;
 };
 
-const registerMouseMove = (id, newX, newY) => {
-  editState.players[id].mouseX = newX;
-  editState.players[id].mouseY = newY;
+const registerMouseMove = (playerId, newX, newY) => {
+  editState.players[playerId].mouseX = newX;
+  editState.players[playerId].mouseY = newY;
 };
 
-const registerMouseDown = (id) => {
-  editState.players[id].mouseDown = true;
+const registerMouseDown = (playerId) => {
+  editState.players[playerId].mouseDown = true;
 };
 
-const registerMouseUp = (id) => {
-  editState.players[id].mouseDown = false;
+const registerMouseUp = (playerId) => {
+  editState.players[playerId].mouseDown = false;
 };
 
 /**
  * change the current tile of player with given id to newTileId.
  * if the player is erasing, newTileId is null
- * @param {*} id of player
+ * @param {*} playerId of player
  * @param {*} newTileId
  */
-const changeTile = (id, newTileId) => {
-  editState.players[id].currentTile = newTileId;
+const changeTile = (playerId, newTileId) => {
+  editState.players[playerId].currentTile = newTileId;
 };
 
 /**
  * Adds a new player to a level. If player already has a level, will reset.
  * @param {*} playerId
- * @param {*} levelId
+ * @param {*} level dictionary containing level info
+ * @param {*} canvasWidth how many pixels across on player's canvas
+ * @param {*} canvasHeight
  */
-const addPlayer = (playerId, levelId) => {
+const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
   }
-  editState.players[id] = {
+  const levelId = level._id;
+  // check if level already exists in editState. if so, EASY!
+  if (!(levelId in editState.levels)) {
+    // we have to add this level.
+    editState.levels[levelId] = level;
+  }
+  editState.players[playerId] = {
     levelId: levelId,
     camX: 0,
     camY: 0,
@@ -88,17 +99,19 @@ const addPlayer = (playerId, levelId) => {
     mouseY: 0,
     mouseDown: false,
     keyDownMap: keyDownMap,
+    canvasWidth: canvasWidth,
+    canvasHeight: canvasHeight,
   };
 };
 
 /** Remove a player from the game state if they DC */
-const removePlayer = (id) => {
-  delete editState.players[id];
+const removePlayer = (playerId) => {
+  delete editState.players[playerId];
 };
 
 // ... helper functions for update ...
 
-const clipPadding = 2; // number of tiles
+const clipPadding = 0; // number of tiles
 /**
  * Given camera coordinates, returns coordinates that are the given cors if they are valid,
  * else closest coordinate that is valid
@@ -175,10 +188,37 @@ const update = () => {
   updateCameras();
 };
 
-// TODO: function to send state to clients like getStateForPlayer(id)
+/**
+ * Returns instructions for player to render stuff at client side.
+ * @param {*} playerId
+ */
+const instructionsForPlayer = (playerId) => {
+  const player = editState.players[playerId];
+  const ret = {
+    camX: player.camX,
+    camY: player.camY,
+    mouseX: player.mouseX,
+    mouseY: player.mouseY,
+    sliceRowStart: 0, //TODO
+    sliceColStart: 0, //TODO
+    sliceRows: 0, //TODO
+    sliceCols: 0, //TODO
+    slice: [], //TODO: row major order of slice
+  };
+  return ret;
+};
+
+const getInstructions = () => {
+  const ret = {};
+  Object.keys(editState.players).forEach((key) => {
+    ret[key] = instructionsForPlayer(key);
+  });
+  return ret;
+};
 
 module.exports = {
-  editState, // replace with fn like getStateForPlayer(id)
+  instructionsForPlayer,
+  getInstructions,
   registerKeyDown,
   registerKeyUp,
   registerMouseDown,

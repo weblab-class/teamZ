@@ -14,6 +14,9 @@ const User = require("./models/user");
 const Tile = require("./models/tile");
 const Level = require("./models/level");
 
+// import editLogic
+const editLogic = require("./editLogic.js");
+
 // import authentication library
 const auth = require("./auth");
 
@@ -74,6 +77,16 @@ router.post("/newLevel", (req, res) => {
   // request should have attributes of level
   const newLevel = new Level({ ...req.body });
   newLevel.save().then((level) => res.send(level));
+});
+
+/**
+ * request consists of levelId
+ */
+router.post("/joinLevel", async (req, res) => {
+  const level = await Level.findOne({ _id: req.body.levelId });
+  // assume level has all fields required as specified in editLogic
+  editLogic.addPlayer(req.user._id, level, 700, 700);
+  // hard code canvas dimensions as 700x700 for now ^
 });
 
 /**

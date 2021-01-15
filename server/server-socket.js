@@ -1,4 +1,4 @@
-// const editLogic = require("./editLogic");
+const editLogic = require("./editLogic");
 
 let io;
 
@@ -29,14 +29,24 @@ const removeUser = (user, socket) => {
   delete socketToUserMap[socket.id];
 };
 
-// // send the current game state every 1/60 of a second.
-// setInterval(() => {
-//   sendGameState();
-// }, 1000 / 60);
+// send the current game state every 1/60 of a second.
+setInterval(() => {
+  sendGameState();
+}, 1000 / 60);
 
-// const sendGameState = () => {
-//   io.emit("update", logic.gameState);
-// };
+let count = 0;
+const updatePeriod = 2;
+const sendGameState = () => {
+  editLogic.update();
+  if (count % updatePeriod === 0) {
+    const instructions = editLogic.getInstructions();
+    Object.keys(instructions).forEach((playerId) => {
+      const sock = getSocketFromUserID(playerId);
+      sock.emit("update", instructions[playerId]);
+    });
+  }
+  count = (count + 1) % updatePeriod;
+};
 
 module.exports = {
   init: (http) => {
@@ -48,11 +58,14 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         removeUser(user, socket);
       });
-      // // adds listeners to messages from client.
-      // socket.on("move", (dir) => {
-      //   const user = getUserFromSocketID(socket.id);
-      //   if (user) logic.movePlayer(user._id, dir);
-      // });
+      socket.on("keyDown", (key) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.registerKeyDown(user._id, key);
+      });
+      socket.on("keyUp", (key) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.registerKeyUp(user._id, key);
+      });
     });
   },
 

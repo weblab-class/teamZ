@@ -14,6 +14,7 @@ const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.goo
 class Edit extends Component {
   constructor(props) {
     super(props);
+    this.canvasRef = React.createRef();
     // for now, the only prop the Edit page should take is :levelId
     // Initialize Default State
     this.state = {
@@ -23,21 +24,25 @@ class Edit extends Component {
 
   componentDidMount() {
     // api calls here
+    post("/api/joinLevel", { levelId: this.props.levelId }).then(() => {
+      // socket instructions
+    });
     // fetch level with _id this.props.levelId, and load into state.
     //
     // set socket instructions here ...
     //
-    // socket.on("update", (update) => {
-    //   this.processUpdate(update);
-    // });
+    socket.on("update", (update) => {
+      this.processUpdate(update);
+    });
   }
 
-  // processUpdate = (update) => { // update is new `game` state
-  //   if (update.winner) {
-  //     this.setState({ winner: update.winner });
-  //   }
-  //   drawCanvas(update);
-  // };
+  getCanvas = () => {
+    return this.canvasRef.current;
+  };
+
+  processUpdate = (update) => {
+    drawEditCanvas(this.getCanvas(), update, {});
+  };
 
   render() {
     return (
@@ -59,6 +64,7 @@ class Edit extends Component {
         )}
         <div>You have reached the edit page.</div>
         <div>LevelId: {this.props.levelId}</div>
+        <canvas ref={this.canvasRef} width="700" height="700" />
       </>
     );
   }

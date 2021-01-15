@@ -13,3 +13,10 @@ socket.on("connect", () => {
 // export const move = (dir) => {
 //   socket.emit("move", dir);
 // };
+export const keyDown = (key) => {
+  socket.emit("keyDown", key);
+};
+
+export const keyUp = (key) => {
+  socket.emit("keyUp", key);
+};
