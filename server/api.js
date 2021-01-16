@@ -71,6 +71,18 @@ router.post("/newTile", (req, res) => {
 });
 
 /**
+ * req.query.tileIds is a list of tileIds
+ */
+router.get("/tilesWithId", (req, res) => {
+  const tileIdList = req.query.tileIds;
+  const ret = {};
+  for (let i = 0; i < tileIdList.length; i++) {
+    const tileId = tileIdList[i];
+    // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
+  }
+});
+
+/**
  * req.body contains attributes of the level (i.e. title, rows, cols, etc)
  */
 router.post("/newLevel", (req, res) => {

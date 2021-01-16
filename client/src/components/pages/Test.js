@@ -14,6 +14,8 @@ class Test extends Component {
     // Initialize Default State
     this.state = {
       newLevelTitle: "",
+      newLevelRows: 10,
+      newLevelCols: 10,
       levels: [],
     };
   }
@@ -32,8 +34,8 @@ class Test extends Component {
    * but with the title specified in the state.
    */
   newLevel = async () => {
-    const rows = 10;
-    const cols = 10;
+    const rows = this.state.newLevelRows;
+    const cols = this.state.newLevelCols;
     const emptyTile = await post("/api/emptyTile");
     const gridTiles = [];
     for (let i = 0; i < rows * cols; i++) {
@@ -47,7 +49,7 @@ class Test extends Component {
       gridTiles: gridTiles,
       availableTiles: [],
     });
-    this.setState({ newLevelTitle: "" });
+    this.setState({ newLevelTitle: "", newLevelRows: 10, newLevelCols: 10 });
     this.loadLevels();
   };
 
@@ -82,6 +84,18 @@ class Test extends Component {
             placeholder="Title here"
             value={this.state.newLevelTitle}
             onChange={(e) => this.setState({ newLevelTitle: e.target.value })}
+          ></textarea>
+          <textarea
+            type="text"
+            placeholder="Rows"
+            value={this.state.newLevelRows}
+            onChange={(e) => this.setState({ newLevelRows: e.target.value })}
+          ></textarea>
+          <textarea
+            type="text"
+            placeholder="Cols"
+            value={this.state.newLevelCols}
+            onChange={(e) => this.setState({ newLevelCols: e.target.value })}
           ></textarea>
           <button type="submit" onClick={(e) => this.newLevel()}>
             Create level
