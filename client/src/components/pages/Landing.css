@@ -1,3 +1,15 @@
+@font-face {
+  font-family: 'minecraftiaregular';
+  src: url('minecraftia-regular-webfont.woff2') format('woff2'),
+    url('minecraftia-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  background-color: #FF9F75;
+}
+
 .test {
   border: solid black 1px;
   width: 300px;
