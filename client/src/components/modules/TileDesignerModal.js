@@ -7,7 +7,7 @@ const tileSize = 16; // use this constant rather than the number `16` when refer
 class TileDesignerModal extends Component {
   constructor(props) {
     /* TileDesignerModal is a pop-up whose job is to design and output a tile.
-     * The only prop passed to TileDesignerModal is a callback called `onSubmit`,
+     * One prop passed to TileDesignerModal is a callback `onSubmit`,
      * which takes three arguments:
      *   -  name: String // name of tile
      *   -  layer: String // one of "Platform" or "Background"
@@ -16,6 +16,14 @@ class TileDesignerModal extends Component {
      *             an ImageBitmap), but you should specify your choice here,
      *             so I will know what to do with it.
      * Call `onSubmit` like so: `this.props.onSubmit(name, layer, image)`.
+     * `onSubmit` should be called when the user performs an action that translates to
+     * submitting the designed tile (e.g. clicking a submit button).
+     * ----------------
+     * Another prop passed to TileDesignerModal is a callback `onCancel`,
+     * which takes no arguments.
+     * `onCancel` should be called when the user performs an action that translates to
+     * exiting the TileDesignerModal without submitting the designed tile (e.g.
+     * clicking on a cancel button).
      * ----------------
      * One should be able to submit a tile by:
      *   -  uploading a 16x16 PNG image
