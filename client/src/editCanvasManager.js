@@ -85,8 +85,10 @@ const drawTiles = (canvas, instructions, images) => {
     return { x: retX, y: retY };
   };
   const absMouseCors = getAbstractCor(instructions.mouseX, instructions.mouseY);
+  //console.log(`absMouseCors: (${absMouseCors.x}, ${absMouseCors.y})`);
   const colMouse = Math.floor(absMouseCors.x / tileSize);
   const rowMouse = Math.floor(absMouseCors.y / tileSize);
+  //console.log(`colMouse: ${colMouse}, rowMouse: ${rowMouse}`);
   // ---
   for (let i = 0; i < instructions.sliceCols; i++) {
     for (let j = 0; j < instructions.sliceRows; j++) {
@@ -94,7 +96,7 @@ const drawTiles = (canvas, instructions, images) => {
       const row = j + instructions.sliceRowStart;
       const canvasCors = getCanvasCor(col * tileSize, row * tileSize);
       if (isTileOnCanvas(row, col)) {
-        const shouldDarken = i === colMouse && j === rowMouse;
+        const shouldDarken = col === colMouse && row === rowMouse;
         drawTile(canvas, null, canvasCors.x, canvasCors.y, shouldDarken);
       }
     }

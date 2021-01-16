@@ -15,6 +15,8 @@ class Edit extends Component {
   constructor(props) {
     super(props);
     this.canvasRef = React.createRef();
+    this.canvasWidth = 900;
+    this.canvasHeight = 700;
     // for now, the only prop the Edit page should take is :levelId
     // Initialize Default State
     this.state = {
@@ -24,7 +26,11 @@ class Edit extends Component {
 
   componentDidMount() {
     // api calls here
-    post("/api/joinLevel", { levelId: this.props.levelId }).then((garbage) => {
+    post("/api/joinLevel", {
+      levelId: this.props.levelId,
+      canvasWidth: this.canvasWidth,
+      canvasHeight: this.canvasHeight,
+    }).then((garbage) => {
       initInput({ canvas: this.getCanvas() });
     });
     // fetch level with _id this.props.levelId, and load into state.
@@ -65,7 +71,7 @@ class Edit extends Component {
         )}
         <div>You have reached the edit page.</div>
         <div>LevelId: {this.props.levelId}</div>
-        <canvas ref={this.canvasRef} width="700" height="700" />
+        <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
       </>
     );
   }

@@ -198,12 +198,42 @@ const update = () => {
   updateCameras();
 };
 
+const getSlice = (playerId) => {
+  const player = editState.players[playerId];
+  const level = editState.levels[player.levelId];
+  // worry about edge cases below
+  const rowStart = Math.min(Math.max(0, Math.floor(player.camY / tileSize)), level.rows);
+  const colStart = Math.min(Math.max(0, Math.floor(player.camX / tileSize)), level.cols);
+  const tilesHigh = Math.min(
+    level.rows - rowStart,
+    Math.floor(player.canvasHeight / tileSizeOnCanvas) + 1
+  );
+  const tilesWide = Math.min(
+    level.cols - colStart,
+    Math.floor(player.canvasWidth / tileSizeOnCanvas) + 1
+  );
+  const slice = [];
+  for (let i = rowStart; i < rowStart + tilesHigh; i++) {
+    for (let j = colStart; j < colStart + tilesWide; j++) {
+      slice.push(level.gridTiles[i * level.cols + j]);
+    }
+  }
+  return {
+    sliceRowStart: rowStart,
+    sliceColStart: colStart,
+    sliceRows: tilesHigh,
+    sliceCols: tilesWide,
+    slice: slice,
+  };
+};
+
 /**
  * Returns instructions for player to render stuff at client side.
  * @param {*} playerId
  */
 const instructionsForPlayer = (playerId) => {
   const player = editState.players[playerId];
+  const sliceDict = getSlice(playerId);
   const ret = {
     editState: editState,
     playerId: playerId,
@@ -211,11 +241,11 @@ const instructionsForPlayer = (playerId) => {
     camY: player.camY,
     mouseX: player.mouseX,
     mouseY: player.mouseY,
-    sliceRowStart: 0, //TODO
-    sliceColStart: 0, //TODO
-    sliceRows: 10, //TODO hard code for now
-    sliceCols: 10, //TODO hard code for now
-    slice: editState.levels[player.levelId].gridTiles, //TODO: row major order of slice, hard code for now
+    sliceRowStart: sliceDict.sliceRowStart,
+    sliceColStart: sliceDict.sliceColStart,
+    sliceRows: sliceDict.sliceRows,
+    sliceCols: sliceDict.sliceCols,
+    slice: sliceDict.slice,
   };
   return ret;
 };
