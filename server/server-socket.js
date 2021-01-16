@@ -78,6 +78,10 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerMouseUp(user._id);
       });
+      socket.on("addTile", (tileId) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.addTile(user._id, tileId);
+      });
     });
   },
 

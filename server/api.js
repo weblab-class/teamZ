@@ -68,6 +68,9 @@ router.post("/emptyTile", async (req, res) => {
 router.post("/newTile", (req, res) => {
   const newTile = new Tile({ ...req.body });
   newTile.save().then((tile) => res.send(tile));
+  // TODO DISCREPENCY: req.body.image is actual image, but Tile.image
+  // is a String reference to tile. must deal with this once we get
+  // image storage set up
 });
 
 /**
@@ -79,6 +82,7 @@ router.get("/tilesWithId", (req, res) => {
   for (let i = 0; i < tileIdList.length; i++) {
     const tileId = tileIdList[i];
     // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
+    // tileObject has to contain actual image
   }
 });
 

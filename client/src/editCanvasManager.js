@@ -19,14 +19,14 @@ const drawTile = (canvas, tileImage, x, y, isDarkened) => {
   // console.log(`drawTile(x: ${x}, y: ${y})`);
   const context = canvas.getContext("2d");
   // TODO: add border to tile?
-  // to draw a bitmap image onto context at cors x, y, consult:
-  // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage#syntax
-  // context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   // HARD CODE FOR NOW
-  context.strokeStyle = "red";
-  if (isDarkened) context.strokeStyle = "green"; // just pretend green is darkened for now
-  context.lineWidth = 2;
-  context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  if (tileImage === null) {
+    // if null, just draw an outline
+    context.strokeStyle = "red";
+    if (isDarkened) context.strokeStyle = "green"; // just pretend green is darkened for now
+    context.lineWidth = 2;
+    context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  }
 };
 
 /**
@@ -43,9 +43,9 @@ const drawTile = (canvas, tileImage, x, y, isDarkened) => {
  *                           sliceRows: 0, //TODO
  *                           sliceCols: 0, //TODO
  *                           slice: [], //TODO: row major order of slice
- * @param {*} images a dictionary mapping id to Image object
+ * @param {*} tiles dict maps tileId to tile obj
  */
-const drawTiles = (canvas, instructions, images) => {
+const drawTiles = (canvas, instructions, tiles) => {
   const context = canvas.getContext("2d");
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
@@ -97,7 +97,9 @@ const drawTiles = (canvas, instructions, images) => {
       const canvasCors = getCanvasCor(col * tileSize, row * tileSize);
       if (isTileOnCanvas(row, col)) {
         const shouldDarken = col === colMouse && row === rowMouse;
-        drawTile(canvas, null, canvasCors.x, canvasCors.y, shouldDarken);
+        const tileId = instructions.slice[iSlice(row, col)];
+        const tileImage = tileId in tiles ? tiles[tileId].image : null;
+        drawTile(canvas, tileImage, canvasCors.x, canvasCors.y, shouldDarken);
       }
     }
   }
@@ -130,7 +132,7 @@ const drawTiles = (canvas, instructions, images) => {
   // }
 };
 
-export const drawEditCanvas = (canvas, instructions, images) => {
+export const drawEditCanvas = (canvas, instructions, tiles) => {
   drawBackground(canvas);
-  drawTiles(canvas, instructions, images);
+  drawTiles(canvas, instructions, tiles);
 };

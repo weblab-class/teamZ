@@ -9,7 +9,6 @@ const keys = ["w", "a", "s", "d", "SHIFT"];
 const editState = {
   // ........
   // non-player-specific information:
-  tiles: {}, // maps tileId to image
   levels: {}, // maps levelId to level information consisting of
   // title, rows, cols, gridTiles, availableTiles, etc
   // title: "",
@@ -17,7 +16,7 @@ const editState = {
   // rows: 0,
   // cols: 0,
   // gridTiles: [], // row-major array of the ids of tiles
-  // availableTiles: {}, // consider changing this to a dictionary of objectId --> tile object
+  // availableTiles: [], // list of available tileIds
   // ........
   // player-specific information:
   players: {},
@@ -75,6 +74,11 @@ const registerMouseUp = (playerId) => {
  */
 const changeTile = (playerId, newTileId) => {
   editState.players[playerId].currentTile = newTileId;
+};
+
+const addTile = (playerId, tileId) => {
+  const levelId = editState.players[playerId].levelId;
+  editState.levels[levelId].availableTiles.push(tileId);
 };
 
 /**
@@ -206,11 +210,11 @@ const getSlice = (playerId) => {
   const colStart = Math.min(Math.max(0, Math.floor(player.camX / tileSize)), level.cols);
   const tilesHigh = Math.min(
     level.rows - rowStart,
-    Math.floor(player.canvasHeight / tileSizeOnCanvas) + 1
+    Math.floor(player.canvasHeight / tileSizeOnCanvas) + 2
   );
   const tilesWide = Math.min(
     level.cols - colStart,
-    Math.floor(player.canvasWidth / tileSizeOnCanvas) + 1
+    Math.floor(player.canvasWidth / tileSizeOnCanvas) + 2
   );
   const slice = [];
   for (let i = rowStart; i < rowStart + tilesHigh; i++) {
@@ -233,10 +237,10 @@ const getSlice = (playerId) => {
  */
 const instructionsForPlayer = (playerId) => {
   const player = editState.players[playerId];
+  const level = editState.levels[player.levelId];
   const sliceDict = getSlice(playerId);
   const ret = {
-    editState: editState,
-    playerId: playerId,
+    availableTiles: level.availableTiles,
     camX: player.camX,
     camY: player.camY,
     mouseX: player.mouseX,

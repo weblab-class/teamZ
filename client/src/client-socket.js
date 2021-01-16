@@ -33,3 +33,7 @@ export const mouseDown = () => {
 export const mouseUp = () => {
   socket.emit("mouseUp");
 };
+
+export const addTile = (tileId) => {
+  socket.emit("addTile", tileId);
+};
