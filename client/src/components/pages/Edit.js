@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
-import { socket, addTile } from "../../client-socket";
+import { socket, addTile, changeTile } from "../../client-socket";
 import { drawEditCanvas } from "../../editCanvasManager";
 import { initInput } from "../../editInput.js";
+
+import SidePane from "../modules/SidePane.js";
 
 import "../../utilities.css";
 import "./Edit.css";
@@ -21,6 +23,7 @@ class Edit extends Component {
     // Initialize Default State
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
+      currentTile: "bad", // tileId of currentTile
     };
   }
 
@@ -58,6 +61,9 @@ class Edit extends Component {
         this.setState({ tiles: { ...this.state.tiles, ...tileDict } });
       });
     }
+    if (update.currentTile !== this.state.currentTile) {
+      this.setState({ currentTile: update.currentTile });
+    }
     drawEditCanvas(this.getCanvas(), update, this.state.tiles);
   };
 
@@ -77,12 +83,21 @@ class Edit extends Component {
 
   render() {
     return (
-      <div classname="u-flexRow">
-        <div classname="u-flexColumn">
+      <div className="u-flexRow">
+        <div className="u-flexColumn">
           <div>Save button, Go-Back button go here</div>
           <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
         </div>
-        <div>Side pane goes here</div>
+        <SidePane
+          tiles={{}}
+          currentTile={this.state.currentTile}
+          setCurrentTile={(tileId) => {
+            changeTile(tileId);
+          }}
+          displayTileDesigner={() => {
+            /* TODO */
+          }}
+        />
       </div>
     );
   }

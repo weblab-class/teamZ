@@ -256,6 +256,7 @@ const instructionsForPlayer = (playerId) => {
   const sliceDict = getSlice(playerId);
   const ret = {
     availableTiles: level.availableTiles,
+    currentTile: player.currentTile,
     camX: player.camX,
     camY: player.camY,
     mouseX: player.mouseX,

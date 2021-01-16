@@ -82,6 +82,10 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.addTile(user._id, tileId);
       });
+      socket.on("changeTile", (tileId) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.changeTile(user._id, tileId);
+      });
     });
   },
 

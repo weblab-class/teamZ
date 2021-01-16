@@ -6,18 +6,35 @@ class SidePane extends Component {
   constructor(props) {
     super(props);
     // props needed:
-    // - tileId -> tile dictionary
-    // id of current tile
+    // - tiles: tileId -> tile dictionary
+    // - currentTile: id of current tile
     // callbacks:
     //  -  setCurrentTile
     //  -  displayTileDesigner
     this.state = {};
   }
 
-  componentDidMount() {}
-
   render() {
-    return <div classname="u-flexColumn">Side pane</div>;
+    const tileButtons = Object.keys(this.props.tiles).map((tileId) => {
+      return (
+        <li key={tileId}>
+          <button
+            onClick={(e) => {
+              this.props.setCurrentTile(tileId);
+            }}
+          >
+            {`Tile: ${tileId}`}
+          </button>
+        </li>
+      );
+    });
+    return (
+      <div className="u-flexColumn">
+        <div>Side pane</div>
+        <ul>{tileButtons}</ul>
+        <div>Current tile: {this.props.currentTile}</div>
+      </div>
+    );
   }
 }
 

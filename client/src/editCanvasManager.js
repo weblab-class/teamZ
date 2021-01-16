@@ -74,7 +74,9 @@ const drawTiles = (canvas, instructions, tiles) => {
     );
     return (
       isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y)
+      isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y) ||
+      isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y) ||
+      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.x)
     );
   };
   // compute the tile under the mouse

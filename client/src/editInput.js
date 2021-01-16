@@ -7,7 +7,6 @@ const keyTranslator = {
   d: "d",
 };
 const handleKeyDown = (e) => {
-  console.log("handleKeyDown in editInput called with key: " + e.key);
   if (e.key in keyTranslator) {
     keyDown(keyTranslator[e.key]);
   }
