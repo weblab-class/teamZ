@@ -29,8 +29,7 @@ const editState = {
        currentTile -- objectIds. can easily access tile properties through availableTiles dictionary
        keyDownMap -- dictionary mapping a keyboard key to boolean -- is player holding down
                                                          that key at the moment?
-       mouseX -- xcor of mouse relative to entire grid. for example, if the player's
-                 mouse is at the top left corner of top left tile, their mouse is at (0,0)
+       mouseX -- xcor of mouse relative to canvas
        mouseY
        mouseDown -- is player's mouse down?
      }
@@ -179,14 +178,30 @@ const corsInGrid = (x, y, levelId) => {
     y < editState.levels[levelId].rows * tileSize
   );
 };
-// place down tiles
+
+const playerMouseOnCanvas = (playerId) => {
+  const player = editState.players[playerId];
+  return (
+    0 <= player.mouseX &&
+    player.mouseX < player.canvasWidth &&
+    0 <= player.mouseY &&
+    player.mouseY < player.canvasHeight
+  );
+};
+// place down tiles TODO: FIX
 const updateTiles = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
     const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
-    if (player.mouseDown && corsInGrid(player.mouseX, player.mouseY, player.levelId)) {
-      const row = Math.floor(player.mouseY / tileSize);
-      const col = Math.floor(player.mouseX / tileSize);
+    const mouseXAbs = player.camX + player.mouseX;
+    const mouseYAbs = player.camY + player.mouseY;
+    if (
+      player.mouseDown &&
+      corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
+      playerMouseOnCanvas(key)
+    ) {
+      const row = Math.floor(mouseYAbs / tileSize);
+      const col = Math.floor(mouseXAbs / tileSize);
       editState.levels[player.levelId].gridTiles[row * editState.cols + col] = tileIdToPlace;
     }
   });
