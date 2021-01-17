@@ -192,9 +192,11 @@ const playerMouseOnCanvas = (playerId) => {
 const updateTiles = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
+    const level = editState.levels[player.levelId];
     const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
-    const mouseXAbs = player.camX + player.mouseX;
-    const mouseYAbs = player.camY + player.mouseY;
+    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+    const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
+    const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
     if (
       player.mouseDown &&
       corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
@@ -202,7 +204,8 @@ const updateTiles = () => {
     ) {
       const row = Math.floor(mouseYAbs / tileSize);
       const col = Math.floor(mouseXAbs / tileSize);
-      editState.levels[player.levelId].gridTiles[row * editState.cols + col] = tileIdToPlace;
+      // console.log(`placing tile at row ${row} , col ${col}`);
+      level.gridTiles[row * level.cols + col] = tileIdToPlace;
     }
   });
 };
@@ -261,6 +264,7 @@ const instructionsForPlayer = (playerId) => {
     camY: player.camY,
     mouseX: player.mouseX,
     mouseY: player.mouseY,
+    mouseDown: player.mouseDown,
     sliceRowStart: sliceDict.sliceRowStart,
     sliceColStart: sliceDict.sliceColStart,
     sliceRows: sliceDict.sliceRows,
@@ -279,6 +283,7 @@ const getInstructions = () => {
 };
 
 module.exports = {
+  editState,
   instructionsForPlayer,
   getInstructions,
   registerKeyDown,
@@ -286,6 +291,7 @@ module.exports = {
   registerMouseDown,
   registerMouseMove,
   registerMouseUp,
+  addTile,
   changeTile,
   addPlayer,
   removePlayer,

@@ -23,7 +23,7 @@ class SidePane extends Component {
               this.props.setCurrentTile(tileId);
             }}
           >
-            {`Tile: ${tileId}`}
+            {`Tile: ${this.props.tiles[tileId].name}`}
           </button>
         </li>
       );
@@ -32,7 +32,19 @@ class SidePane extends Component {
       <div className="u-flexColumn">
         <div>Side pane</div>
         <ul>{tileButtons}</ul>
-        <div>Current tile: {this.props.currentTile}</div>
+        <div>
+          Current tile:{" "}
+          {this.props.currentTile in this.props.tiles
+            ? this.props.tiles[this.props.currentTile].name
+            : "badTile :("}
+        </div>
+        <button
+          onClick={(e) => {
+            this.props.displayTileDesigner();
+          }}
+        >
+          Create new tile
+        </button>
       </div>
     );
   }
