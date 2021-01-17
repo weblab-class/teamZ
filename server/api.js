@@ -56,6 +56,11 @@ router.post("/wipe", async (req, res) => {
   res.send(true);
 });
 
+router.post("/removePlayer", (req, res) => {
+  if (req.user) editLogic.removePlayer(req.user._id);
+  res.send({});
+});
+
 /**
  * Sends back an empty tile (i.e. tile with layer "None")
  */
@@ -137,7 +142,7 @@ router.post("/newLevel", (req, res) => {
 
 router.post("/save", async (req, res) => {
   const levelId = editLogic.editState.players[req.user._id].levelId;
-  const levelInEditState = editState.levels[levelId];
+  const levelInEditState = editLogic.editState.levels[levelId];
   const level = await Level.findOne({ _id: levelId });
   level.title = levelInEditState.title;
   level.rows = levelInEditState.rows;

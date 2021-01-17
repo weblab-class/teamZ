@@ -2,9 +2,15 @@ import { keyDown, keyUp, mouseMove, mouseDown, mouseUp } from "./client-socket";
 
 const keyTranslator = {
   w: "w",
+  W: "w",
   a: "a",
+  A: "a",
   s: "s",
+  S: "s",
   d: "d",
+  D: "d",
+  Shift: "SHIFT",
+  " ": "SHIFT",
 };
 const handleKeyDown = (e) => {
   if (e.key in keyTranslator) {

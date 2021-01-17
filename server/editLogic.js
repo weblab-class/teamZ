@@ -17,6 +17,8 @@ const editState = {
   // cols: 0,
   // gridTiles: [], // row-major array of the ids of tiles
   // availableTiles: [], // list of available tileIds
+  // startX: 0, // abstract cors of start position
+  // startY: 0,
   // ........
   // player-specific information:
   players: {},
@@ -32,6 +34,7 @@ const editState = {
        mouseX -- xcor of mouse relative to canvas
        mouseY
        mouseDown -- is player's mouse down?
+       isDraggingChar -- is player dragging the character and changing its start cors?
      }
    */
 };
@@ -42,14 +45,17 @@ const editState = {
  * @param key one of the strings in keys
  */
 const registerKeyDown = (playerId, key) => {
+  if (!(playerId in editState.players)) return;
   editState.players[playerId].keyDownMap[key] = true;
 };
 
 const registerKeyUp = (playerId, key) => {
+  if (!(playerId in editState.players)) return;
   editState.players[playerId].keyDownMap[key] = false;
 };
 
 const registerMouseMove = (playerId, newX, newY) => {
+  if (!(playerId in editState.players)) return;
   if (!(playerId in editState.players)) {
     return;
   }
@@ -57,12 +63,40 @@ const registerMouseMove = (playerId, newX, newY) => {
   editState.players[playerId].mouseY = Math.floor(newY);
 };
 
+const toAbstractCors = (canX, canY, camX, camY) => {
+  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+  return {
+    x: Math.floor(canX / canvasToAbstractRatio + camX),
+    y: Math.floor(canY / canvasToAbstractRatio + camY),
+  };
+};
+
+const playerMouseOnChar = (playerId) => {
+  if (!(playerId in editState.players)) return;
+  const player = editState.players[playerId];
+  const level = editState.levels[player.levelId];
+  const playerMouseAbsCors = toAbstractCors(player.mouseX, player.mouseY, player.camX, player.camY);
+  return (
+    playerMouseAbsCors.x >= level.startX &&
+    playerMouseAbsCors.x < level.startX + tileSize &&
+    playerMouseAbsCors.y >= level.startY &&
+    playerMouseAbsCors.y < level.startY + tileSize
+  );
+};
+
 const registerMouseDown = (playerId) => {
+  if (!(playerId in editState.players)) return;
   editState.players[playerId].mouseDown = true;
+  // check if player clicked character. if so, the player is now dragging the character.
+  if (playerMouseOnChar(playerId) && playerMouseOnCanvas(playerId)) {
+    editState.players[playerId].isDraggingChar = true;
+  }
 };
 
 const registerMouseUp = (playerId) => {
+  if (!(playerId in editState.players)) return;
   editState.players[playerId].mouseDown = false;
+  editState.players[playerId].isDraggingChar = false;
 };
 
 /**
@@ -72,10 +106,12 @@ const registerMouseUp = (playerId) => {
  * @param {*} newTileId
  */
 const changeTile = (playerId, newTileId) => {
+  if (!(playerId in editState.players)) return;
   editState.players[playerId].currentTile = newTileId;
 };
 
 const addTile = (playerId, tileId) => {
+  if (!(playerId in editState.players)) return;
   const levelId = editState.players[playerId].levelId;
   editState.levels[levelId].availableTiles.push(tileId);
 };
@@ -114,7 +150,9 @@ const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
 
 /** Remove a player from the game state if they DC */
 const removePlayer = (playerId) => {
-  delete editState.players[playerId];
+  if (playerId in editState.players) {
+    delete editState.players[playerId];
+  }
 };
 
 // ... helper functions for update ...
@@ -188,25 +226,48 @@ const playerMouseOnCanvas = (playerId) => {
     player.mouseY < player.canvasHeight
   );
 };
-// place down tiles TODO: FIX
+
 const updateTiles = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
     const level = editState.levels[player.levelId];
-    const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
-    const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
-    if (
-      player.mouseDown &&
-      corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
-      playerMouseOnCanvas(key)
-    ) {
-      const row = Math.floor(mouseYAbs / tileSize);
-      const col = Math.floor(mouseXAbs / tileSize);
-      // console.log(`placing tile at row ${row} , col ${col}`);
-      level.gridTiles[row * level.cols + col] = tileIdToPlace;
+    if (!player.isDraggingChar) {
+      const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
+      const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+      const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
+      const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
+      if (
+        player.mouseDown &&
+        corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
+        playerMouseOnCanvas(key)
+      ) {
+        const row = Math.floor(mouseYAbs / tileSize);
+        const col = Math.floor(mouseXAbs / tileSize);
+        // console.log(`placing tile at row ${row} , col ${col}`);
+        level.gridTiles[row * level.cols + col] = tileIdToPlace;
+      }
     }
+  });
+};
+
+const clipCharCors = (levelId) => {
+  const level = editState.levels[levelId];
+  level.startX = Math.max(0, level.startX);
+  level.startY = Math.max(0, level.startY);
+  level.startX = Math.min(level.cols * tileSize - tileSize, level.startX);
+  level.startY = Math.min(level.rows * tileSize - tileSize, level.startY);
+};
+
+const updateStartPosition = () => {
+  Object.keys(editState.players).forEach((key) => {
+    const player = editState.players[key];
+    const level = editState.levels[player.levelId];
+    if (player.isDraggingChar) {
+      const newStartCors = toAbstractCors(player.mouseX, player.mouseY, player.camX, player.camY);
+      level.startX = Math.floor(newStartCors.x - tileSize / 2);
+      level.startY = Math.floor(newStartCors.y - tileSize / 2);
+    }
+    clipCharCors(player.levelId);
   });
 };
 
@@ -218,6 +279,7 @@ const updateTiles = () => {
 const update = () => {
   updateTiles();
   updateCameras();
+  updateStartPosition();
 };
 
 const getSlice = (playerId) => {
@@ -270,6 +332,9 @@ const instructionsForPlayer = (playerId) => {
     sliceRows: sliceDict.sliceRows,
     sliceCols: sliceDict.sliceCols,
     slice: sliceDict.slice,
+    isDraggingChar: player.isDraggingChar,
+    startX: level.startX,
+    startY: level.startY,
   };
   return ret;
 };

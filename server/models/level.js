@@ -9,8 +9,8 @@ const LevelSchema = new mongoose.Schema({
   cols: Number,
   gridTiles: [{ type: ObjectId, ref: "tile" }], // of Tile, length should be exactly rows * cols
   availableTiles: [{ type: ObjectId, ref: "tile" }], // of Tile
-  // startX: Number, // x_cor of character spawn point
-  // startY: Number, // y_cor of character spawn point
+  startX: Number, // x_cor of character spawn point
+  startY: Number, // y_cor of character spawn point
 });
 
 // compile model from schema
