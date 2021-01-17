@@ -135,6 +135,19 @@ router.post("/newLevel", (req, res) => {
   newLevel.save().then((level) => res.send(level));
 });
 
+router.post("/save", async (req, res) => {
+  const levelId = editLogic.editState.players[req.user._id].levelId;
+  const levelInEditState = editState.levels[levelId];
+  const level = await Level.findOne({ _id: levelId });
+  level.title = levelInEditState.title;
+  level.rows = levelInEditState.rows;
+  level.cols = levelInEditState.cols;
+  level.gridTiles = levelInEditState.gridTiles;
+  level.availableTiles = levelInEditState.availableTiles;
+  await level.save();
+  res.send({});
+});
+
 /**
  * request consists of levelId
  */

@@ -283,6 +283,7 @@ const getInstructions = () => {
 };
 
 module.exports = {
+  editState,
   instructionsForPlayer,
   getInstructions,
   registerKeyDown,

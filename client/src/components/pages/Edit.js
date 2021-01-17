@@ -138,7 +138,17 @@ class Edit extends Component {
     return (
       <div className="u-flexRow">
         <div className="u-flexColumn">
-          <div>Save button, Go-Back button go here</div>
+          <div>
+            Save button, Go-Back button go here:
+            <button
+              type="submit"
+              onClick={(e) => {
+                post("/api/save");
+              }}
+            >
+              save level
+            </button>
+          </div>
           <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
         </div>
         <SidePane
