@@ -6,13 +6,14 @@
 | This file defines the routes for your server.
 |
 */
-
+const tileSize = 16;
 const express = require("express");
 
 // import models so we can interact with the database
 const User = require("./models/user");
 const Tile = require("./models/tile");
 const Level = require("./models/level");
+const Pattern = require("./models/pattern");
 
 // import editLogic
 const editLogic = require("./editLogic.js");
@@ -48,6 +49,13 @@ router.post("/initsocket", (req, res) => {
 // | write your API methods below!|
 // |------------------------------|
 
+router.post("/wipe", async (req, res) => {
+  await Tile.deleteMany({});
+  await Pattern.deleteMany({});
+  await Level.deleteMany({});
+  res.send(true);
+});
+
 /**
  * Sends back an empty tile (i.e. tile with layer "None")
  */
@@ -64,10 +72,22 @@ router.post("/emptyTile", async (req, res) => {
 
 /**
  * req.body contains attributes of tile
+ * .name
+ * .layer
+ * .image : clamped array of numbers
  */
-router.post("/newTile", (req, res) => {
-  const newTile = new Tile({ ...req.body });
-  newTile.save().then((tile) => res.send(tile));
+router.post("/newTile", async (req, res) => {
+  const pattern = await new Pattern({
+    width: tileSize,
+    height: tileSize,
+    image: req.body.image,
+  }).save();
+  const tile = await new Tile({
+    name: req.body.name,
+    layer: req.body.layer,
+    image: pattern._id,
+  }).save();
+  res.send(tile._id);
   // TODO DISCREPENCY: req.body.image is actual image, but Tile.image
   // is a String reference to tile. must deal with this once we get
   // image storage set up
@@ -76,14 +96,34 @@ router.post("/newTile", (req, res) => {
 /**
  * req.query.tileIds is a list of tileIds
  */
-router.get("/tilesWithId", (req, res) => {
-  const tileIdList = req.query.tileIds;
+router.post("/tilesWithId", async (req, res) => {
+  console.log("entered tilesWithId api call");
+  console.log("req.body.tileIds: " + req.body.tileIds.toString());
+  const tileIdList = req.body.tileIds;
+  console.log("tileIdList var length: " + tileIdList.length);
   const ret = {};
   for (let i = 0; i < tileIdList.length; i++) {
+    console.log("entered loop");
     const tileId = tileIdList[i];
+    console.log("tileId variable: " + tileId);
     // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
     // tileObject has to contain actual image
+    const tile = await Tile.findOne({ _id: tileId });
+    console.log("found tile: " + tile);
+    const pattern = await Pattern.findOne({ _id: tile.image });
+    console.log("found pattern, proof: " + pattern.image[0]);
+    const tileObject = {
+      _id: tile._id,
+      name: tile.name,
+      layer: tile.layer,
+      width: pattern.width,
+      height: pattern.height,
+      image: pattern.image,
+    };
+    ret[tileId] = tileObject;
   }
+  console.log("ret: length: " + Object.keys(ret).length);
+  res.send(ret);
 });
 
 /**

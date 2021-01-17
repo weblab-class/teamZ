@@ -4,7 +4,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 const TileSchema = new mongoose.Schema({
   name: String,
   layer: String,
-  image: String,
+  image: { type: ObjectId, ref: "pattern" },
 });
 
 // compile model from schema

@@ -286,6 +286,7 @@ module.exports = {
   registerMouseDown,
   registerMouseMove,
   registerMouseUp,
+  addTile,
   changeTile,
   addPlayer,
   removePlayer,

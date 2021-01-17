@@ -103,6 +103,15 @@ class Test extends Component {
         </div>
         Edit levels by clicking links in the list below:
         <ul>{levels}</ul>
+        <button
+          onClick={(e) => {
+            post("/api/wipe").then((x) => {
+              this.loadLevels();
+            });
+          }}
+        >
+          Wipe
+        </button>
       </>
     );
   }
