@@ -55,10 +55,11 @@ const registerKeyUp = (playerId, key) => {
 };
 
 const registerMouseMove = (playerId, newX, newY) => {
+  // console.log(`registerMouseMove is called with args: newX: ${newX}, newY: ${newY}`);
   if (!(playerId in editState.players)) return;
-  if (!(playerId in editState.players)) {
-    return;
-  }
+  // if (Math.floor(newX) === 0 && Math.floor(newY) === 0) {
+  //   console.log("registerMouseMove called with floored args newX 0, newY 0");
+  // }
   editState.players[playerId].mouseX = Math.floor(newX);
   editState.players[playerId].mouseY = Math.floor(newY);
 };
@@ -124,6 +125,7 @@ const addTile = (playerId, tileId) => {
  * @param {*} canvasHeight
  */
 const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
+  // console.log("addPlayer is called in editLogic");
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
@@ -319,6 +321,9 @@ const instructionsForPlayer = (playerId) => {
   const player = editState.players[playerId];
   const level = editState.levels[player.levelId];
   const sliceDict = getSlice(playerId);
+  // if (player.mouseX === 0 && player.mouseY === 0) {
+  //   console.log("about to send 0,0 mouseCors in instructionsForPlayer");
+  // }
   const ret = {
     availableTiles: level.availableTiles,
     currentTile: player.currentTile,

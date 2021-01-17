@@ -21,18 +21,22 @@ class Edit extends Component {
     this.canvasRef = React.createRef();
     this.canvasWidth = 900;
     this.canvasHeight = 700;
+    const emptyFn = () => {
+      console.log("empty fn");
+    };
     // for now, the only prop the Edit page should take is :levelId
     // Initialize Default State
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
-      fetching: {},
+      fetching: {}, // tileIds -> true
       currentTile: "no current tile", // tileId of currentTile
       tempNewTileName: "",
       tempNewTileLayer: "Platform",
       tempNewTileR: 128,
       tempNewTileG: 128,
       tempNewTileB: 128,
+      clearInputFn: emptyFn,
     };
   }
 
@@ -43,7 +47,8 @@ class Edit extends Component {
       canvasWidth: this.canvasWidth,
       canvasHeight: this.canvasHeight,
     }).then((garbage) => {
-      initInput({ canvas: this.getCanvas() });
+      const clearInputFn = initInput({ canvas: this.getCanvas() });
+      this.setState({ clearInputFn: clearInputFn });
     });
     socket.on("update", (update) => {
       // console.log(`mouseX: ${update.mouseX}, mouseY: ${update.mouseY}`);
@@ -51,11 +56,16 @@ class Edit extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.state.clearInputFn();
+  }
+
   getCanvas = () => {
     return this.canvasRef.current;
   };
 
   processUpdate = async (update) => {
+    if (this.getCanvas() === null) return; //do nothing if no canvas
     //before drawing, check if update includes any new tiles.
     const updateAvailableTiles = update.availableTiles;
     const tilesToFetch = [];
@@ -67,25 +77,25 @@ class Edit extends Component {
         fetchingDict[tileId] = true;
       }
     }
-    if (tilesToFetch.length > 0) {
-      console.log("tilesToFetch: " + tilesToFetch);
-      console.log("tilesToFetchLength: " + tilesToFetch.length);
-      console.log("first elem of tilesToFetch: " + tilesToFetch[0]);
-    }
+    // if (tilesToFetch.length > 0) {
+    //   console.log("tilesToFetch: " + tilesToFetch);
+    //   console.log("tilesToFetchLength: " + tilesToFetch.length);
+    //   console.log("first elem of tilesToFetch: " + tilesToFetch[0]);
+    // }
     if (tilesToFetch.length > 0) {
       await this.setState((prevState) => {
         return {
           fetching: Object.assign({}, prevState.fetching, fetchingDict),
         };
       });
-      Object.keys(this.state.fetching).forEach((key) => {
-        console.log("a key in fetching: " + key);
-      });
+      // Object.keys(this.state.fetching).forEach((key) => {
+      //   console.log("a key in fetching: " + key);
+      // });
       post("/api/tilesWithId", { tileIds: tilesToFetch }).then(async (tileDict) => {
-        console.log("received tileDict from tilesWithID call");
+        // console.log("received tileDict from tilesWithID call");
         const newTiles = {};
         await Object.keys(tileDict).forEach((tileId) => {
-          console.log("one key in loop: " + tileId);
+          // console.log("one key in loop: " + tileId);
           const tileObject = tileDict[tileId];
           const imArray = tileObject.image;
           const imArrayClamped = new Uint8ClampedArray(imArray.length);
@@ -94,7 +104,7 @@ class Edit extends Component {
           }
           const tileImageData = new ImageData(imArrayClamped, tileObject.width, tileObject.height);
           createImageBitmap(tileImageData).then((bitmap) => {
-            console.log("created butmap successfully: " + bitmap);
+            // console.log("created butmap successfully: " + bitmap);
             newTiles[tileId] = {
               _id: tileObject._id,
               name: tileObject.name,
@@ -103,14 +113,14 @@ class Edit extends Component {
             };
           });
         });
-        console.log("newTiles len: " + Object.keys(newTiles).length);
+        // console.log("newTiles len: " + Object.keys(newTiles).length);
         await this.setState((prevState) => {
           return { tiles: Object.assign({}, prevState.tiles, newTiles) };
         });
-        console.log("new state tiles len: " + Object.keys(this.state.tiles).length);
-        if (Object.keys(this.state.tiles).length > 0) {
-          console.log("state tiles: " + this.state.tiles);
-        }
+        // console.log("new state tiles len: " + Object.keys(this.state.tiles).length);
+        // if (Object.keys(this.state.tiles).length > 0) {
+        //   console.log("state tiles: " + this.state.tiles);
+        // }
       });
     }
     if (update.currentTile !== this.state.currentTile) {
@@ -130,7 +140,7 @@ class Edit extends Component {
       image: image,
     }).then((tileId) => {
       // consider adding this new tile to state locally, without relying on api call
-      console.log("created tile with id: " + tileId);
+      // console.log("created tile with id: " + tileId);
       addTile(tileId);
     });
   };

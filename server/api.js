@@ -102,21 +102,21 @@ router.post("/newTile", async (req, res) => {
  * req.query.tileIds is a list of tileIds
  */
 router.post("/tilesWithId", async (req, res) => {
-  console.log("entered tilesWithId api call");
-  console.log("req.body.tileIds: " + req.body.tileIds.toString());
+  // console.log("entered tilesWithId api call");
+  // console.log("req.body.tileIds: " + req.body.tileIds.toString());
   const tileIdList = req.body.tileIds;
-  console.log("tileIdList var length: " + tileIdList.length);
+  // console.log("tileIdList var length: " + tileIdList.length);
   const ret = {};
   for (let i = 0; i < tileIdList.length; i++) {
-    console.log("entered loop");
+    // console.log("entered loop");
     const tileId = tileIdList[i];
-    console.log("tileId variable: " + tileId);
+    // console.log("tileId variable: " + tileId);
     // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
     // tileObject has to contain actual image
     const tile = await Tile.findOne({ _id: tileId });
-    console.log("found tile: " + tile);
+    // console.log("found tile: " + tile);
     const pattern = await Pattern.findOne({ _id: tile.image });
-    console.log("found pattern, proof: " + pattern.image[0]);
+    // console.log("found pattern, proof: " + pattern.image[0]);
     const tileObject = {
       _id: tile._id,
       name: tile.name,
@@ -127,7 +127,7 @@ router.post("/tilesWithId", async (req, res) => {
     };
     ret[tileId] = tileObject;
   }
-  console.log("ret: length: " + Object.keys(ret).length);
+  // console.log("ret: length: " + Object.keys(ret).length);
   res.send(ret);
 });
 

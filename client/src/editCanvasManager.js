@@ -158,6 +158,9 @@ const drawChar = (canvas, instructions) => {
 };
 
 export const drawEditCanvas = (canvas, instructions, tiles) => {
+  // console.log(
+  //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
+  // );
   drawBackground(canvas);
   drawTiles(canvas, instructions, tiles);
   drawChar(canvas, instructions);

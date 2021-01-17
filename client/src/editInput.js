@@ -25,9 +25,12 @@ const handleKeyUp = (e) => {
 
 const getMousePosition = (e, canvas) => {
   const rect = canvas.getBoundingClientRect();
+  // console.log(
+  //   "getMousePosition newX: " + ((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width
+  // );
   return {
-    x: ((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width,
-    y: ((e.clientY - rect.top) / (rect.bottom - rect.top)) * canvas.height,
+    x: Math.floor(((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width),
+    y: Math.floor(((e.clientY - rect.top) / (rect.bottom - rect.top)) * canvas.height),
   };
 };
 const handleMouseMove = (e, canvas) => {
@@ -51,9 +54,19 @@ const handleMouseUp = (e) => {
  * */
 
 export const initInput = (information) => {
+  const mouseMoveFn = (e) => {
+    handleMouseMove(e, information.canvas);
+  };
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
-  window.addEventListener("mousemove", (e) => handleMouseMove(e, information.canvas));
+  window.addEventListener("mousemove", mouseMoveFn);
   window.addEventListener("mousedown", handleMouseDown);
   window.addEventListener("mouseup", handleMouseUp);
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+    window.removeEventListener("keyup", handleKeyUp);
+    window.removeEventListener("mousemove", mouseMoveFn);
+    window.removeEventListener("mousedown", handleMouseDown);
+    window.removeEventListener("mouseup", handleMouseUp);
+  };
 };
