@@ -67,6 +67,12 @@ module.exports = {
         if (user) editLogic.registerKeyUp(user._id, key);
       });
       socket.on("mouseMove", (cors) => {
+        if (cors === null) {
+          console.log("cors is null");
+        }
+        if (cors.x === null) {
+          console.log("cors.x is null!!!");
+        }
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerMouseMove(user._id, cors.x, cors.y);
       });
