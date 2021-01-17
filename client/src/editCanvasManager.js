@@ -3,6 +3,12 @@ const tileSize = 16;
 const tileSizeOnCanvas = 64;
 /** helper functions */
 
+const darken = (canvas, x, y) => {
+  const context = canvas.getContext("2d");
+  context.fillStyle = "rgba(0, 0, 0, .5)";
+  context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+};
+
 // hard code backgroundImage to be black for now
 const drawBackground = (
   canvas
@@ -114,7 +120,45 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
+const drawCharSprite = (canvas, x, y, isDarkened) => {
+  const context = canvas.getContext("2d");
+  context.fillStyle = "rgba(230,230,230,1)";
+  context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  if (isDarkened) {
+    darken(canvas, x, y);
+  }
+};
+
+const drawChar = (canvas, instructions) => {
+  const context = canvas.getContext("2d");
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
+  // first, draw character. copy n paste cuz im lazy
+  const getCanvasCor = (absX, absY) => {
+    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+    const retX = (absX - instructions.camX) * canvasToAbstractRatio;
+    const retY = (absY - instructions.camY) * canvasToAbstractRatio;
+    return { x: retX, y: retY };
+  };
+  const getAbstractCor = (canX, canY) => {
+    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+    const retX = canX / canvasToAbstractRatio + instructions.camX;
+    const retY = canY / canvasToAbstractRatio + instructions.camY;
+    return { x: retX, y: retY };
+  };
+  const charCanvasCors = getCanvasCor(instructions.startX, instructions.startY);
+  const mouseAbsCors = getAbstractCor(instructions.mouseX, instructions.mouseY);
+  const playerMouseOnChar =
+    instructions.startX <= mouseAbsCors.x &&
+    mouseAbsCors.x < instructions.startX + tileSize &&
+    instructions.startY <= mouseAbsCors.y &&
+    mouseAbsCors.y < instructions.startY + tileSize;
+  const shouldDarken = playerMouseOnChar || instructions.isDraggingChar;
+  drawCharSprite(canvas, charCanvasCors.x, charCanvasCors.y, shouldDarken);
+};
+
 export const drawEditCanvas = (canvas, instructions, tiles) => {
   drawBackground(canvas);
   drawTiles(canvas, instructions, tiles);
+  drawChar(canvas, instructions);
 };

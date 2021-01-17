@@ -4,6 +4,7 @@ import { get, post } from "../../utilities.js";
 import { socket, addTile, changeTile } from "../../client-socket";
 import { drawEditCanvas } from "../../editCanvasManager";
 import { initInput } from "../../editInput.js";
+import { Link } from "@reach/router";
 
 import SidePane from "../modules/SidePane.js";
 
@@ -139,7 +140,14 @@ class Edit extends Component {
       <div className="u-flexRow">
         <div className="u-flexColumn">
           <div>
-            Save button, Go-Back button go here:
+            <Link
+              to={"/"}
+              onClick={(e) => {
+                post("/api/save");
+              }}
+            >
+              Go Back
+            </Link>
             <button
               type="submit"
               onClick={(e) => {

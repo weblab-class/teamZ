@@ -23,6 +23,7 @@ class Test extends Component {
   componentDidMount() {
     // fetch all levels
     this.loadLevels();
+    post("/api/removePlayer");
   }
 
   loadLevels = () => {
@@ -48,6 +49,8 @@ class Test extends Component {
       cols: cols,
       gridTiles: gridTiles,
       availableTiles: [],
+      startX: 0,
+      startY: 0,
     });
     this.setState({ newLevelTitle: "", newLevelRows: 10, newLevelCols: 10 });
     this.loadLevels();
