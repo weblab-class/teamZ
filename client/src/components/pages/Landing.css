@@ -9,7 +9,7 @@
 body {
   background-color: #FF9F75;
   font-family: sans-serif;
-  border:0;
+  margin:0;
 }
 
 h1 {
@@ -73,4 +73,5 @@ a.loginbutton:hover {
 .ground {
   position: fixed;
   bottom: 0px;
+  z-index: 0;
 }
