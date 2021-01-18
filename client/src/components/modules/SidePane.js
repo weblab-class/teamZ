@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import "../../utilities.css";
+import "./SidePane.css";
 
 const tileButtonSize = 64;
 class SidePane extends Component {
@@ -65,7 +66,6 @@ class SidePane extends Component {
               this.props.setCurrentTile(tileId);
             }}
           >
-            {this.props.tiles[tileId].name}
             <canvas
               width={tileButtonSize}
               height={tileButtonSize}
@@ -76,7 +76,7 @@ class SidePane extends Component {
       });
     return (
       <div className="u-flexColumn">
-        tile select
+        tile select wowitlookslikeicanpushthisdivreallyfar
         <div
           onClick={(e) => {
             this.setState({ layer: this.state.layer === "Platform" ? "Background" : "Platform" });
