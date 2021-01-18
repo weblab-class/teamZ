@@ -1,9 +1,9 @@
-// import { tileSize, tileSizeOnCanvas } from "../constants.js";
-const tileSize = 16;
-const tileSizeOnCanvas = 64;
+const constants = require("../constants.js");
+const tileSize = constants.tileSize;
+const tileSizeOnCanvas = constants.tileSizeOnCanvas;
 
 // keys used in level-editor; initialize keys to not-pressed-down
-const keys = ["w", "a", "s", "d", "SHIFT"];
+const keys = ["w", "a", "s", "d", "e", "SHIFT"];
 
 // state of level editor
 const editState = {
@@ -47,6 +47,9 @@ const editState = {
 const registerKeyDown = (playerId, key) => {
   if (!(playerId in editState.players)) return;
   editState.players[playerId].keyDownMap[key] = true;
+  if (key === "e") {
+    editState.players[playerId].currentTile = "eraser tile";
+  }
 };
 
 const registerKeyUp = (playerId, key) => {
@@ -186,7 +189,7 @@ const clipCamera = (camX, camY, levelId) => {
 };
 
 // update players' camera coordinates
-const scrollSpeed = 4;
+const scrollSpeed = 8;
 const updateCameras = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];

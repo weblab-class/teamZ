@@ -32,14 +32,17 @@ class SidePane extends Component {
     });
   }
 
-  componentDidUpdate(prevProps) {
-    if (Object.keys(prevProps.tiles).length !== Object.keys(this.props.tiles).length) {
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      Object.keys(prevProps.tiles).length !== Object.keys(this.props.tiles).length ||
+      this.state.layer !== prevState.layer
+    ) {
       const refDict = {};
-      Object.keys(this.state.refDict).forEach((tileId) => {
-        refDict[tileId] = this.state.refDict[tileId];
-      });
       Object.keys(this.props.tiles).forEach((tileId) => {
         refDict[tileId] = React.createRef();
+      });
+      Object.keys(this.state.refDict).forEach((tileId) => {
+        refDict[tileId] = this.state.refDict[tileId];
       });
       this.setState({ refDict: refDict }, () => {
         Object.keys(this.state.refDict).forEach((tileId) => {
@@ -75,8 +78,8 @@ class SidePane extends Component {
         );
       });
     return (
-      <div className="u-flexColumn">
-        tile select wowitlookslikeicanpushthisdivreallyfar
+      <div className="u-flexColumn sidePaneContainer">
+        tile select
         <div
           onClick={(e) => {
             this.setState({ layer: this.state.layer === "Platform" ? "Background" : "Platform" });
@@ -84,12 +87,12 @@ class SidePane extends Component {
         >
           {this.state.layer}
         </div>
-        <div>{tileButtons}</div>
+        <div className="tileButtonContainer">{tileButtons}</div>
         <div>
           Current tile:{" "}
           {this.props.currentTile in this.props.tiles
             ? this.props.tiles[this.props.currentTile].name
-            : "badTile :("}
+            : "Eraser"}
         </div>
         <button
           onClick={(e) => {

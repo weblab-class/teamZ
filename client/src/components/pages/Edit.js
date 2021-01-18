@@ -14,7 +14,8 @@ import "./Edit.css";
 //TODO: REPLACE WITH YOUR OWN CLIENT_ID
 const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.googleusercontent.com";
 
-const tileSize = 16;
+//const tileSize = 16;
+import { tileSize } from "../../../../constants";
 class Edit extends Component {
   constructor(props) {
     super(props);

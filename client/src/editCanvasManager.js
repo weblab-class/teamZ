@@ -1,11 +1,11 @@
-// import { tileSize, tileSizeOnCanvas } from "../../constants.js";
-const tileSize = 16;
-const tileSizeOnCanvas = 64;
+import { tileSize, tileSizeOnCanvas } from "../../constants.js";
+// const tileSize = 16;
+// const tileSizeOnCanvas = 64;
 /** helper functions */
 
 const darken = (canvas, x, y) => {
   const context = canvas.getContext("2d");
-  context.fillStyle = "rgba(0, 0, 0, .5)";
+  context.fillStyle = "rgba(0, 0, 0, .4)";
   context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
 
@@ -27,20 +27,22 @@ const drawTile = (canvas, tileImage, x, y, isDarkened) => {
   // TODO: add border to tile?
   // HARD CODE FOR NOW
   if (tileImage === null) {
-    // if null, just draw an outline
-    context.strokeStyle = "red";
-    if (isDarkened) context.strokeStyle = "green"; // just pretend green is darkened for now
-    context.lineWidth = 2;
-    context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    // if null, draw semi-opaque rect
+    context.strokeStyle = "rgba(0,0,0,0)";
+    context.fillStyle = "rgba(240,240,240,0.2)";
+    if (isDarkened) {
+      context.fillStyle = "rgba(240,240,240,0.4)";
+    }
+    context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   } else {
     // tileImage is not null
     context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    // draw border
-    context.strokeStyle = "gray";
-    if (isDarkened) context.strokeStyle = "green";
-    context.lineWidth = 1;
-    context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    if (isDarkened) darken(canvas, x, y);
   }
+  // draw border
+  context.strokeStyle = "rgba(200,200,200,0.8)";
+  context.lineWidth = 2;
+  context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
 
 /**

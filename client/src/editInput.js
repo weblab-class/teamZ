@@ -9,6 +9,8 @@ const keyTranslator = {
   S: "s",
   d: "d",
   D: "d",
+  e: "e",
+  E: "e",
   Shift: "SHIFT",
   " ": "SHIFT",
 };
