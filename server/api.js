@@ -170,8 +170,19 @@ router.post("/joinLevel", async (req, res) => {
  */
 router.post("/joinGame", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
+  const gridTileArr = [];
+  for (let i = 0; i < level.gridTiles.length; i++) {
+    const tileObject = await Tile.findOne({ _id: level.gridTiles[i] });
+    gridTileArr.push(tileObject);
+  }
   // assume level has all fields required as specified in editLogic
-  playLogic.addPlayer(req.user._id, level, req.body.canvasWidth, req.body.canvasHeight);
+  playLogic.addPlayer(
+    req.user._id,
+    level,
+    gridTileArr,
+    req.body.canvasWidth,
+    req.body.canvasHeight
+  );
   res.send({});
 });
 

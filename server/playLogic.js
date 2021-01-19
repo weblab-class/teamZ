@@ -1,11 +1,11 @@
 const constants = require("../constants.js");
 const tileSize = constants.tileSize;
 const tileSizeOnCanvas = constants.tileSizeOnCanvas;
-const gravity = 1;
-const maxSpeed = tileSize;
-const jumpSpeed = 10;
-const walkAccel = 5;
-const airAccel = 2;
+const gravity = 0.5;
+const maxSpeed = tileSize / 4;
+const jumpSpeed = 4;
+const walkAccel = 2;
+const airAccel = 1;
 
 // keys used in level-editor; initialize keys to not-pressed-down
 const keys = ["w", "a", "s", "d"];
@@ -66,14 +66,32 @@ const registerKeyUp = (playerId, key) => {
  * @param {*} canvasWidth how many pixels across on player's canvas
  * @param {*} canvasHeight
  */
-const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
-  // console.log("addPlayer is called in editLogic");
+const addPlayer = (playerId, level, modifiedGridTilesArr, canvasWidth, canvasHeight) => {
+  console.log("addPlayer called, with modified array arg: ");
+  console.log(modifiedGridTilesArr);
+  console.log("with len: " + modifiedGridTilesArr.length);
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
   }
+  const availableTilesSet = {};
+  for (let i = 0; i < level.availableTiles.length; i++) {
+    availableTilesSet[level.availableTiles[i]] = true;
+  }
   const levelId = level._id;
-  playState.levels[levelId] = level; // add level no matter what
+  playState.levels[levelId] = {
+    title: level.title,
+    rows: level.rows,
+    cols: level.cols,
+    gridTiles: modifiedGridTilesArr,
+    creator: level.creator,
+    emptyTile: level.emptyTile,
+    startX: level.startX,
+    startY: level.startY,
+    availableTiles: level.availableTiles,
+  }; // add level no matter what
+  playState.levels[levelId].gridTiles = modifiedGridTilesArr;
+  playState.levels[levelId].availableTilesSet = availableTilesSet;
   playState.players[playerId] = {
     levelId: levelId,
     camX: 0,
@@ -130,7 +148,8 @@ const hitTest = (levelId, absX, absY) => {
   if (col >= level.cols || row >= level.rows) return false;
   // now we know row and col are legit.
   const tile = level.gridTiles[row * level.cols + col];
-  return tile.layer === "Platform" && tile._id in level.availableTiles;
+  if (tile === null) return false;
+  return tile.layer === "Platform" && tile._id in level.availableTilesSet;
 };
 
 const diamondFromTopLeft = (x, y) => {
@@ -349,6 +368,11 @@ const corsInGrid = (x, y, levelId) => {
  * called each frame. updates the game state
  */
 const update = () => {
+  // console.log("printing level gridTiles");
+  // Object.keys(playState.players).forEach((playerId) => {
+  //   const level = playState.levels[playState.players[playerId].levelId];
+  //   console.log(level.gridTiles);
+  // });
   updatePlayerPositions();
   updateCameras();
 };
@@ -370,7 +394,12 @@ const getSlice = (playerId) => {
   const slice = [];
   for (let i = rowStart; i < rowStart + tilesHigh; i++) {
     for (let j = colStart; j < colStart + tilesWide; j++) {
-      slice.push(level.gridTiles[i * level.cols + j]._id);
+      const iSlice = i * level.cols + j;
+      if (level.gridTiles[iSlice] === null) {
+        slice.push("eraser tile");
+      } else {
+        slice.push(level.gridTiles[i * level.cols + j]._id);
+      }
     }
   }
   return {
