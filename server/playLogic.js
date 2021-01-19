@@ -3,7 +3,7 @@ const tileSize = constants.tileSize;
 const tileSizeOnCanvas = constants.tileSizeOnCanvas;
 const gravity = 0.5;
 const maxSpeed = tileSize / 4;
-const jumpSpeed = 4;
+const jumpSpeed = 10;
 const walkAccel = 2;
 const airAccel = 1;
 

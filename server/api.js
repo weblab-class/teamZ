@@ -63,6 +63,11 @@ router.post("/removePlayer", (req, res) => {
   res.send({});
 });
 
+router.post("/removePlayerFromGame", (req, res) => {
+  if (req.user) playLogic.removePlayer(req.user._id);
+  res.send({});
+});
+
 /**
  * Sends back an empty tile (i.e. tile with layer "None")
  */

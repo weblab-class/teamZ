@@ -13,47 +13,10 @@ class SidePane extends Component {
     // callbacks:
     //  -  setCurrentTile
     //  -  displayTileDesigner
-    // const refDict = {};
-    // Object.keys(props.tiles).forEach((tileId) => {
-    //   refDict[tileId] = React.createRef();
-    // });
     this.state = {
       layer: "Platform",
-      //  refDict: refDict,
     };
   }
-
-  componentDidMount() {
-    // Object.keys(this.state.refDict).forEach((tileId) => {
-    //   const canvas = this.refDict[tileId].current;
-    //   const context = canvas.getContext("2d");
-    //   const im = this.props.tiles[tileId].image;
-    //   context.drawImage(im, 0, 0, tileButtonSize, tileButtonSize);
-    // });
-  }
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (
-  //     Object.keys(prevProps.tiles).length !== Object.keys(this.props.tiles).length ||
-  //     this.state.layer !== prevState.layer
-  //   ) {
-  //     const refDict = {};
-  //     Object.keys(this.props.tiles).forEach((tileId) => {
-  //       refDict[tileId] = React.createRef();
-  //     });
-  //     Object.keys(this.state.refDict).forEach((tileId) => {
-  //       refDict[tileId] = this.state.refDict[tileId];
-  //     });
-  //     this.setState({ refDict: refDict }, () => {
-  //       Object.keys(this.state.refDict).forEach((tileId) => {
-  //         const canvas = this.state.refDict[tileId].current;
-  //         const context = canvas.getContext("2d");
-  //         const im = this.props.tiles[tileId].image;
-  //         context.drawImage(im, 0, 0, tileButtonSize, tileButtonSize);
-  //       });
-  //     });
-  //   }
-  // }
 
   render() {
     const tileButtons = Object.keys(this.props.tiles)
@@ -72,22 +35,19 @@ class SidePane extends Component {
             <canvas
               width={tileButtonSize}
               height={tileButtonSize}
-              ref={
-                /*this.state.refDict[tileId]*/
-                (canvas) => {
-                  if (!canvas) {
-                    console.log("no canvas");
-                    return;
-                  } else {
-                    const context = canvas.getContext("2d");
-                    if (tileId in this.props.tiles) {
-                      // draw
-                      const im = this.props.tiles[tileId].image;
-                      context.drawImage(im, 0, 0, canvas.width, canvas.height);
-                    }
+              ref={(canvas) => {
+                if (!canvas) {
+                  console.log("no canvas");
+                  return;
+                } else {
+                  const context = canvas.getContext("2d");
+                  if (tileId in this.props.tiles) {
+                    // draw
+                    const im = this.props.tiles[tileId].image;
+                    context.drawImage(im, 0, 0, canvas.width, canvas.height);
                   }
                 }
-              }
+              }}
             />
           </div>
         );
