@@ -167,6 +167,14 @@ class Edit extends Component {
             >
               save level
             </button>
+            <Link
+              to={"/play/" + this.props.levelId}
+              onClick={(e) => {
+                post("/api/save");
+              }}
+            >
+              Play
+            </Link>
           </div>
           <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
         </div>

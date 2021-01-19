@@ -5,6 +5,7 @@ import Skeleton from "./pages/Skeleton.js";
 import Landing from "./pages/Landing.js";
 import Test from "./pages/Test.js";
 import Edit from "./pages/Edit.js";
+import Play from "./pages/Play.js";
 
 import "../utilities.css";
 
@@ -71,6 +72,12 @@ class App extends Component {
           />
           <Edit
             path="/edit/:levelId"
+            handleLogin={this.handleLogin}
+            handleLogout={this.handleLogout}
+            userId={this.state.userId}
+          />
+          <Play
+            path="/play/:levelId"
             handleLogin={this.handleLogin}
             handleLogout={this.handleLogout}
             userId={this.state.userId}

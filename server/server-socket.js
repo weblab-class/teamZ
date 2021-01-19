@@ -1,4 +1,5 @@
 const editLogic = require("./editLogic");
+const playLogic = require("./playLogic");
 
 let io;
 
@@ -38,11 +39,17 @@ let count = 0;
 const updatePeriod = 2;
 const sendGameState = () => {
   editLogic.update();
+  playLogic.update();
   if (count % updatePeriod === 0) {
     const instructions = editLogic.getInstructions();
     Object.keys(instructions).forEach((playerId) => {
       const sock = getSocketFromUserID(playerId);
       if (sock) sock.emit("update", instructions[playerId]);
+    });
+    const playInstructions = playLogic.getInstructions();
+    Object.keys(playInstructions).forEach((playerId) => {
+      const sock = getSocketFromUserID(playerId);
+      if (sock) sock.emit("playUpdate", playInstructions[playerId]);
     });
   }
   count = (count + 1) % updatePeriod;
@@ -91,6 +98,14 @@ module.exports = {
       socket.on("changeTile", (tileId) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.changeTile(user._id, tileId);
+      });
+      socket.on("playKeyDown", (key) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) playLogic.registerKeyDown(user._id, key);
+      });
+      socket.on("playKeyUp", (key) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) playLogic.registerKeyUp(user._id, key);
       });
     });
   },

@@ -41,3 +41,11 @@ export const addTile = (tileId) => {
 export const changeTile = (tileId) => {
   socket.emit("changeTile", tileId);
 };
+
+export const playKeyDown = (key) => {
+  socket.emit("playKeyDown", key);
+};
+
+export const playKeyUp = (key) => {
+  socket.emit("playKeyUp", key);
+};

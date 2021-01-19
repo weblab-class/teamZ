@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
 import { socket } from "../../client-socket";
-// import { drawEditCanvas } from "../../editCanvasManager";
-// import { initInput } from "../../editInput.js";
+import { drawPlayCanvas } from "../../playCanvasManager";
+import { initInput } from "../../playInput.js";
 import { Link } from "@reach/router";
 
 import "../../utilities.css";
@@ -19,34 +19,27 @@ class Play extends Component {
     const emptyFn = () => {
       console.log("empty fn");
     };
-    // for now, the only prop the Edit page should take is :levelId
+    // for now, the only prop the play page should take is :levelId
     // Initialize Default State
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
       fetching: {}, // tileIds -> true
-      currentTile: "no current tile", // tileId of currentTile
-      tempNewTileName: "",
-      tempNewTileLayer: "Platform",
-      tempNewTileR: 128,
-      tempNewTileG: 128,
-      tempNewTileB: 128,
       clearInputFn: emptyFn,
     };
   }
 
   componentDidMount() {
     // api calls here
-    post("/api/joinLevel", {
+    post("/api/joinGame", {
       levelId: this.props.levelId,
       canvasWidth: this.canvasWidth,
       canvasHeight: this.canvasHeight,
     }).then((garbage) => {
-      const clearInputFn = initInput({ canvas: this.getCanvas() });
+      const clearInputFn = initInput();
       this.setState({ clearInputFn: clearInputFn });
     });
-    socket.on("update", (update) => {
-      // console.log(`mouseX: ${update.mouseX}, mouseY: ${update.mouseY}`);
+    socket.on("playUpdate", (update) => {
       this.processUpdate(update);
     });
   }
@@ -121,107 +114,13 @@ class Play extends Component {
     if (update.currentTile !== this.state.currentTile) {
       this.setState({ currentTile: update.currentTile });
     }
-    drawEditCanvas(this.getCanvas(), update, this.state.tiles);
-  };
-
-  /**
-   * @param image has to be an actual image ||| FOR NOW image is just array
-   */
-  createTile = (tileName, layer, image) => {
-    // console.log(`TileName: ${tileName}, layer: ${layer}, image: ${image}`);
-    post("/api/newTile", {
-      name: tileName,
-      layer: layer,
-      image: image,
-    }).then((tileId) => {
-      // consider adding this new tile to state locally, without relying on api call
-      // console.log("created tile with id: " + tileId);
-      addTile(tileId);
-    });
+    drawPlayCanvas(this.getCanvas(), update, this.state.tiles);
   };
 
   render() {
     return (
       <div className="u-flexRow">
-        <div className="u-flexColumn">
-          <div>
-            <Link
-              to={"/"}
-              onClick={(e) => {
-                post("/api/save");
-              }}
-            >
-              Go Back
-            </Link>
-            <button
-              type="submit"
-              onClick={(e) => {
-                post("/api/save");
-              }}
-            >
-              save level
-            </button>
-          </div>
-          <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
-        </div>
-        <SidePane
-          tiles={this.state.tiles}
-          currentTile={this.state.currentTile}
-          setCurrentTile={(tileId) => {
-            changeTile(tileId);
-          }}
-          displayTileDesigner={() => {
-            /* TODO */
-          }}
-        />
-        <div>
-          Temporary tile creator
-          <textarea
-            type="text"
-            placeholder="TileName"
-            value={this.state.tempNewTileName}
-            onChange={(e) => this.setState({ tempNewTileName: e.target.value })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileLayer"
-            value={this.state.tempNewTileLayer}
-            onChange={(e) => this.setState({ tempNewTileLayer: e.target.value })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileR"
-            value={this.state.tempNewTileR}
-            onChange={(e) => this.setState({ tempNewTileR: parseInt(e.target.value) })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileG"
-            value={this.state.tempNewTileG}
-            onChange={(e) => this.setState({ tempNewTileG: parseInt(e.target.value) })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileB"
-            value={this.state.tempNewTileB}
-            onChange={(e) => this.setState({ tempNewTileB: parseInt(e.target.value) })}
-          ></textarea>
-          <button
-            type="submit"
-            onClick={(e) => {
-              const arr = [];
-              for (let i = 0; i < 4 * tileSize * tileSize; i += 4) {
-                arr.push(this.state.tempNewTileR);
-                arr.push(this.state.tempNewTileG);
-                arr.push(this.state.tempNewTileB);
-                arr.push(255);
-              }
-              this.createTile(this.state.tempNewTileName, this.state.tempNewTileLayer, arr);
-            }}
-          >
-            Add tile
-          </button>
-        </div>
+        <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
       </div>
     );
   }

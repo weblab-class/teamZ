@@ -6,7 +6,8 @@
 | This file defines the routes for your server.
 |
 */
-const tileSize = 16;
+const constants = require("../constants");
+const tileSize = constants.tileSize;
 const express = require("express");
 
 // import models so we can interact with the database
@@ -17,6 +18,7 @@ const Pattern = require("./models/pattern");
 
 // import editLogic
 const editLogic = require("./editLogic.js");
+const playLogic = require("./playLogic.js");
 
 // import authentication library
 const auth = require("./auth");
@@ -160,6 +162,16 @@ router.post("/joinLevel", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
   // assume level has all fields required as specified in editLogic
   editLogic.addPlayer(req.user._id, level, req.body.canvasWidth, req.body.canvasHeight);
+  res.send({});
+});
+
+/**
+ * request consists of levelId
+ */
+router.post("/joinGame", async (req, res) => {
+  const level = await Level.findOne({ _id: req.body.levelId });
+  // assume level has all fields required as specified in editLogic
+  playLogic.addPlayer(req.user._id, level, req.body.canvasWidth, req.body.canvasHeight);
   res.send({});
 });
 

@@ -19,7 +19,7 @@ const playState = {
   // cols: 0,
   // gridTiles: [], // row-major array of dictionaries of the form:
   //                // {_id: , layer: "..."}
-  // availableTiles: [], // list of available tileIds
+  // availableTiles: {}, // set of available tileIds
   // startX: 0, // abstract cors of start position
   // startY: 0,
   // ........
@@ -88,6 +88,7 @@ const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
     canvasWidth: canvasWidth,
     canvasHeight: canvasHeight,
   };
+  centerCamera(playerId);
 };
 
 /** Remove a player from the game state if they DC */
@@ -129,7 +130,7 @@ const hitTest = (levelId, absX, absY) => {
   if (col >= level.cols || row >= level.rows) return false;
   // now we know row and col are legit.
   const tile = level.gridTiles[row * level.cols + col];
-  return tile.layer === "Platform";
+  return tile.layer === "Platform" && tile._id in level.availableTiles;
 };
 
 const diamondFromTopLeft = (x, y) => {
