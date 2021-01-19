@@ -21,17 +21,8 @@ h2.Landing-h2 {
 }
 
 .Landing-main {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   line-height: 1.2em;
+  height: 100vh;
 }
 
 a.Landing-a {

@@ -24,6 +24,10 @@ class Landing extends Component {
   render() {
     return (
       <>
+      <div className="Landing-main u-flex u-flexColumn u-flex-alignCenter u-flex-justifyCenter">
+        <h1 className="Landing-h1">playPix</h1>
+        <h2 className="Landing-h2">Explore pixel art and platforming!</h2>
+
         {this.props.userId ? (
           <GoogleLogout
             clientId={GOOGLE_CLIENT_ID}
@@ -38,14 +42,9 @@ class Landing extends Component {
             onSuccess={this.props.handleLogin}
             onFailure={(err) => console.log(err)}
           />
-        )}
-        <div>
-          <div className="Landing-main">
-            <h1 className="Landing-h1">playPix</h1>
-            <h2 className="Landing-h2">Explore pixel art and platforming!</h2>
-          </div>
-          <img src={Ground} className="Landing-ground"  />
-        </div>
+        )} 
+      </div>
+      <img src={Ground} className="Landing-ground"/>
       </>
     );
   }
