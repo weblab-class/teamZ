@@ -1,22 +1,26 @@
-body {
-  background-color: #FF9F75;
-  font-family: sans-serif;
-  margin:0;
-}
+/* @font-face {
+  font-family: 'minecraftiaregular';
+  src: url('./fonts/minecraftia-font/minecraftia-regular-webfont.woff2') format('woff2'),
+       url('./fonts/minecraftia-font/minecraftia-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+} */
 
-h1 {
-  font-family: sans-serif;
+/* Somehow, the fonts work without importing it? Interesting */
+
+h1.Landing-h1 {
+  font-family: minecraftia-regular, sans-serif;
   font-weight: normal;
   font-style: normal;
   font-size: 5em;
 }
 
-h2 {
+h2.Landing-h2 {
   font-style: normal;
   padding-bottom: 2em;
 }
 
-.main {
+.Landing-main {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -30,12 +34,12 @@ h2 {
   line-height: 1.2em;
 }
 
-a {
+a.Landing-a {
   color: #000000;
   background-color: #FFE3B8;
 }
 
-a.loginbutton {
+a.Landing-login {
   display: inline-block;
   padding: 1em 1.7em;
   margin: 0 0.3em 0.3em 0;
@@ -47,23 +51,23 @@ a.loginbutton {
   box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25), inset 0 -0.6em 1em -0.35em rgba(0, 0, 0, 0.17), inset 0 0.6em 2em -0.3em rgba(255, 255, 255, 0.15), inset 0 0 0em 0.05em rgba(255, 255, 255, 0.12);
 }
 
-a.loginbutton:active {
+a.Landing-login:active {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), inset 0 0.6em 2em -0.3em rgba(0, 0, 0, 0.15), inset 0 0 0em 0.05em rgba(255, 255, 255, 0.12);
 }
 
-a.loginbutton:hover {
+a.Landing-login:hover {
   background-color: #FFE7B9;
 }
 
 @media all and (max-width:30em) {
-  a.button7 {
+  a.Landing-login {
     display: block;
     margin: 0.4em auto;
   }
 }
 
-.ground {
+.Landing-ground {
   position: fixed;
-  bottom: 0px;
+  bottom: 0;
   z-index: 0;
 }

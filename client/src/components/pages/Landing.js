@@ -4,6 +4,9 @@ import GoogleLogin, { GoogleLogout } from "react-google-login";
 import "../../utilities.css";
 import "./Landing.css";
 
+import Ground from "../../public/ground.png"
+// is there any way i could use this image without importing it like so?
+
 //TODO: REPLACE WITH YOUR OWN CLIENT_ID
 const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.googleusercontent.com";
 
@@ -36,7 +39,13 @@ class Landing extends Component {
             onFailure={(err) => console.log(err)}
           />
         )}
-        <div>You have reached the landing page.</div>
+        <div>
+          <div className="Landing-main">
+            <h1 className="Landing-h1">playPix</h1>
+            <h2 className="Landing-h2">Explore pixel art and platforming!</h2>
+          </div>
+          <img src={Ground} className="Landing-ground"  />
+        </div>
       </>
     );
   }
