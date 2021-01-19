@@ -36,9 +36,29 @@ class TileDesignerModal extends Component {
     };
   }
 
+  //for the MVP, the modal will only be able to upload images
+
   render() {
-    return <>TODO: TileDesignerModal</>;
+    return (
+      <div className="modal-wrapper">
+        <div className="modal-header">
+          <p>Design a tile or upload your own image</p>
+          <span className="close-modal-btn"></span>
+        </div>
+        <div className="modal-content">
+          <div className="modal-body">
+            <h4>Modal</h4>
+            <button onClick={this.props.onSubmit(name, layer, image)} className="btn-submit">Upload Image</button> 
+          </div>
+          <div className="modal-footer">
+            <button onClick={this.props.onCancel()} className="btn-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 
+
 export default TileDesignerModal;
+
