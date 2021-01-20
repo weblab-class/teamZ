@@ -20,6 +20,8 @@ const Pattern = require("./models/pattern");
 const editLogic = require("./editLogic.js");
 const playLogic = require("./playLogic.js");
 
+const { uploadImagePromise, deleteImagePromise, downloadImagePromise } = require("./storageTalk");
+
 // import authentication library
 const auth = require("./auth");
 
@@ -86,23 +88,40 @@ router.post("/emptyTile", async (req, res) => {
  * req.body contains attributes of tile
  * .name
  * .layer
- * .image : clamped array of numbers
+ * .image : string representing image, base 64 encoded
  */
-router.post("/newTile", async (req, res) => {
-  const pattern = await new Pattern({
-    width: tileSize,
-    height: tileSize,
-    image: req.body.image,
-  }).save();
-  const tile = await new Tile({
-    name: req.body.name,
-    layer: req.body.layer,
-    image: pattern._id,
-  }).save();
-  res.send(tile._id);
-  // TODO DISCREPENCY: req.body.image is actual image, but Tile.image
-  // is a String reference to tile. must deal with this once we get
-  // image storage set up
+router.post("/newTile", (req, res) => {
+  console.log("/newTile called");
+  if (typeof req.body.image !== "string") {
+    throw new Error(
+      "Can only handle images encoded as strings. Got type: " + typeof req.body.image
+    );
+  }
+  uploadImagePromise(req.body.image)
+    .then((imageName) => {
+      console.log("imageName in newTile: " + imageName);
+      return new Pattern({
+        image: imageName,
+      }).save();
+    })
+    .then((pattern) => {
+      console.log("created pattern: ", pattern);
+      return new Tile({
+        name: req.body.name,
+        layer: req.body.layer,
+        image: pattern._id,
+      }).save();
+    })
+    .then((tile) => {
+      console.log("created tile: ", tile);
+      res.send(tile._id);
+    })
+    .catch((err) => {
+      console.log("ERR: upload image: " + err);
+      res.status(500).send({
+        message: "error uploading",
+      });
+    });
 });
 
 /**
@@ -120,17 +139,20 @@ router.post("/tilesWithId", async (req, res) => {
     // console.log("tileId variable: " + tileId);
     // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
     // tileObject has to contain actual image
+    console.log("inTilesWithId: trying to find tile with Id: " + tileId);
     const tile = await Tile.findOne({ _id: tileId });
-    // console.log("found tile: " + tile);
+    console.log("found tile: " + tile);
     const pattern = await Pattern.findOne({ _id: tile.image });
+    console.log("found pattern: ", pattern);
+    const imageName = pattern.image;
+    const imString = await downloadImagePromise(imageName);
+    console.log("found imageString: " + imString);
     // console.log("found pattern, proof: " + pattern.image[0]);
     const tileObject = {
       _id: tile._id,
       name: tile.name,
       layer: tile.layer,
-      width: pattern.width,
-      height: pattern.height,
-      image: pattern.image,
+      image: imString,
     };
     ret[tileId] = tileObject;
   }

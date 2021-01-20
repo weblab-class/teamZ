@@ -90,18 +90,20 @@ class Edit extends Component {
       //   console.log("a key in fetching: " + key);
       // });
       post("/api/tilesWithId", { tileIds: tilesToFetch }).then(async (tileDict) => {
+        // image is STRING
         // console.log("received tileDict from tilesWithID call");
         const newTiles = {};
         await Object.keys(tileDict).forEach((tileId) => {
           // console.log("one key in loop: " + tileId);
           const tileObject = tileDict[tileId];
-          const imArray = tileObject.image;
-          const imArrayClamped = new Uint8ClampedArray(imArray.length);
-          for (let i = 0; i < imArray.length; i++) {
-            imArrayClamped[i] = imArray[i];
-          }
-          const tileImageData = new ImageData(imArrayClamped, tileObject.width, tileObject.height);
-          createImageBitmap(tileImageData).then((bitmap) => {
+          const imString = tileObject.image;
+          console.log("got imString in edit.js: " + imString);
+          const img = document.createElement("img");
+          img.src = imString;
+          // img.width = tileSize;
+          // img.height = tileSize;
+          console.log("img: ", img);
+          createImageBitmap(img).then((bitmap) => {
             // console.log("created butmap successfully: " + bitmap);
             newTiles[tileId] = {
               _id: tileObject._id,
@@ -128,7 +130,7 @@ class Edit extends Component {
   };
 
   /**
-   * @param image has to be an actual image ||| FOR NOW image is just array
+   * @param image has to be a bas64 encoded string
    */
   createTile = (tileName, layer, image) => {
     // console.log(`TileName: ${tileName}, layer: ${layer}, image: ${image}`);
@@ -141,6 +143,15 @@ class Edit extends Component {
       // console.log("created tile with id: " + tileId);
       addTile(tileId);
     });
+  };
+
+  imagedataEncode = (imagedata) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = imagedata.width;
+    canvas.height = imagedata.height;
+    ctx.putImageData(imagedata, 0, 0);
+    return canvas.toDataURL();
   };
 
   render() {
@@ -220,14 +231,20 @@ class Edit extends Component {
           <button
             type="submit"
             onClick={(e) => {
-              const arr = [];
+              const arr = new Uint8ClampedArray(4 * tileSize * tileSize);
               for (let i = 0; i < 4 * tileSize * tileSize; i += 4) {
-                arr.push(this.state.tempNewTileR);
-                arr.push(this.state.tempNewTileG);
-                arr.push(this.state.tempNewTileB);
-                arr.push(255);
+                arr[i + 0] = this.state.tempNewTileR;
+                arr[i + 1] = this.state.tempNewTileG;
+                arr[i + 2] = this.state.tempNewTileB;
+                arr[i + 3] = 255;
               }
-              this.createTile(this.state.tempNewTileName, this.state.tempNewTileLayer, arr);
+              const imData = new ImageData(arr, tileSize, tileSize);
+              const base64String = this.imagedataEncode(imData);
+              this.createTile(
+                this.state.tempNewTileName,
+                this.state.tempNewTileLayer,
+                base64String
+              );
             }}
           >
             Add tile
