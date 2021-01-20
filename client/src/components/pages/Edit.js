@@ -99,24 +99,30 @@ class Edit extends Component {
           const imString = tileObject.image;
           console.log("got imString in edit.js: " + imString);
           const img = document.createElement("img");
+          img.onload = () => {
+            createImageBitmap(img).then((bitmap) => {
+              // console.log("created butmap successfully: " + bitmap);
+              const newEntry = {};
+              newEntry[tileId] = {
+                _id: tileObject._id,
+                name: tileObject.name,
+                layer: tileObject.layer,
+                image: bitmap,
+              };
+              this.setState((prevState) => {
+                return { tiles: Object.assign({}, prevState.tiles, newEntry) };
+              });
+            });
+          };
           img.src = imString;
           // img.width = tileSize;
           // img.height = tileSize;
           console.log("img: ", img);
-          createImageBitmap(img).then((bitmap) => {
-            // console.log("created butmap successfully: " + bitmap);
-            newTiles[tileId] = {
-              _id: tileObject._id,
-              name: tileObject.name,
-              layer: tileObject.layer,
-              image: bitmap,
-            };
-          });
         });
         // console.log("newTiles len: " + Object.keys(newTiles).length);
-        await this.setState((prevState) => {
-          return { tiles: Object.assign({}, prevState.tiles, newTiles) };
-        });
+        // await this.setState((prevState) => {
+        //   return { tiles: Object.assign({}, prevState.tiles, newTiles) };
+        // });
         // console.log("new state tiles len: " + Object.keys(this.state.tiles).length);
         // if (Object.keys(this.state.tiles).length > 0) {
         //   console.log("state tiles: " + this.state.tiles);
