@@ -1,0 +1,5 @@
+.toolBarContainer {
+  display: flex;
+  flex-direction: row;
+  background: #ffcba6;
+}

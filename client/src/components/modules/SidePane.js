@@ -26,7 +26,7 @@ class SidePane extends Component {
       .map((tileId) => {
         return (
           <div
-            className="tileButton"
+            className="u-clickable tileButton"
             key={tileId}
             onClick={(e) => {
               this.props.setCurrentTile(tileId);
@@ -54,8 +54,8 @@ class SidePane extends Component {
       });
     return (
       <div className="u-flexColumn sidePaneContainer">
-        tile select
         <div
+          className="u-clickable layerSwitchButton"
           onClick={(e) => {
             this.setState({ layer: this.state.layer === "Platform" ? "Background" : "Platform" });
           }}
@@ -63,19 +63,36 @@ class SidePane extends Component {
           {this.state.layer}
         </div>
         <div className="tileButtonContainer">{tileButtons}</div>
-        <div>
-          Current tile:{" "}
+        <div className="currentBlockContainer">
           {this.props.currentTile in this.props.tiles
             ? this.props.tiles[this.props.currentTile].name
             : "Eraser"}
+          <canvas
+            width="128"
+            height="128"
+            ref={(canvas) => {
+              if (!canvas) {
+                console.log("no canvas (currentTile)");
+                return;
+              } else {
+                const context = canvas.getContext("2d");
+                if (this.props.currentTile in this.props.tiles) {
+                  // draw
+                  const im = this.props.tiles[this.props.currentTile].image;
+                  context.drawImage(im, 0, 0, canvas.width, canvas.height);
+                }
+              }
+            }}
+          />
         </div>
-        <button
+        <div
+          className="u-clickable"
           onClick={(e) => {
             this.props.displayTileDesigner();
           }}
         >
           Create new tile
-        </button>
+        </div>
       </div>
     );
   }

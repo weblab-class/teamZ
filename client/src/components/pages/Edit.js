@@ -7,6 +7,7 @@ import { initInput } from "../../editInput.js";
 import { Link } from "@reach/router";
 
 import SidePane from "../modules/SidePane.js";
+import ToolBar from "../modules/ToolBar.js";
 
 import "../../utilities.css";
 import "./Edit.css";
@@ -162,46 +163,33 @@ class Edit extends Component {
 
   render() {
     return (
-      <div className="u-flexRow">
-        <div className="u-flexColumn">
-          <div>
-            <Link
-              to={"/"}
-              onClick={(e) => {
-                post("/api/save");
-              }}
-            >
-              Go Back
-            </Link>
-            <button
-              type="submit"
-              onClick={(e) => {
-                post("/api/save");
-              }}
-            >
-              save level
-            </button>
-            <Link
-              to={"/play/" + this.props.levelId}
-              onClick={(e) => {
-                post("/api/save");
-              }}
-            >
-              Play
-            </Link>
-          </div>
-          <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
-        </div>
-        <SidePane
-          tiles={this.state.tiles}
-          currentTile={this.state.currentTile}
-          setCurrentTile={(tileId) => {
-            changeTile(tileId);
+      <div className="u-flexColumn">
+        <ToolBar
+          levelId={this.props.levelId}
+          onBack={() => {
+            post("/api/save");
           }}
-          displayTileDesigner={() => {
-            /* TODO */
+          onSave={() => {
+            post("/api/save");
+          }}
+          onPlay={() => {
+            post("/api/save");
           }}
         />
+        <div className="u-flexRow">
+          <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
+          <SidePane
+            tiles={this.state.tiles}
+            currentTile={this.state.currentTile}
+            setCurrentTile={(tileId) => {
+              changeTile(tileId);
+            }}
+            displayTileDesigner={() => {
+              /* TODO */
+            }}
+          />
+        </div>
+
         <div>
           Temporary tile creator
           <textarea

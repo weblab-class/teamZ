@@ -12,22 +12,52 @@
 .tileButton:hover {
   cursor: pointer;
 }
+.layerSwitchButton {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 4px;
+  font-size: 24px;
+  background: rgba(240, 240, 240, 1);
+}
+.layerSwitchButton:hover {
+  background: rgba(200, 200, 200, 1);
+  cursor: pointer;
+}
+.currentBlockContainer {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+}
 
 .sidePaneContainer {
   display: flex;
   align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
   min-width: 384px;
+  background: #fdecc2;
 }
 
 .tileButtonContainer {
   display: flex;
   overflow-y: auto;
-  min-width: 288px;
-  max-width: 320px;
+  overflow-x: hidden;
+  width: 296px;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-content: flex-start;
   height: 50vh;
   border: 1px solid black;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
