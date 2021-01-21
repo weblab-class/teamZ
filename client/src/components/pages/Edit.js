@@ -33,6 +33,8 @@ class Edit extends Component {
       currentTile: "no current tile", // tileId of currentTile
       title: "",
       description: "",
+      rows: 0,
+      cols: 0,
       isSettingsPaneOpen: false,
       tempNewTileName: "",
       tempNewTileLayer: "Platform",
@@ -132,6 +134,12 @@ class Edit extends Component {
     if (update.description !== this.state.description) {
       this.setState({ description: update.description });
     }
+    if (update.rows !== this.state.rows) {
+      this.setState({ rows: update.rows });
+    }
+    if (update.cols !== this.state.cols) {
+      this.setState({ cols: update.cols });
+    }
     drawEditCanvas(this.getCanvas(), update, this.state.tiles);
   };
 
@@ -209,6 +217,8 @@ class Edit extends Component {
           <SettingsPane
             title={this.state.title}
             description={this.state.description}
+            rows={this.state.rows}
+            cols={this.state.cols}
             onCancel={() => {
               this.setState({ isSettingsPaneOpen: false }, () => {
                 enableEdit();

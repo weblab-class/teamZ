@@ -105,6 +105,10 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.modifyLevel(user._id, newValues);
       });
+      socket.on("resizeLevel", (deltas) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.resizeLevel(user._id, deltas);
+      });
       socket.on("playKeyDown", (key) => {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.registerKeyDown(user._id, key);

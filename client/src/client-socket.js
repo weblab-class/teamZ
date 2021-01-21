@@ -54,6 +54,11 @@ export const modifyLevel = (newValues) => {
   socket.emit("modifyLevel", newValues);
 };
 
+export const resizeLevel = (deltas) => {
+  console.log("resizing called client socket: ", deltas);
+  socket.emit("resizeLevel", deltas);
+};
+
 export const playKeyDown = (key) => {
   socket.emit("playKeyDown", key);
 };

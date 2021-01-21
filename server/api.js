@@ -175,6 +175,7 @@ router.post("/save", async (req, res) => {
   const levelInEditState = editLogic.editState.levels[levelId];
   const level = await Level.findOne({ _id: levelId });
   level.title = levelInEditState.title;
+  level.description = levelInEditState.description;
   level.rows = levelInEditState.rows;
   level.cols = levelInEditState.cols;
   level.gridTiles = levelInEditState.gridTiles;

@@ -4,8 +4,9 @@ import "../../utilities.css";
 import "./SettingsPane.css";
 
 import { get, post } from "../../utilities.js";
-import { modifyLevel } from "../../client-socket";
+import { modifyLevel, resizeLevel } from "../../client-socket";
 import SettingsGeneral from "./settingsModules/SettingsGeneral.js";
+import SettingsSize from "./settingsModules/SettingsSize.js";
 
 const menuStrings = ["General", "Level Size", "Character", "Background", "Sharing"];
 class SettingsPane extends Component {
@@ -51,6 +52,18 @@ class SettingsPane extends Component {
           description={this.props.description}
           onSubmit={(title, description) => {
             modifyLevel({ title: title, description: description });
+            post("/api/save");
+          }}
+        />
+      );
+    }
+    if (this.state.displayPaneOption === 1) {
+      content = (
+        <SettingsSize
+          rows={this.props.rows}
+          cols={this.props.cols}
+          onSubmit={(deltas) => {
+            resizeLevel(deltas);
             post("/api/save");
           }}
         />

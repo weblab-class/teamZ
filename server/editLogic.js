@@ -181,6 +181,99 @@ const modifyLevel = (playerId, newValues) => {
   });
 };
 
+/**
+ *
+ * @param {*} playerId
+ * @param {*} deltas a dictionary containing left, right, up, down for resize
+ */
+const resizeLevel = (playerId, deltas) => {
+  if (!(playerId in editState.players)) return;
+  const level = editState.levels[editState.players[playerId].levelId];
+  // first, make sure the deltas dont go over level dims.
+  if (deltas.left + level.cols <= 0) return;
+  if (deltas.right + level.cols <= 0) return;
+  if (deltas.left + deltas.right + level.cols <= 0) return;
+  if (deltas.up + level.rows <= 0) return;
+  if (deltas.down + level.rows <= 0) return;
+  if (deltas.up + deltas.down + level.rows <= 0) return;
+  // construct 2d copy of gridTiles
+  let copyGrid = [];
+  for (let i = 0; i < level.rows; i++) {
+    const nextRow = [];
+    for (let j = 0; j < level.cols; j++) {
+      nextRow.push(level.gridTiles[i * level.cols + j]);
+    }
+    copyGrid.push(nextRow);
+  }
+  const arrEmpty = (len) => {
+    const ret = [];
+    for (let i = 0; i < len; i++) {
+      ret.push("eraser tile");
+    }
+    return ret;
+  };
+  let levelRows = level.rows;
+  let levelCols = level.cols;
+  // now resize vertically
+  if (deltas.down > 0) {
+    for (let i = 0; i < deltas.down; i++) {
+      copyGrid.push(arrEmpty(levelCols));
+    }
+  } else if (deltas.down < 0) {
+    for (let i = 0; i < -1 * deltas.down; i++) {
+      copyGrid.pop();
+    }
+  }
+  if (deltas.up > 0) {
+    const tempArr = [];
+    for (let i = 0; i < deltas.up; i++) {
+      tempArr.push(arrEmpty(levelCols));
+    }
+    copyGrid = [...tempArr, ...copyGrid];
+  } else if (deltas.up < 0) {
+    copyGrid = copyGrid.slice(-1 * deltas.up);
+  }
+  levelRows += deltas.down + deltas.up;
+  // resize horizontally
+  if (deltas.right > 0) {
+    for (let i = 0; i < levelRows; i++) {
+      for (let j = 0; j < deltas.right; j++) {
+        copyGrid[i].push("empty Tile");
+      }
+    }
+  } else if (deltas.right < 0) {
+    for (let i = 0; i < levelRows; i++) {
+      for (let j = 0; j < deltas.right; j++) {
+        copyGrid[i].pop();
+      }
+    }
+  }
+  if (deltas.left > 0) {
+    for (let i = 0; i < levelRows; i++) {
+      copyGrid[i] = [...arrEmpty(deltas.left), ...copyGrid[i]];
+    }
+  } else if (deltas.left < 0) {
+    for (let i = 0; i < levelRows; i++) {
+      copyGrid[i] = copyGrid[i].slice(-1 * deltas.left);
+    }
+  }
+  levelCols += deltas.left + deltas.right;
+  // construct 1D array from copyGrid.
+  const newGrid = [];
+  for (let i = 0; i < levelRows; i++) {
+    for (let j = 0; j < levelCols; j++) {
+      newGrid.push(copyGrid[i][j]);
+    }
+  }
+  // adjust level size and set grid
+  level.rows = levelRows;
+  level.cols = levelCols;
+  level.gridTiles = newGrid;
+  // last thing to do is move level char start to account for level resize
+  level.startY += deltas.up * tileSize;
+  level.startX += deltas.left * tileSize;
+};
+
 // ... helper functions for update ...
 
 const clipPadding = 0; // number of tiles
@@ -359,6 +452,8 @@ const instructionsForPlayer = (playerId) => {
     currentTile: player.currentTile,
     title: level.title,
     description: level.description,
+    rows: level.rows,
+    cols: level.cols,
     camX: player.camX,
     camY: player.camY,
     mouseX: player.mouseX,
@@ -401,4 +496,5 @@ module.exports = {
   removePlayer,
   update,
   modifyLevel,
+  resizeLevel,
 };

@@ -24,6 +24,7 @@ class SettingsGeneral extends Component {
         general settings component
         <textarea
           type="text"
+          className="input"
           placeholder="Title..."
           defaultValue={this.props.title}
           onChange={(e) => {
@@ -33,6 +34,7 @@ class SettingsGeneral extends Component {
         ></textarea>
         <textarea
           type="text"
+          className="input"
           placeholder="Description..."
           defaultValue={this.props.description}
           onChange={(e) => {
