@@ -116,7 +116,7 @@ class Play extends Component {
   };
 
   render() {
-    const loadingPage = <div>loading...</div>;
+    const loadingPage = <div className="loadingPage">Loading ...</div>;
     const playContainer = (
       <div className="u-flexRow playContainer">
         <canvas
