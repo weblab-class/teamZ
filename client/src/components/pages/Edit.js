@@ -17,7 +17,7 @@ import { tileSize } from "../../../../constants";
 class Edit extends Component {
   constructor(props) {
     super(props);
-    this.canvasRef = React.createRef();
+    this.canvas = null;
     this.canvasWidth = 900;
     this.canvasHeight = 700;
     const emptyFn = () => {
@@ -60,7 +60,7 @@ class Edit extends Component {
   }
 
   getCanvas = () => {
-    return this.canvasRef.current;
+    return this.canvas;
   };
 
   processUpdate = async (update) => {
@@ -93,7 +93,6 @@ class Edit extends Component {
       post("/api/tilesWithId", { tileIds: tilesToFetch }).then(async (tileDict) => {
         // image is STRING
         // console.log("received tileDict from tilesWithID call");
-        const newTiles = {};
         await Object.keys(tileDict).forEach((tileId) => {
           // console.log("one key in loop: " + tileId);
           const tileObject = tileDict[tileId];
@@ -116,18 +115,8 @@ class Edit extends Component {
             });
           };
           img.src = imString;
-          // img.width = tileSize;
-          // img.height = tileSize;
           console.log("img: ", img);
         });
-        // console.log("newTiles len: " + Object.keys(newTiles).length);
-        // await this.setState((prevState) => {
-        //   return { tiles: Object.assign({}, prevState.tiles, newTiles) };
-        // });
-        // console.log("new state tiles len: " + Object.keys(this.state.tiles).length);
-        // if (Object.keys(this.state.tiles).length > 0) {
-        //   console.log("state tiles: " + this.state.tiles);
-        // }
       });
     }
     if (update.currentTile !== this.state.currentTile) {
@@ -163,7 +152,7 @@ class Edit extends Component {
 
   render() {
     return (
-      <div className="u-flexColumn">
+      <div className="u-flexColumn editPageContainer">
         <ToolBar
           levelId={this.props.levelId}
           onBack={() => {
@@ -177,7 +166,19 @@ class Edit extends Component {
           }}
         />
         <div className="u-flexRow">
-          <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
+          <div className="editorContainer">
+            <canvas
+              ref={(canvas) => {
+                if (!canvas) {
+                  console.log("no canvas edit");
+                  return;
+                }
+                this.canvas = canvas;
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+              }}
+            />
+          </div>
           <SidePane
             tiles={this.state.tiles}
             currentTile={this.state.currentTile}

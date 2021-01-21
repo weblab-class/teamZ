@@ -94,6 +94,11 @@ form {
   color: var(--primary--dim);
 }
 
+/*
+  u-clickable elements are rounded white-button-y kinda elements
+  that will appear very often in our website.
+  Don't modify font size, color, opacity, margin, or padding here.
+*/
 .u-clickable {
   border-radius: 4px;
   background: rgba(240, 240, 240, 1);

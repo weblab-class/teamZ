@@ -421,15 +421,15 @@ const instructionsForPlayer = (playerId) => {
   const sliceDict = getSlice(playerId);
   const ret = {
     availableTiles: level.availableTiles,
-    camX: player.camX,
-    camY: player.camY,
+    camX: Math.floor(player.camX),
+    camY: Math.floor(player.camY),
     sliceRowStart: sliceDict.sliceRowStart,
     sliceColStart: sliceDict.sliceColStart,
     sliceRows: sliceDict.sliceRows,
     sliceCols: sliceDict.sliceCols,
     slice: sliceDict.slice,
-    x: player.x,
-    y: player.y,
+    x: Math.floor(player.x),
+    y: Math.floor(player.y),
   };
   return ret;
 };

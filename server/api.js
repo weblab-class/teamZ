@@ -91,7 +91,7 @@ router.post("/emptyTile", async (req, res) => {
  * .image : string representing image, base 64 encoded
  */
 router.post("/newTile", (req, res) => {
-  console.log("/newTile called");
+  // console.log("/newTile called");
   if (typeof req.body.image !== "string") {
     throw new Error(
       "Can only handle images encoded as strings. Got type: " + typeof req.body.image
@@ -99,13 +99,13 @@ router.post("/newTile", (req, res) => {
   }
   uploadImagePromise(req.body.image)
     .then((imageName) => {
-      console.log("imageName in newTile: " + imageName);
+      // console.log("imageName in newTile: " + imageName);
       return new Pattern({
         image: imageName,
       }).save();
     })
     .then((pattern) => {
-      console.log("created pattern: ", pattern);
+      // console.log("created pattern: ", pattern);
       return new Tile({
         name: req.body.name,
         layer: req.body.layer,
@@ -113,7 +113,7 @@ router.post("/newTile", (req, res) => {
       }).save();
     })
     .then((tile) => {
-      console.log("created tile: ", tile);
+      // console.log("created tile: ", tile);
       res.send(tile._id);
     })
     .catch((err) => {
@@ -139,14 +139,14 @@ router.post("/tilesWithId", async (req, res) => {
     // console.log("tileId variable: " + tileId);
     // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
     // tileObject has to contain actual image
-    console.log("inTilesWithId: trying to find tile with Id: " + tileId);
+    //console.log("inTilesWithId: trying to find tile with Id: " + tileId);
     const tile = await Tile.findOne({ _id: tileId });
-    console.log("found tile: " + tile);
+    //console.log("found tile: " + tile);
     const pattern = await Pattern.findOne({ _id: tile.image });
-    console.log("found pattern: ", pattern);
+    //console.log("found pattern: ", pattern);
     const imageName = pattern.image;
     const imString = await downloadImagePromise(imageName);
-    console.log("found imageString: " + imString);
+    //console.log("found imageString: " + imString);
     // console.log("found pattern, proof: " + pattern.image[0]);
     const tileObject = {
       _id: tile._id,
