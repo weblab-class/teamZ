@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
-import { socket, addTile, changeTile } from "../../client-socket";
+import { socket, addTile, changeTile, enableEdit, disableEdit } from "../../client-socket";
 import { drawEditCanvas } from "../../editCanvasManager";
 import { initInput } from "../../editInput.js";
 import { Link } from "@reach/router";
 
 import SidePane from "../modules/SidePane.js";
 import ToolBar from "../modules/ToolBar.js";
+import SettingsPane from "../modules/SettingsPane.js";
 
 import "../../utilities.css";
 import "./Edit.css";
@@ -30,6 +31,9 @@ class Edit extends Component {
       //            tile object has name, layer, image attributes
       fetching: {}, // tileIds -> true
       currentTile: "no current tile", // tileId of currentTile
+      title: "",
+      description: "",
+      isSettingsPaneOpen: false,
       tempNewTileName: "",
       tempNewTileLayer: "Platform",
       tempNewTileR: 128,
@@ -122,6 +126,12 @@ class Edit extends Component {
     if (update.currentTile !== this.state.currentTile) {
       this.setState({ currentTile: update.currentTile });
     }
+    if (update.title !== this.state.title) {
+      this.setState({ title: update.title });
+    }
+    if (update.description !== this.state.description) {
+      this.setState({ description: update.description });
+    }
     drawEditCanvas(this.getCanvas(), update, this.state.tiles);
   };
 
@@ -164,6 +174,11 @@ class Edit extends Component {
           onPlay={() => {
             post("/api/save");
           }}
+          onOpenSettings={() => {
+            this.setState({ isSettingsPaneOpen: true }, () => {
+              disableEdit();
+            });
+          }}
         />
         <div className="u-flexRow">
           <div className="editorContainer">
@@ -190,7 +205,17 @@ class Edit extends Component {
             }}
           />
         </div>
-
+        {this.state.isSettingsPaneOpen ? (
+          <SettingsPane
+            title={this.state.title}
+            description={this.state.description}
+            onCancel={() => {
+              this.setState({ isSettingsPaneOpen: false }, () => {
+                enableEdit();
+              });
+            }}
+          />
+        ) : null}
         <div>
           Temporary tile creator
           <textarea

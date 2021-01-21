@@ -3,6 +3,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const LevelSchema = new mongoose.Schema({
   title: String,
+  description: String,
   creator: { type: ObjectId, ref: "user" },
   emptyTile: { type: ObjectId, ref: "tile" },
   rows: Number,

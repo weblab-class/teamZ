@@ -44,6 +44,7 @@ class Test extends Component {
     }
     await post("/api/newLevel", {
       title: this.state.newLevelTitle,
+      description: "hard coded description",
       creator: this.props.userId,
       rows: rows,
       cols: cols,

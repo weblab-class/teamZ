@@ -35,6 +35,8 @@ const editState = {
        mouseY
        mouseDown -- is player's mouse down?
        isDraggingChar -- is player dragging the character and changing its start cors?
+       isEditing -- can the player scroll / place tiles, or are they in the 
+                    settings / add tiles view?
      }
    */
 };
@@ -103,6 +105,16 @@ const registerMouseUp = (playerId) => {
   editState.players[playerId].isDraggingChar = false;
 };
 
+const enableEdit = (playerId) => {
+  if (!(playerId in editState.players)) return;
+  editState.players[playerId].isEditing = true;
+};
+
+const disableEdit = (playerId) => {
+  if (!(playerId in editState.players)) return;
+  editState.players[playerId].isEditing = false;
+};
+
 /**
  * change the current tile of player with given id to newTileId.
  * if the player is erasing, newTileId is null
@@ -150,6 +162,7 @@ const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
     keyDownMap: keyDownMap,
     canvasWidth: canvasWidth,
     canvasHeight: canvasHeight,
+    isEditing: true,
   };
 };
 
@@ -162,7 +175,7 @@ const removePlayer = (playerId) => {
 
 const modifyLevel = (playerId, newValues) => {
   if (!(playerId in editState.players)) return;
-  const level = editState.levels[editState.players[playerId]];
+  const level = editState.levels[editState.players[playerId].levelId];
   Object.keys(newValues).forEach((key) => {
     level[key] = newValues[key];
   });
@@ -201,23 +214,25 @@ const scrollSpeed = 8;
 const updateCameras = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
-    if (player.keyDownMap["w"]) {
-      player.camY -= scrollSpeed;
+    if (player.isEditing) {
+      if (player.keyDownMap["w"]) {
+        player.camY -= scrollSpeed;
+      }
+      if (player.keyDownMap["s"]) {
+        player.camY += scrollSpeed;
+      }
+      if (player.keyDownMap["a"]) {
+        player.camX -= scrollSpeed;
+      }
+      if (player.keyDownMap["d"]) {
+        player.camX += scrollSpeed;
+      }
+      // we need to make sure the player's camera coordinates are valid
+      // apply the clipping helper fn
+      const clippedCors = clipCamera(player.camX, player.camY, player.levelId);
+      player.camX = clippedCors.x;
+      player.camY = clippedCors.y;
     }
-    if (player.keyDownMap["s"]) {
-      player.camY += scrollSpeed;
-    }
-    if (player.keyDownMap["a"]) {
-      player.camX -= scrollSpeed;
-    }
-    if (player.keyDownMap["d"]) {
-      player.camX += scrollSpeed;
-    }
-    // we need to make sure the player's camera coordinates are valid
-    // apply the clipping helper fn
-    const clippedCors = clipCamera(player.camX, player.camY, player.levelId);
-    player.camX = clippedCors.x;
-    player.camY = clippedCors.y;
   });
 };
 
@@ -243,21 +258,23 @@ const playerMouseOnCanvas = (playerId) => {
 const updateTiles = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
-    const level = editState.levels[player.levelId];
-    if (!player.isDraggingChar) {
-      const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
-      const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-      const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
-      const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
-      if (
-        player.mouseDown &&
-        corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
-        playerMouseOnCanvas(key)
-      ) {
-        const row = Math.floor(mouseYAbs / tileSize);
-        const col = Math.floor(mouseXAbs / tileSize);
-        // console.log(`placing tile at row ${row} , col ${col}`);
-        level.gridTiles[row * level.cols + col] = tileIdToPlace;
+    if (player.isEditing) {
+      const level = editState.levels[player.levelId];
+      if (!player.isDraggingChar) {
+        const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
+        const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+        const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
+        const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
+        if (
+          player.mouseDown &&
+          corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
+          playerMouseOnCanvas(key)
+        ) {
+          const row = Math.floor(mouseYAbs / tileSize);
+          const col = Math.floor(mouseXAbs / tileSize);
+          // console.log(`placing tile at row ${row} , col ${col}`);
+          level.gridTiles[row * level.cols + col] = tileIdToPlace;
+        }
       }
     }
   });
@@ -274,13 +291,15 @@ const clipCharCors = (levelId) => {
 const updateStartPosition = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
-    const level = editState.levels[player.levelId];
-    if (player.isDraggingChar) {
-      const newStartCors = toAbstractCors(player.mouseX, player.mouseY, player.camX, player.camY);
-      level.startX = Math.floor(newStartCors.x - tileSize / 2);
-      level.startY = Math.floor(newStartCors.y - tileSize / 2);
+    if (player.isEditing) {
+      const level = editState.levels[player.levelId];
+      if (player.isDraggingChar) {
+        const newStartCors = toAbstractCors(player.mouseX, player.mouseY, player.camX, player.camY);
+        level.startX = Math.floor(newStartCors.x - tileSize / 2);
+        level.startY = Math.floor(newStartCors.y - tileSize / 2);
+      }
+      clipCharCors(player.levelId);
     }
-    clipCharCors(player.levelId);
   });
 };
 
@@ -338,6 +357,8 @@ const instructionsForPlayer = (playerId) => {
   const ret = {
     availableTiles: level.availableTiles,
     currentTile: player.currentTile,
+    title: level.title,
+    description: level.description,
     camX: player.camX,
     camY: player.camY,
     mouseX: player.mouseX,
@@ -372,6 +393,8 @@ module.exports = {
   registerMouseDown,
   registerMouseMove,
   registerMouseUp,
+  enableEdit,
+  disableEdit,
   addTile,
   changeTile,
   addPlayer,

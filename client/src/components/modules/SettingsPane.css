@@ -6,6 +6,9 @@
   display: flex;
   flex-direction: row;
 }
+.redX {
+  background: coral;
+}
 .settingsPaneSubcontainer {
   display: flex;
   flex-direction: row;

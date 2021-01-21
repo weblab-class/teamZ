@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
-import "../../utilities.css";
-import "./SettingsPane.css";
+import "../../../utilities.css";
+import "../SettingsPane.css";
 
 const menuStrings = ["General", "Level Size", "Character", "Background", "Sharing"];
 class SettingsGeneral extends Component {
@@ -18,13 +18,14 @@ class SettingsGeneral extends Component {
   }
 
   render() {
+    console.log("settingsGeneral received: " + this.props.title);
     return (
       <div className="settingsGeneralContainer">
-        general settings
+        general settings component
         <textarea
           type="text"
           placeholder="Title..."
-          value={this.props.title}
+          defaultValue={this.props.title}
           onChange={(e) => {
             this.setState({ title: e.target.value });
           }}
@@ -33,7 +34,7 @@ class SettingsGeneral extends Component {
         <textarea
           type="text"
           placeholder="Description..."
-          value={this.props.description}
+          defaultValue={this.props.description}
           onChange={(e) => {
             this.setState({ description: e.target.value });
           }}

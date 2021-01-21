@@ -38,6 +38,14 @@ export const addTile = (tileId) => {
   socket.emit("addTile", tileId);
 };
 
+export const enableEdit = () => {
+  socket.emit("enableEdit");
+};
+
+export const disableEdit = () => {
+  socket.emit("disableEdit");
+};
+
 export const changeTile = (tileId) => {
   socket.emit("changeTile", tileId);
 };
