@@ -160,6 +160,14 @@ const removePlayer = (playerId) => {
   }
 };
 
+const modifyLevel = (playerId, newValues) => {
+  if (!(playerId in editState.players)) return;
+  const level = editState.levels[editState.players[playerId]];
+  Object.keys(newValues).forEach((key) => {
+    level[key] = newValues[key];
+  });
+};
+
 // ... helper functions for update ...
 
 const clipPadding = 0; // number of tiles
@@ -369,4 +377,5 @@ module.exports = {
   addPlayer,
   removePlayer,
   update,
+  modifyLevel,
 };

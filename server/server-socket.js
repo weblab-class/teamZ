@@ -99,6 +99,10 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.changeTile(user._id, tileId);
       });
+      socket.on("modifyLevel", (newValues) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) editLogic.modifyLevel(user._id, newValues);
+      });
       socket.on("playKeyDown", (key) => {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.registerKeyDown(user._id, key);

@@ -1,0 +1,25 @@
+.settingsPaneContainer {
+  display: flex;
+  flex-direction: column;
+}
+.settingsPaneBar {
+  display: flex;
+  flex-direction: row;
+}
+.settingsPaneSubcontainer {
+  display: flex;
+  flex-direction: row;
+}
+.settingsPaneMenu {
+  display: flex;
+  flex-direction: column;
+}
+.settingsPaneContent {
+  display: flex;
+  flex-direction: column;
+}
+.settingsPaneMenuOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

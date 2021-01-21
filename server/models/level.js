@@ -11,9 +11,8 @@ const LevelSchema = new mongoose.Schema({
   availableTiles: [{ type: ObjectId, ref: "tile" }], // of Tile
   startX: Number, // x_cor of character spawn point
   startY: Number, // y_cor of character spawn point
-  charGround: { type: ObjectId, ref: "pattern" },
-  charAir: { type: ObjectId, ref: "pattern" },
-  // background: ???,
+  charSprite: { type: ObjectId, ref: "pattern" }, // facing right
+  background: { type: ObjectId, ref: "pattern" },
 });
 
 // compile model from schema

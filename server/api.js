@@ -128,6 +128,7 @@ router.post("/newTile", (req, res) => {
  * req.query.tileIds is a list of tileIds
  */
 router.post("/tilesWithId", async (req, res) => {
+  console.log("user name and id: " + req.user.googleid + ", " + req.user.name);
   // console.log("entered tilesWithId api call");
   // console.log("req.body.tileIds: " + req.body.tileIds.toString());
   const tileIdList = req.body.tileIds;
