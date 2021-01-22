@@ -10,14 +10,15 @@ const darken = (canvas, x, y) => {
 };
 
 // hard code backgroundImage to be black for now
-const drawBackground = (
-  canvas
-  /*, backgroundImage*/
-) => {
+const drawBackground = (canvas, backgroundImage) => {
   const context = canvas.getContext("2d");
-  context.fillStyle = "black";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  // context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  if (backgroundImage === null) {
+    context.fillStyle = "black";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  } else {
+    // TODO: "center" the background
+    context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  }
 };
 
 /**Draws tile */
@@ -163,14 +164,14 @@ const drawChar = (canvas, instructions, charSpriteImage) => {
   drawCharSprite(canvas, charSpriteImage, charCanvasCors.x, charCanvasCors.y, shouldDarken);
 };
 
-export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage) => {
+export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
   // console.log(
   //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
   // );
   // don't smooth:
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
-  drawBackground(canvas);
+  drawBackground(canvas, backgroundImage);
   drawTiles(canvas, instructions, tiles);
   drawChar(canvas, instructions, charSpriteImage);
 };

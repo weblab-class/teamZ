@@ -458,6 +458,7 @@ const instructionsForPlayer = (playerId) => {
     title: level.title,
     description: level.description,
     charSprite: level.charSprite,
+    background: level.background,
     rows: level.rows,
     cols: level.cols,
     camX: player.camX,

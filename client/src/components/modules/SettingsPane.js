@@ -8,6 +8,7 @@ import { modifyLevel, resizeLevel } from "../../client-socket";
 import SettingsGeneral from "./settingsModules/SettingsGeneral.js";
 import SettingsSize from "./settingsModules/SettingsSize.js";
 import SettingsCharacter from "./settingsModules/SettingsCharacter.js";
+import SettingsBackground from "./settingsModules/SettingsBackground.js";
 
 const menuStrings = ["General", "Level Size", "Character", "Background", "Sharing"];
 class SettingsPane extends Component {
@@ -76,6 +77,16 @@ class SettingsPane extends Component {
         <SettingsCharacter
           onSubmit={(image) => {
             this.props.changeCharSprite(image);
+            () => post("/api/save");
+          }}
+        />
+      );
+    }
+    if (this.state.displayPaneOption === 3) {
+      content = (
+        <SettingsBackground
+          onSubmit={(image) => {
+            this.props.changeBackground(image);
             () => post("/api/save");
           }}
         />

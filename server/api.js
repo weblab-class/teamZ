@@ -142,7 +142,7 @@ router.post("/newTile", (req, res) => {
 /**
  * req.body.image is string
  */
-router.post("/newCharSprite", (req, res) => {
+router.post("/newImage", (req, res) => {
   if (typeof req.body.image !== "string") {
     throw new Error(
       "Can only handle images encoded as strings. Got type: " + typeof req.body.image
@@ -205,11 +205,11 @@ router.post("/tilesWithId", async (req, res) => {
 });
 
 /**
- * req.body.charSprite
+ * req.body.patternId
  * res sends back image string
  */
-router.post("/fetchCharSprite", async (req, res) => {
-  const pattern = await Pattern.findOne({ _id: req.body.charSprite });
+router.post("/fetchImage", async (req, res) => {
+  const pattern = await Pattern.findOne({ _id: req.body.patternId });
   const imageName = pattern.image;
   const imString = await downloadImagePromise(imageName);
   res.send({ image: imString });

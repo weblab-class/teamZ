@@ -36,11 +36,14 @@ class Edit extends Component {
     // Initialize Default State
     this.fetching = {};
     this.lastFetchedCharSprite = null;
+    this.lastFetchedBackground = null;
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
       charSprite: null,
       charSpriteImage: null,
+      background: null,
+      backgroundImage: null,
       currentTile: "no current tile", // tileId of currentTile
       title: "",
       description: "",
@@ -139,13 +142,38 @@ class Edit extends Component {
         });
       } else {
         console.log("update.charSprite: " + update.charSprite);
-        post("/api/fetchCharSprite", { charSprite: update.charSprite }).then((imObj) => {
+        post("/api/fetchImage", { patternId: update.charSprite }).then((imObj) => {
           const imString = imObj.image;
           const img = document.createElement("img");
           img.onload = () => {
             createImageBitmap(img).then((bitmap) => {
               this.setState((prevState) => {
                 return { charSprite: update.charSprite, charSpriteImage: bitmap };
+              });
+            });
+          };
+          img.src = imString;
+        });
+      }
+    }
+    if (
+      update.background !== this.state.background &&
+      update.background !== this.lastFetchedBackground
+    ) {
+      this.lastFetchedBackground = update.background;
+      if (update.background === null) {
+        this.setState((prevState) => {
+          return { background: null, backgroundImage: null };
+        });
+      } else {
+        console.log("update.background: " + update.background);
+        post("/api/fetchImage", { patternId: update.background }).then((imObj) => {
+          const imString = imObj.image;
+          const img = document.createElement("img");
+          img.onload = () => {
+            createImageBitmap(img).then((bitmap) => {
+              this.setState((prevState) => {
+                return { background: update.background, backgroundImage: bitmap };
               });
             });
           };
@@ -168,7 +196,13 @@ class Edit extends Component {
     if (update.cols !== this.state.cols) {
       this.setState({ cols: update.cols });
     }
-    drawEditCanvas(this.getCanvas(), update, this.state.tiles, this.state.charSpriteImage);
+    drawEditCanvas(
+      this.getCanvas(),
+      update,
+      this.state.tiles,
+      this.state.charSpriteImage,
+      this.state.backgroundImage
+    );
   };
 
   /**
@@ -196,10 +230,22 @@ class Edit extends Component {
       modifyLevel({ charSprite: null });
       return;
     }
-    post("/api/newCharSprite", {
+    post("/api/newImage", {
       image: image,
     }).then((patternId) => {
       modifyLevel({ charSprite: patternId });
+    });
+  };
+
+  changeBackground = (image) => {
+    if (image === null) {
+      modifyLevel({ background: null });
+      return;
+    }
+    post("/api/newImage", {
+      image: image,
+    }).then((patternId) => {
+      modifyLevel({ background: patternId });
     });
   };
 
@@ -266,6 +312,7 @@ class Edit extends Component {
             rows={this.state.rows}
             cols={this.state.cols}
             changeCharSprite={this.changeCharSprite}
+            changeBackground={this.changeBackground}
             onCancel={() => {
               this.setState({ isSettingsPaneOpen: false }, () => {
                 enableEdit();
