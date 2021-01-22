@@ -35,8 +35,8 @@ class Play extends Component {
     // api calls here
     post("/api/joinGame", {
       levelId: this.props.levelId,
-      canvasWidth: this.canvasWidth,
-      canvasHeight: this.canvasHeight,
+      canvasWidth: this.canvas.width,
+      canvasHeight: this.canvas.height,
     }).then((garbage) => {
       const clearInputFn = initInput();
       this.setState({ clearInputFn: clearInputFn });

@@ -43,6 +43,7 @@ export const enableEdit = () => {
 };
 
 export const disableEdit = () => {
+  console.log("disableEdit called");
   socket.emit("disableEdit");
 };
 
@@ -52,6 +53,10 @@ export const changeTile = (tileId) => {
 
 export const modifyLevel = (newValues) => {
   socket.emit("modifyLevel", newValues);
+};
+
+export const modifyPlayer = (newValues) => {
+  socket.emit("modifyPlayer", newValues);
 };
 
 export const resizeLevel = (deltas) => {

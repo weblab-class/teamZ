@@ -8,6 +8,7 @@ import {
   enableEdit,
   disableEdit,
   modifyLevel,
+  modifyPlayer,
 } from "../../client-socket";
 import { drawEditCanvas } from "../../editCanvasManager";
 import { initInput } from "../../editInput.js";
@@ -21,14 +22,11 @@ import TileDesignerModal from "../modules/TileDesignerModal.js";
 import "../../utilities.css";
 import "./Edit.css";
 
-//const tileSize = 16;
 import { tileSize } from "../../../../constants";
 class Edit extends Component {
   constructor(props) {
     super(props);
     this.canvas = null;
-    this.canvasWidth = 900;
-    this.canvasHeight = 700;
     const emptyFn = () => {
       console.log("empty fn");
     };
@@ -37,6 +35,7 @@ class Edit extends Component {
     this.fetching = {};
     this.lastFetchedCharSprite = null;
     this.lastFetchedBackground = null;
+    this.clearInputFn = emptyFn();
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
@@ -51,7 +50,6 @@ class Edit extends Component {
       cols: 0,
       isSettingsPaneOpen: false,
       isTileDesignerModalOpen: false,
-      clearInputFn: emptyFn,
     };
   }
 
@@ -59,11 +57,11 @@ class Edit extends Component {
     // api calls here
     post("/api/joinLevel", {
       levelId: this.props.levelId,
-      canvasWidth: this.canvasWidth,
-      canvasHeight: this.canvasHeight,
+      canvasWidth: this.canvas.width,
+      canvasHeight: this.canvas.height,
     }).then((garbage) => {
       const clearInputFn = initInput({ canvas: this.getCanvas() });
-      this.setState({ clearInputFn: clearInputFn });
+      this.clearInputFn = clearInputFn;
     });
     socket.on("update", (update) => {
       // console.log(`mouseX: ${update.mouseX}, mouseY: ${update.mouseY}`);
@@ -72,7 +70,7 @@ class Edit extends Component {
   }
 
   componentWillUnmount() {
-    this.state.clearInputFn();
+    this.clearInputFn();
   }
 
   getCanvas = () => {
@@ -249,15 +247,6 @@ class Edit extends Component {
     });
   };
 
-  imagedataEncode = (imagedata) => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = imagedata.width;
-    canvas.height = imagedata.height;
-    ctx.putImageData(imagedata, 0, 0);
-    return canvas.toDataURL();
-  };
-
   render() {
     return (
       <div className="u-flexColumn editPageContainer">
@@ -289,6 +278,10 @@ class Edit extends Component {
                 this.canvas = canvas;
                 canvas.width = canvas.parentElement.offsetWidth;
                 canvas.height = canvas.parentElement.offsetHeight;
+                modifyPlayer({
+                  canvasWidth: canvas.width,
+                  canvasHeight: canvas.height,
+                });
               }}
             />
           </div>

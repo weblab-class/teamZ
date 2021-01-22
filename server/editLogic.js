@@ -175,6 +175,14 @@ const removePlayer = (playerId) => {
   }
 };
 
+const modifyPlayer = (playerId, newValues) => {
+  if (!(playerId in editState.players)) return;
+  const player = editState.players[playerId];
+  Object.keys(newValues).forEach((key) => {
+    player[key] = newValues[key];
+  });
+};
+
 const modifyLevel = (playerId, newValues) => {
   if (!(playerId in editState.players)) return;
   const level = editState.levels[editState.players[playerId].levelId];
@@ -281,37 +289,30 @@ const resizeLevel = (playerId, deltas) => {
 
 // ... helper functions for update ...
 
-const clipPadding = 0; // number of tiles
 /**
- * Given camera coordinates, returns coordinates that are the given cors if they are valid,
- * else closest coordinate that is valid
- * @param {*} camX
- * @param {*} camY
- * @param {*} levelId
+ * mutates player camera to be good.
  */
-const clipCamera = (camX, camY, levelId) => {
-  let retX = camX;
-  let retY = camY;
-  retX = Math.max(0, retX);
-  retY = Math.max(0, retY);
-  // lazy bottom-right clipping for now
-  retX = Math.min(retX, tileSize * editState.levels[levelId].cols);
-  retY = Math.min(retY, tileSize * editState.levels[levelId].rows);
-  // retX = Math.max(-clipPadding * tileSize, retX);
-  // retX = Math.min(clipPadding * tileSize + editState.levels[levelId].cols * tileSize - 1);
-  // retY = Math.max(-clipPadding * tileSize, retY);
-  // retY = Math.min(clipPadding * tileSize + editState.levels[levelId].rows * tileSize - 1);
-  return {
-    x: retX,
-    y: retY,
-  };
+const clipCamera = (playerId) => {
+  const player = editState.players[playerId];
+  const level = editState.levels[player.levelId];
+  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+  player.camX = Math.min(
+    player.camX,
+    Math.floor(level.cols * tileSize - player.canvasWidth / canvasToAbstractRatio)
+  );
+  player.camY = Math.min(
+    player.camY,
+    Math.floor(level.rows * tileSize - player.canvasHeight / canvasToAbstractRatio)
+  );
+  player.camX = Math.max(0, player.camX);
+  player.camY = Math.max(0, player.camY);
 };
 
 // update players' camera coordinates
 const scrollSpeed = 8;
 const updateCameras = () => {
-  Object.keys(editState.players).forEach((key) => {
-    const player = editState.players[key];
+  Object.keys(editState.players).forEach((playerId) => {
+    const player = editState.players[playerId];
     if (player.isEditing) {
       if (player.keyDownMap["w"]) {
         player.camY -= scrollSpeed;
@@ -327,9 +328,7 @@ const updateCameras = () => {
       }
       // we need to make sure the player's camera coordinates are valid
       // apply the clipping helper fn
-      const clippedCors = clipCamera(player.camX, player.camY, player.levelId);
-      player.camX = clippedCors.x;
-      player.camY = clippedCors.y;
+      clipCamera(playerId);
     }
   });
 };
@@ -503,5 +502,6 @@ module.exports = {
   removePlayer,
   update,
   modifyLevel,
+  modifyPlayer,
   resizeLevel,
 };
