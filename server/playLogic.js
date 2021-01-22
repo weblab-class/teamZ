@@ -67,8 +67,7 @@ const registerKeyUp = (playerId, key) => {
  * @param {*} canvasHeight
  */
 const addPlayer = (playerId, level, modifiedGridTilesArr, canvasWidth, canvasHeight) => {
-  console.log("addPlayer called, with modified array arg: ");
-  console.log(modifiedGridTilesArr);
+  console.log("addPlayer called, with modified array arg ");
   console.log("with len: " + modifiedGridTilesArr.length);
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
@@ -89,6 +88,8 @@ const addPlayer = (playerId, level, modifiedGridTilesArr, canvasWidth, canvasHei
     startX: level.startX,
     startY: level.startY,
     availableTiles: level.availableTiles,
+    charSprite: level.charSprite,
+    background: level.background,
   }; // add level no matter what
   playState.levels[levelId].gridTiles = modifiedGridTilesArr;
   playState.levels[levelId].availableTilesSet = availableTilesSet;
@@ -114,6 +115,14 @@ const removePlayer = (playerId) => {
   if (playerId in playState.players) {
     delete playState.players[playerId];
   }
+};
+
+const modifyPlayer = (playerId, newValues) => {
+  if (!(playerId in playState.players)) return;
+  const player = playState.players[playerId];
+  Object.keys(newValues).forEach((key) => {
+    player[key] = newValues[key];
+  });
 };
 
 const restartPlayer = (playerId) => {
@@ -430,6 +439,8 @@ const instructionsForPlayer = (playerId) => {
     slice: sliceDict.slice,
     x: Math.floor(player.x),
     y: Math.floor(player.y),
+    charSprite: level.charSprite,
+    background: level.background,
   };
   return ret;
 };
@@ -451,5 +462,6 @@ module.exports = {
   addPlayer,
   removePlayer,
   restartPlayer,
+  modifyPlayer,
   update,
 };

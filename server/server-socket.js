@@ -121,6 +121,10 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.registerKeyUp(user._id, key);
       });
+      socket.on("playModifyPlayer", (newValues) => {
+        const user = getUserFromSocketID(socket.id);
+        if (user) playLogic.modifyPlayer(user._id, newValues);
+      });
     });
   },
 

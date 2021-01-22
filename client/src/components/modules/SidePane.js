@@ -74,6 +74,7 @@ class SidePane extends Component {
             ref={(canvas) => {
               if (!canvas) {
                 console.log("no canvas (currentTile)");
+                // TODO draw eraser static im
                 return;
               } else {
                 const context = canvas.getContext("2d");

@@ -71,3 +71,7 @@ export const playKeyDown = (key) => {
 export const playKeyUp = (key) => {
   socket.emit("playKeyUp", key);
 };
+
+export const playModifyPlayer = (newValues) => {
+  socket.emit("playModifyPlayer", newValues);
+};

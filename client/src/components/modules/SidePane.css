@@ -28,15 +28,16 @@
   align-items: center;
   flex-direction: column;
   justify-content: space-between;
-  min-width: 384px;
+  width: min-content;
+  min-width: 304px;
   background: #fdecc2;
 }
 
 .tileButtonContainer {
   display: flex;
   overflow-y: auto;
-  overflow-x: hidden;
-  width: 296px;
+  width: min-content;
+  min-width: 288px;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -45,7 +46,7 @@
   border: 1px solid black;
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   -webkit-appearance: none;
   width: 7px;
 }
@@ -54,4 +55,4 @@
   border-radius: 4px;
   background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
-}
+} */

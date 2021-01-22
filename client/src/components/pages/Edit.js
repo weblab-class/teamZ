@@ -35,7 +35,7 @@ class Edit extends Component {
     this.fetching = {};
     this.lastFetchedCharSprite = null;
     this.lastFetchedBackground = null;
-    this.clearInputFn = emptyFn();
+    this.clearInputFn = emptyFn;
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
@@ -57,8 +57,8 @@ class Edit extends Component {
     // api calls here
     post("/api/joinLevel", {
       levelId: this.props.levelId,
-      canvasWidth: this.canvas.width,
-      canvasHeight: this.canvas.height,
+      canvasWidth: this.canvas ? this.canvas.width : 32,
+      canvasHeight: this.canvas ? this.canvas.height : 32,
     }).then((garbage) => {
       const clearInputFn = initInput({ canvas: this.getCanvas() });
       this.clearInputFn = clearInputFn;
@@ -90,11 +90,6 @@ class Edit extends Component {
         fetchingDict[tileId] = true;
       }
     }
-    // if (tilesToFetch.length > 0) {
-    //   console.log("tilesToFetch: " + tilesToFetch);
-    //   console.log("tilesToFetchLength: " + tilesToFetch.length);
-    //   console.log("first elem of tilesToFetch: " + tilesToFetch[0]);
-    // }
     if (tilesToFetch.length > 0) {
       this.fetching = await Object.assign({}, this.fetching, fetchingDict);
       // Object.keys(this.state.fetching).forEach((key) => {

@@ -278,16 +278,39 @@ router.post("/joinLevel", async (req, res) => {
  */
 router.post("/joinGame", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
-  const gridTileArr = [];
+  const levelPopulated = await Level.findOne({ _id: req.body.levelId }).populate("gridTiles");
+  const modifiedGridTiles = [];
+  let iPop = 0;
   for (let i = 0; i < level.gridTiles.length; i++) {
-    const tileObject = await Tile.findOne({ _id: level.gridTiles[i] });
-    gridTileArr.push(tileObject);
+    if (level.gridTiles[i] === null) {
+      modifiedGridTiles.push(null);
+    } else {
+      modifiedGridTiles.push(levelPopulated.gridTiles[iPop]);
+      iPop++;
+    }
   }
+  // console.log("---BEGIN TEST---");
+  // console.log("level.gridTiles len: " + level.gridTiles.length);
+  // let count = 0;
+  // for (let i = 0; i < level.gridTiles.length; i++) {
+  //   if (level.gridTiles[i] === null) {
+  //     count++;
+  //   }
+  // }
+  // console.log(`Found ${count} instances of null in gridTiles`);
+  // const levelPopulated = await Level.findOne({ _id: req.body.levelId }).populate("gridTiles");
+  // console.log("length of populated gridTiles: " + levelPopulated.gridTiles.length);
+  // console.log("---END TEST");
+  // const gridTileArr = [];
+  // for (let i = 0; i < level.gridTiles.length; i++) {
+  //   const tileObject = await Tile.findOne({ _id: level.gridTiles[i] });
+  //   gridTileArr.push(tileObject);
+  // }
   // assume level has all fields required as specified in editLogic
   playLogic.addPlayer(
     req.user._id,
     level,
-    gridTileArr,
+    modifiedGridTiles,
     req.body.canvasWidth,
     req.body.canvasHeight
   );

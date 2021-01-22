@@ -1,15 +1,15 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
 /** helper functions */
 
-// hard code backgroundImage to be black for now
-const drawBackground = (
-  canvas
-  /*, backgroundImage*/
-) => {
+const drawBackground = (canvas, backgroundImage) => {
   const context = canvas.getContext("2d");
-  context.fillStyle = "black";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  // context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  if (backgroundImage === null) {
+    context.fillStyle = "black";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  } else {
+    // TODO: "center" the background
+    context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  }
 };
 
 /**Draws tile */
@@ -92,13 +92,17 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
-const drawCharSprite = (canvas, x, y) => {
+const drawCharSprite = (canvas, charSpriteImage, x, y) => {
   const context = canvas.getContext("2d");
-  context.fillStyle = "rgba(230,230,230,1)";
-  context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  if (charSpriteImage === null) {
+    context.fillStyle = "rgba(230,230,230,1)";
+    context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  } else {
+    context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  }
 };
 
-const drawChar = (canvas, instructions) => {
+const drawChar = (canvas, instructions, charSpriteImage) => {
   const context = canvas.getContext("2d");
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
@@ -109,17 +113,21 @@ const drawChar = (canvas, instructions) => {
     return { x: retX, y: retY };
   };
   const charCanvasCors = getCanvasCor(instructions.x, instructions.y);
-  drawCharSprite(canvas, charCanvasCors.x, charCanvasCors.y);
+  drawCharSprite(canvas, charSpriteImage, charCanvasCors.x, charCanvasCors.y);
 };
-
-export const drawPlayCanvas = (canvas, instructions, tiles) => {
+const clearCanvas = (canvas) => {
+  const context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
+};
+export const drawPlayCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
   // console.log(
   //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
   // );
   // disable smoothing
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
-  drawBackground(canvas);
+  clearCanvas(canvas);
+  drawBackground(canvas, backgroundImage);
   drawTiles(canvas, instructions, tiles);
-  drawChar(canvas, instructions);
+  drawChar(canvas, instructions, charSpriteImage);
 };
