@@ -50,7 +50,7 @@ const registerKeyDown = (playerId, key) => {
   if (!(playerId in editState.players)) return;
   editState.players[playerId].keyDownMap[key] = true;
   if (key === "e") {
-    editState.players[playerId].currentTile = "eraser tile";
+    editState.players[playerId].currentTile = null;
   }
 };
 
@@ -208,7 +208,7 @@ const resizeLevel = (playerId, deltas) => {
   const arrEmpty = (len) => {
     const ret = [];
     for (let i = 0; i < len; i++) {
-      ret.push("eraser tile");
+      ret.push(null);
     }
     return ret;
   };
@@ -241,7 +241,7 @@ const resizeLevel = (playerId, deltas) => {
   if (deltas.right > 0) {
     for (let i = 0; i < levelRows; i++) {
       for (let j = 0; j < deltas.right; j++) {
-        copyGrid[i].push("empty Tile");
+        copyGrid[i].push(null);
       }
     }
   } else if (deltas.right < 0) {
