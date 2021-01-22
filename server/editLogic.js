@@ -229,7 +229,10 @@ const resizeLevel = (playerId, deltas) => {
     for (let i = 0; i < deltas.up; i++) {
       tempArr.push(arrEmpty(levelCols));
     }
-    copyGrid = [...tempArr, ...copyGrid];
+    console.log("tempArr: ", tempArr);
+    console.log("grid before: ", copyGrid);
+    copyGrid = tempArr.concat(copyGrid);
+    console.log("grid after: ", copyGrid);
   } else if (deltas.up < 0) {
     copyGrid = copyGrid.slice(-1 * deltas.up);
   }

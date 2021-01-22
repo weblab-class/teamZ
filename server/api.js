@@ -171,7 +171,12 @@ router.post("/newLevel", (req, res) => {
 });
 
 router.post("/save", async (req, res) => {
+  if (!(req.user._id in editLogic.editState.players)) {
+    return;
+  }
   const levelId = editLogic.editState.players[req.user._id].levelId;
+  console.log("playerDict: ", editLogic.editState.players[req.user._id]);
+  console.log("save levelId: " + levelId);
   const levelInEditState = editLogic.editState.levels[levelId];
   const level = await Level.findOne({ _id: levelId });
   level.title = levelInEditState.title;
@@ -189,8 +194,41 @@ router.post("/save", async (req, res) => {
  */
 router.post("/joinLevel", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
+  const levelCopy = {};
+  /*
+  title: String,
+  description: String,
+  creator: { type: ObjectId, ref: "user" },
+  emptyTile: { type: ObjectId, ref: "tile" },
+  rows: Number,
+  cols: Number,
+  gridTiles: [{ type: ObjectId, ref: "tile" }], // of Tile, length should be exactly rows * cols
+  availableTiles: [{ type: ObjectId, ref: "tile" }], // of Tile
+  startX: Number, // x_cor of character spawn point
+  startY: Number, // y_cor of character spawn point
+  charSprite: { type: ObjectId, ref: "pattern" }, // facing right
+  background: { type: ObjectId, ref: "pattern" },
+  */
+  const attributesOfLevel = [
+    "_id",
+    "title",
+    "description",
+    "creator",
+    "rows",
+    "cols",
+    "gridTiles",
+    "availableTiles",
+    "startX",
+    "startY",
+    "charSprite",
+    "background",
+  ];
+  for (let i = 0; i < attributesOfLevel.length; i++) {
+    const attr = attributesOfLevel[i];
+    levelCopy[attr] = level[attr];
+  }
   // assume level has all fields required as specified in editLogic
-  editLogic.addPlayer(req.user._id, level, req.body.canvasWidth, req.body.canvasHeight);
+  editLogic.addPlayer(req.user._id, levelCopy, req.body.canvasWidth, req.body.canvasHeight);
   res.send({});
 });
 

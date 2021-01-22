@@ -26,10 +26,10 @@ class Edit extends Component {
     };
     // for now, the only prop the Edit page should take is :levelId
     // Initialize Default State
+    this.fetching = {};
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
-      fetching: {}, // tileIds -> true
       currentTile: "no current tile", // tileId of currentTile
       title: "",
       description: "",
@@ -77,7 +77,7 @@ class Edit extends Component {
     const fetchingDict = {};
     for (let i = 0; i < updateAvailableTiles.length; i++) {
       const tileId = updateAvailableTiles[i];
-      if (!(tileId in this.state.tiles) && !(tileId in this.state.fetching)) {
+      if (!(tileId in this.state.tiles) && !(tileId in this.fetching)) {
         tilesToFetch.push(tileId);
         fetchingDict[tileId] = true;
       }
@@ -88,11 +88,7 @@ class Edit extends Component {
     //   console.log("first elem of tilesToFetch: " + tilesToFetch[0]);
     // }
     if (tilesToFetch.length > 0) {
-      await this.setState((prevState) => {
-        return {
-          fetching: Object.assign({}, prevState.fetching, fetchingDict),
-        };
-      });
+      this.fetching = Object.assign({}, this.fetching, fetchingDict);
       // Object.keys(this.state.fetching).forEach((key) => {
       //   console.log("a key in fetching: " + key);
       // });
