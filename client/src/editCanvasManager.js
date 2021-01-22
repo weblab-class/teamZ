@@ -164,6 +164,11 @@ const drawChar = (canvas, instructions, charSpriteImage) => {
   drawCharSprite(canvas, charSpriteImage, charCanvasCors.x, charCanvasCors.y, shouldDarken);
 };
 
+const clearCanvas = (canvas) => {
+  const context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
+};
+
 export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
   // console.log(
   //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
@@ -171,6 +176,7 @@ export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, bac
   // don't smooth:
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
+  clearCanvas(canvas);
   drawBackground(canvas, backgroundImage);
   drawTiles(canvas, instructions, tiles);
   drawChar(canvas, instructions, charSpriteImage);
