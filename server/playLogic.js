@@ -1,11 +1,12 @@
 const constants = require("../constants.js");
 const tileSize = constants.tileSize;
 const tileSizeOnCanvas = constants.tileSizeOnCanvas;
-const gravity = 0.5;
-const maxSpeed = tileSize / 4;
-const jumpSpeed = 10;
+const gravity = 0.7;
+const maxWalkSpeed = tileSize / 4;
+const maxAirSpeed = tileSize;
+const jumpSpeed = tileSize / 1.64;
 const walkAccel = 2;
-const airAccel = 1;
+const airAccel = 0.5;
 
 // keys used in level-editor; initialize keys to not-pressed-down
 const keys = ["w", "a", "s", "d"];
@@ -56,7 +57,14 @@ const registerKeyDown = (playerId, key) => {
 
 const registerKeyUp = (playerId, key) => {
   if (!(playerId in playState.players)) return;
-  playState.players[playerId].keyDownMap[key] = false;
+  const player = playState.players[playerId];
+  player.keyDownMap[key] = false;
+  if (
+    ((key === "a" && player.xspeed < 0) || (key === "d" && player.xspeed > 0)) &&
+    !onGround(playerId)
+  ) {
+    player.xspeed = 0;
+  }
 };
 
 /**
@@ -306,10 +314,17 @@ const updatePlayerPosition = (playerId) => {
   // // update gravity
   player.yspeed += gravity;
   // // clip speed to max speeds.
-  player.xspeed = Math.min(player.xspeed, maxSpeed);
-  player.xspeed = Math.max(player.xspeed, -1 * maxSpeed);
-  player.yspeed = Math.min(player.yspeed, maxSpeed);
-  player.yspeed = Math.max(player.yspeed, -1 * maxSpeed);
+  player.xspeed = Math.min(player.xspeed, maxWalkSpeed);
+  player.xspeed = Math.max(player.xspeed, -1 * maxWalkSpeed);
+  player.yspeed = Math.min(player.yspeed, maxAirSpeed);
+  player.yspeed = Math.max(player.yspeed, -1 * maxAirSpeed);
+  // if player is not holding keys down, fric.
+  if (onGround(playerId) && !player.keyDownMap["d"] && !player.keyDownMap["a"]) {
+    player.xspeed /= 2;
+    if (Math.abs(player.xspeed) < 0.5) {
+      player.xspeed = 0;
+    }
+  }
   // clip character position.
   clipCharCors(playerId);
 };
