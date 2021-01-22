@@ -41,6 +41,7 @@ class SidePane extends Component {
                   return;
                 } else {
                   const context = canvas.getContext("2d");
+                  context.imageSmoothingEnabled = false;
                   if (tileId in this.props.tiles) {
                     // draw
                     const im = this.props.tiles[tileId].image;
@@ -76,6 +77,7 @@ class SidePane extends Component {
                 return;
               } else {
                 const context = canvas.getContext("2d");
+                context.imageSmoothingEnabled = false;
                 if (this.props.currentTile in this.props.tiles) {
                   // draw
                   const im = this.props.tiles[this.props.currentTile].image;

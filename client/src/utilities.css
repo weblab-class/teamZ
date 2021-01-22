@@ -94,6 +94,25 @@ form {
   color: var(--primary--dim);
 }
 
+.u-cover {
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.u-window {
+  display: flex;
+  background: rgba(240, 240, 240, 1);
+  filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.25));
+}
+
 /*
   u-clickable elements are rounded white-button-y kinda elements
   that will appear very often in our website.

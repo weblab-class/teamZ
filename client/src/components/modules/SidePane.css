@@ -13,15 +13,9 @@
   cursor: pointer;
 }
 .layerSwitchButton {
-  border: 1px solid black;
   border-radius: 8px;
   padding: 4px;
   font-size: 24px;
-  background: rgba(240, 240, 240, 1);
-}
-.layerSwitchButton:hover {
-  background: rgba(200, 200, 200, 1);
-  cursor: pointer;
 }
 .currentBlockContainer {
   border: 1px solid black;

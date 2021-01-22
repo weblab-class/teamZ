@@ -9,6 +9,7 @@ import { Link } from "@reach/router";
 import SidePane from "../modules/SidePane.js";
 import ToolBar from "../modules/ToolBar.js";
 import SettingsPane from "../modules/SettingsPane.js";
+import TileDesignerModal from "../modules/TileDesignerModal.js";
 
 import "../../utilities.css";
 import "./Edit.css";
@@ -36,11 +37,7 @@ class Edit extends Component {
       rows: 0,
       cols: 0,
       isSettingsPaneOpen: false,
-      tempNewTileName: "",
-      tempNewTileLayer: "Platform",
-      tempNewTileR: 128,
-      tempNewTileG: 128,
-      tempNewTileB: 128,
+      isTileDesignerModalOpen: false,
       clearInputFn: emptyFn,
     };
   }
@@ -88,7 +85,7 @@ class Edit extends Component {
     //   console.log("first elem of tilesToFetch: " + tilesToFetch[0]);
     // }
     if (tilesToFetch.length > 0) {
-      this.fetching = Object.assign({}, this.fetching, fetchingDict);
+      this.fetching = await Object.assign({}, this.fetching, fetchingDict);
       // Object.keys(this.state.fetching).forEach((key) => {
       //   console.log("a key in fetching: " + key);
       // });
@@ -184,7 +181,7 @@ class Edit extends Component {
             });
           }}
         />
-        <div className="u-flexRow">
+        <div className="u-flexRow editRow">
           <div className="editorContainer">
             <canvas
               ref={(canvas) => {
@@ -205,7 +202,9 @@ class Edit extends Component {
               changeTile(tileId);
             }}
             displayTileDesigner={() => {
-              /* TODO */
+              this.setState({ isTileDesignerModalOpen: true }, () => {
+                disableEdit();
+              });
             }}
           />
         </div>
@@ -222,60 +221,16 @@ class Edit extends Component {
             }}
           />
         ) : null}
-        <div>
-          Temporary tile creator
-          <textarea
-            type="text"
-            placeholder="TileName"
-            value={this.state.tempNewTileName}
-            onChange={(e) => this.setState({ tempNewTileName: e.target.value })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileLayer"
-            value={this.state.tempNewTileLayer}
-            onChange={(e) => this.setState({ tempNewTileLayer: e.target.value })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileR"
-            value={this.state.tempNewTileR}
-            onChange={(e) => this.setState({ tempNewTileR: parseInt(e.target.value) })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileG"
-            value={this.state.tempNewTileG}
-            onChange={(e) => this.setState({ tempNewTileG: parseInt(e.target.value) })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileB"
-            value={this.state.tempNewTileB}
-            onChange={(e) => this.setState({ tempNewTileB: parseInt(e.target.value) })}
-          ></textarea>
-          <button
-            type="submit"
-            onClick={(e) => {
-              const arr = new Uint8ClampedArray(4 * tileSize * tileSize);
-              for (let i = 0; i < 4 * tileSize * tileSize; i += 4) {
-                arr[i + 0] = this.state.tempNewTileR;
-                arr[i + 1] = this.state.tempNewTileG;
-                arr[i + 2] = this.state.tempNewTileB;
-                arr[i + 3] = 255;
-              }
-              const imData = new ImageData(arr, tileSize, tileSize);
-              const base64String = this.imagedataEncode(imData);
-              this.createTile(
-                this.state.tempNewTileName,
-                this.state.tempNewTileLayer,
-                base64String
-              );
+        {this.state.isTileDesignerModalOpen ? (
+          <TileDesignerModal
+            onSubmit={this.createTile}
+            onCancel={() => {
+              this.setState({ isTileDesignerModalOpen: false }, () => {
+                enableEdit();
+              });
             }}
-          >
-            Add tile
-          </button>
-        </div>
+          />
+        ) : null}
       </div>
     );
   }

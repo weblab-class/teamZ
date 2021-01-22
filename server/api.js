@@ -16,6 +16,21 @@ const Tile = require("./models/tile");
 const Level = require("./models/level");
 const Pattern = require("./models/pattern");
 
+const attributesOfLevel = [
+  "_id",
+  "title",
+  "description",
+  "creator",
+  "rows",
+  "cols",
+  "gridTiles",
+  "availableTiles",
+  "startX",
+  "startY",
+  "charSprite",
+  "background",
+];
+
 // import editLogic
 const editLogic = require("./editLogic.js");
 const playLogic = require("./playLogic.js");
@@ -179,12 +194,12 @@ router.post("/save", async (req, res) => {
   console.log("save levelId: " + levelId);
   const levelInEditState = editLogic.editState.levels[levelId];
   const level = await Level.findOne({ _id: levelId });
-  level.title = levelInEditState.title;
-  level.description = levelInEditState.description;
-  level.rows = levelInEditState.rows;
-  level.cols = levelInEditState.cols;
-  level.gridTiles = levelInEditState.gridTiles;
-  level.availableTiles = levelInEditState.availableTiles;
+  for (let i = 0; i < attributesOfLevel.length; i++) {
+    const attr = attributesOfLevel[i];
+    if (attr !== "_id") {
+      level[attr] = levelInEditState[attr];
+    }
+  }
   await level.save();
   res.send({});
 });
@@ -209,20 +224,7 @@ router.post("/joinLevel", async (req, res) => {
   charSprite: { type: ObjectId, ref: "pattern" }, // facing right
   background: { type: ObjectId, ref: "pattern" },
   */
-  const attributesOfLevel = [
-    "_id",
-    "title",
-    "description",
-    "creator",
-    "rows",
-    "cols",
-    "gridTiles",
-    "availableTiles",
-    "startX",
-    "startY",
-    "charSprite",
-    "background",
-  ];
+
   for (let i = 0; i < attributesOfLevel.length; i++) {
     const attr = attributesOfLevel[i];
     levelCopy[attr] = level[attr];

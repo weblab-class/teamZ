@@ -37,7 +37,7 @@ class SettingsSize extends Component {
       <input
         type="number"
         key={i}
-        className="input"
+        className="u-input"
         placeholder={dir}
         defaultValue={0}
         onChange={(e) => {

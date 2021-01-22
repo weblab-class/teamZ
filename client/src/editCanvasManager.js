@@ -163,6 +163,9 @@ export const drawEditCanvas = (canvas, instructions, tiles) => {
   // console.log(
   //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
   // );
+  // don't smooth:
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
   drawBackground(canvas);
   drawTiles(canvas, instructions, tiles);
   drawChar(canvas, instructions);

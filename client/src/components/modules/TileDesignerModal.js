@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import "../../utilities.css";
 import "./TileDesignerModal.css";
 
-const tileSize = 16; // use this constant rather than the number `16` when referencing tile size.
+import { tileSize } from "../../../../constants.js";
 class TileDesignerModal extends Component {
   constructor(props) {
     /* TileDesignerModal is a pop-up whose job is to design and output a tile.
@@ -33,11 +33,98 @@ class TileDesignerModal extends Component {
     super(props);
     this.state = {
       // TODO: initialize state
+      name: "",
+      layer: "Platform",
+      image: null,
     };
   }
 
+  uploadImage = (event) => {
+    const fileInput = event.target;
+    console.log(fileInput);
+    this.readImage(fileInput.files[0])
+      .then((image) => {
+        fileInput.value = null;
+        // scale image down to 16 x 16
+        const img = document.createElement("img");
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = tileSize;
+          canvas.height = tileSize;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const scaledImageString = canvas.toDataURL();
+          this.setState({ image: scaledImageString });
+        };
+        img.src = image;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  readImage = (blob) => {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onloadend = () => {
+        if (r.error) {
+          reject(r.error.message);
+          return;
+        } else if (!r.result.startsWith("data:image/")) {
+          reject("not an image!");
+          return;
+        } else {
+          resolve(r.result);
+        }
+      };
+      r.readAsDataURL(blob);
+    });
+  };
+
   render() {
-    return <>TODO: TileDesignerModal</>;
+    return (
+      <div className="u-cover">
+        <div className="u-window">
+          Tile designer modal:
+          <div
+            className="u-clickable"
+            onClick={(e) => {
+              this.props.onCancel();
+            }}
+          >
+            Cancel
+          </div>
+          <textarea
+            type="text"
+            placeholder="name..."
+            value={this.state.name}
+            onChange={(e) => this.setState({ name: e.target.value })}
+          ></textarea>
+          <select
+            defaultValue="Platform"
+            onChange={(e) => {
+              console.log("changed select: " + e.target.value);
+              this.setState({ layer: e.target.value });
+            }}
+          >
+            <option value="Platform">Platform</option>
+            <option value="Background">Background</option>
+          </select>
+          <input type="file" name="files[]" accept="image/*" onChange={this.uploadImage} />
+          <div
+            className="u-clickable"
+            onClick={(e) => {
+              if (this.state.image !== null) {
+                this.props.onSubmit(this.state.name, this.state.layer, this.state.image);
+              }
+            }}
+          >
+            Submit
+            {this.state.image === null ? "stateImage is null" : ""}
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 

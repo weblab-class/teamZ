@@ -70,21 +70,23 @@ class SettingsPane extends Component {
       );
     }
     return (
-      <div className="settingsPaneContainer">
-        <div className="settingsPaneBar">
-          SettingsPane
-          <div
-            className="redX"
-            onClick={(e) => {
-              this.props.onCancel();
-            }}
-          >
-            Cancel
+      <div className="u-cover">
+        <div className="u-window settingsPaneContainer">
+          <div className="settingsPaneBar">
+            SettingsPane
+            <div
+              className="u-clickable redX"
+              onClick={(e) => {
+                this.props.onCancel();
+              }}
+            >
+              Cancel
+            </div>
           </div>
-        </div>
-        <div className="settingsPaneSubcontainer">
-          <div className="settingsPaneMenu">{menuButtons}</div>
-          <div className="settingsPaneContent">{content}</div>
+          <div className="settingsPaneSubcontainer">
+            <div className="settingsPaneMenu">{menuButtons}</div>
+            <div className="settingsPaneContent">{content}</div>
+          </div>
         </div>
       </div>
     );
