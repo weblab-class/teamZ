@@ -140,6 +140,34 @@ router.post("/newTile", (req, res) => {
 });
 
 /**
+ * req.body.image is string
+ */
+router.post("/newCharSprite", (req, res) => {
+  if (typeof req.body.image !== "string") {
+    throw new Error(
+      "Can only handle images encoded as strings. Got type: " + typeof req.body.image
+    );
+  }
+  uploadImagePromise(req.body.image)
+    .then((imageName) => {
+      // console.log("imageName in newTile: " + imageName);
+      return new Pattern({
+        image: imageName,
+      }).save();
+    })
+    .then((pattern) => {
+      // console.log("created tile: ", tile);
+      res.send(pattern._id);
+    })
+    .catch((err) => {
+      console.log("ERR: upload image: " + err);
+      res.status(500).send({
+        message: "error uploading",
+      });
+    });
+});
+
+/**
  * req.query.tileIds is a list of tileIds
  */
 router.post("/tilesWithId", async (req, res) => {
@@ -174,6 +202,17 @@ router.post("/tilesWithId", async (req, res) => {
   }
   // console.log("ret: length: " + Object.keys(ret).length);
   res.send(ret);
+});
+
+/**
+ * req.body.charSprite
+ * res sends back image string
+ */
+router.post("/fetchCharSprite", async (req, res) => {
+  const pattern = await Pattern.findOne({ _id: req.body.charSprite });
+  const imageName = pattern.image;
+  const imString = await downloadImagePromise(imageName);
+  res.send({ image: imString });
 });
 
 /**

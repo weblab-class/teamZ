@@ -52,6 +52,8 @@ class Test extends Component {
       availableTiles: [],
       startX: 0,
       startY: 0,
+      charSprite: null,
+      background: null,
     });
     this.setState({ newLevelTitle: "", newLevelRows: 10, newLevelCols: 10 });
     this.loadLevels();

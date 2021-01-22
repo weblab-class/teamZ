@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
-import { socket, addTile, changeTile, enableEdit, disableEdit } from "../../client-socket";
+import {
+  socket,
+  addTile,
+  changeTile,
+  enableEdit,
+  disableEdit,
+  modifyLevel,
+} from "../../client-socket";
 import { drawEditCanvas } from "../../editCanvasManager";
 import { initInput } from "../../editInput.js";
 import { Link } from "@reach/router";
@@ -28,9 +35,12 @@ class Edit extends Component {
     // for now, the only prop the Edit page should take is :levelId
     // Initialize Default State
     this.fetching = {};
+    this.lastFetchedCharSprite = null;
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
+      charSprite: null,
+      charSpriteImage: null,
       currentTile: "no current tile", // tileId of currentTile
       title: "",
       description: "",
@@ -118,6 +128,31 @@ class Edit extends Component {
         });
       });
     }
+    if (
+      update.charSprite !== this.state.charSprite &&
+      update.charSprite !== this.lastFetchedCharSprite
+    ) {
+      this.lastFetchedCharSprite = update.charSprite;
+      if (update.charSprite === null) {
+        this.setState((prevState) => {
+          return { charSprite: null, charSpriteImage: null };
+        });
+      } else {
+        console.log("update.charSprite: " + update.charSprite);
+        post("/api/fetchCharSprite", { charSprite: update.charSprite }).then((imObj) => {
+          const imString = imObj.image;
+          const img = document.createElement("img");
+          img.onload = () => {
+            createImageBitmap(img).then((bitmap) => {
+              this.setState((prevState) => {
+                return { charSprite: update.charSprite, charSpriteImage: bitmap };
+              });
+            });
+          };
+          img.src = imString;
+        });
+      }
+    }
     if (update.currentTile !== this.state.currentTile) {
       this.setState({ currentTile: update.currentTile });
     }
@@ -133,7 +168,7 @@ class Edit extends Component {
     if (update.cols !== this.state.cols) {
       this.setState({ cols: update.cols });
     }
-    drawEditCanvas(this.getCanvas(), update, this.state.tiles);
+    drawEditCanvas(this.getCanvas(), update, this.state.tiles, this.state.charSpriteImage);
   };
 
   /**
@@ -149,6 +184,22 @@ class Edit extends Component {
       // consider adding this new tile to state locally, without relying on api call
       // console.log("created tile with id: " + tileId);
       addTile(tileId);
+    });
+  };
+
+  /**
+   *
+   * @param {*} image base64 encoded str
+   */
+  changeCharSprite = (image) => {
+    if (image === null) {
+      modifyLevel({ charSprite: null });
+      return;
+    }
+    post("/api/newCharSprite", {
+      image: image,
+    }).then((patternId) => {
+      modifyLevel({ charSprite: patternId });
     });
   };
 
@@ -214,6 +265,7 @@ class Edit extends Component {
             description={this.state.description}
             rows={this.state.rows}
             cols={this.state.cols}
+            changeCharSprite={this.changeCharSprite}
             onCancel={() => {
               this.setState({ isSettingsPaneOpen: false }, () => {
                 enableEdit();

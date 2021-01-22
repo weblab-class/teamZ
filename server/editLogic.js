@@ -12,6 +12,7 @@ const editState = {
   levels: {}, // maps levelId to level information consisting of
   // title, rows, cols, gridTiles, availableTiles, etc
   // title: "",
+  // desc
   // don't need to store creator, since that won't change. might store collaborators later
   // rows: 0,
   // cols: 0,
@@ -19,6 +20,7 @@ const editState = {
   // availableTiles: [], // list of available tileIds
   // startX: 0, // abstract cors of start position
   // startY: 0,
+  // charSprite
   // ........
   // player-specific information:
   players: {},
@@ -455,6 +457,7 @@ const instructionsForPlayer = (playerId) => {
     currentTile: player.currentTile,
     title: level.title,
     description: level.description,
+    charSprite: level.charSprite,
     rows: level.rows,
     cols: level.cols,
     camX: player.camX,

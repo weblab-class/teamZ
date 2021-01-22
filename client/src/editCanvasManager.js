@@ -122,16 +122,20 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
-const drawCharSprite = (canvas, x, y, isDarkened) => {
+const drawCharSprite = (canvas, charSpriteImage, x, y, isDarkened) => {
   const context = canvas.getContext("2d");
-  context.fillStyle = "rgba(230,230,230,1)";
-  context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  if (charSpriteImage === null) {
+    context.fillStyle = "rgba(230,230,230,1)";
+    context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  } else {
+    context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  }
   if (isDarkened) {
     darken(canvas, x, y);
   }
 };
 
-const drawChar = (canvas, instructions) => {
+const drawChar = (canvas, instructions, charSpriteImage) => {
   const context = canvas.getContext("2d");
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
@@ -156,10 +160,10 @@ const drawChar = (canvas, instructions) => {
     instructions.startY <= mouseAbsCors.y &&
     mouseAbsCors.y < instructions.startY + tileSize;
   const shouldDarken = playerMouseOnChar || instructions.isDraggingChar;
-  drawCharSprite(canvas, charCanvasCors.x, charCanvasCors.y, shouldDarken);
+  drawCharSprite(canvas, charSpriteImage, charCanvasCors.x, charCanvasCors.y, shouldDarken);
 };
 
-export const drawEditCanvas = (canvas, instructions, tiles) => {
+export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage) => {
   // console.log(
   //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
   // );
@@ -168,5 +172,5 @@ export const drawEditCanvas = (canvas, instructions, tiles) => {
   ctx.imageSmoothingEnabled = false;
   drawBackground(canvas);
   drawTiles(canvas, instructions, tiles);
-  drawChar(canvas, instructions);
+  drawChar(canvas, instructions, charSpriteImage);
 };
