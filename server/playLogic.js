@@ -8,6 +8,8 @@ const jumpSpeed = tileSize / 1.64;
 const walkAccel = 2;
 const airAccel = 0.5;
 
+const restartCap = 20;
+
 // keys used in level-editor; initialize keys to not-pressed-down
 const keys = ["w", "a", "s", "d"];
 
@@ -59,10 +61,13 @@ const registerKeyUp = (playerId, key) => {
   if (!(playerId in playState.players)) return;
   const player = playState.players[playerId];
   player.keyDownMap[key] = false;
-  if (
-    ((key === "a" && player.xspeed < 0) || (key === "d" && player.xspeed > 0)) &&
-    !onGround(playerId)
-  ) {
+  // if (
+  //   ((key === "a" && player.xspeed < 0) || (key === "d" && player.xspeed > 0)) &&
+  //   !onGround(playerId)
+  // ) {
+  //   player.xspeed = 0;
+  // }
+  if (key === "a" || key === "d") {
     player.xspeed = 0;
   }
 };
@@ -116,6 +121,15 @@ const addPlayer = (playerId, level, modifiedGridTilesArr, canvasWidth, canvasHei
     canvasHeight: canvasHeight,
   };
   centerCamera(playerId);
+  // restart all players on same level.
+  Object.keys(playState.players).forEach((otherPlayerId) => {
+    if (
+      otherPlayerId !== playerId &&
+      levelId === playState.levels[playState.players[otherPlayerId].levelId]
+    ) {
+      restartPlayer(otherPlayerId);
+    }
+  });
 };
 
 /** Remove a player from the game state if they DC */
@@ -136,6 +150,7 @@ const modifyPlayer = (playerId, newValues) => {
 const restartPlayer = (playerId) => {
   if (!(playerId in playState.players)) return;
   playState.players[playerId].isRestarting = true;
+  console.log("restart player in playLogic called");
 };
 
 const toAbstractCors = (canX, canY, camX, camY) => {
@@ -386,6 +401,30 @@ const corsInGrid = (x, y, levelId) => {
   );
 };
 
+const updatePlayerRestart = (playerId) => {
+  const player = playState.players[playerId];
+  const level = playState.levels[player.levelId];
+  if (player.isRestarting) {
+    if (player.restartTimer === restartCap) {
+      player.isRestarting = false;
+      player.restartTimer = 0;
+      return;
+    }
+    if (player.restartTimer === Math.floor(restartCap / 2)) {
+      player.x = level.startX;
+      player.y = level.startY;
+      player.xspeed = 0;
+      player.yspeed = 0;
+    }
+    player.restartTimer++;
+  }
+};
+
+const updatePlayerRestarts = () => {
+  Object.keys(playState.players).forEach((playerId) => {
+    updatePlayerRestart(playerId);
+  });
+};
 // ... update ...
 
 /**
@@ -397,6 +436,7 @@ const update = () => {
   //   const level = playState.levels[playState.players[playerId].levelId];
   //   console.log(level.gridTiles);
   // });
+  updatePlayerRestarts();
   updatePlayerPositions();
   updateCameras();
 };
@@ -456,6 +496,7 @@ const instructionsForPlayer = (playerId) => {
     y: Math.floor(player.y),
     charSprite: level.charSprite,
     background: level.background,
+    restartFraction: player.restartTimer / restartCap,
   };
   return ret;
 };

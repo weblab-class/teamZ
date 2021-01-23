@@ -40,7 +40,7 @@ class Test extends Component {
     const emptyTile = await post("/api/emptyTile");
     const gridTiles = [];
     for (let i = 0; i < rows * cols; i++) {
-      gridTiles.push(emptyTile._id);
+      gridTiles.push(null);
     }
     await post("/api/newLevel", {
       title: this.state.newLevelTitle,

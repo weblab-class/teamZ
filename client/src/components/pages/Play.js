@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
-import { socket, playModifyPlayer } from "../../client-socket";
+import { socket, playModifyPlayer, playRestartPlayer } from "../../client-socket";
 import { drawPlayCanvas } from "../../playCanvasManager";
 import { initInput } from "../../playInput.js";
 import { Link } from "@reach/router";
@@ -165,6 +165,22 @@ class Play extends Component {
             playModifyPlayer({ canvasWidth: canvas.width, canvasHeight: canvas.height });
           }}
         />
+        <div className="playButtonsContainer">
+          <Link
+            className="u-clickable"
+            to={this.props.didComeFromEditor ? "/edit/" + this.props.levelId : "/"}
+          >
+            Back
+          </Link>
+          <div
+            className="u-clickable"
+            onClick={(e) => {
+              playRestartPlayer();
+            }}
+          >
+            Retry
+          </div>
+        </div>
       </div>
     );
     return <>{this.state.loaded ? playContainer : loadingPage}</>;

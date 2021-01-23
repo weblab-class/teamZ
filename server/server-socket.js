@@ -125,6 +125,11 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.modifyPlayer(user._id, newValues);
       });
+      socket.on("playRestartPlayer", () => {
+        console.log("server socket received playRestartPlayer message");
+        const user = getUserFromSocketID(socket.id);
+        if (user) playLogic.restartPlayer(user._id);
+      });
     });
   },
 

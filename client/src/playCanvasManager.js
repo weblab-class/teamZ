@@ -1,5 +1,12 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
 /** helper functions */
+const drawShade = (canvas, perc) => {
+  const context = canvas.getContext("2d");
+  if (perc > 0) {
+    context.fillStyle = `rgba(0,0,0,${1 - 2 * Math.abs(0.5 - perc)})`;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  }
+};
 
 const drawBackground = (canvas, backgroundImage) => {
   const context = canvas.getContext("2d");
@@ -130,4 +137,5 @@ export const drawPlayCanvas = (canvas, instructions, tiles, charSpriteImage, bac
   drawBackground(canvas, backgroundImage);
   drawTiles(canvas, instructions, tiles);
   drawChar(canvas, instructions, charSpriteImage);
+  drawShade(canvas, instructions.restartFraction);
 };
