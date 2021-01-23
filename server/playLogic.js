@@ -6,7 +6,7 @@ const maxWalkSpeed = tileSize / 4;
 const maxAirSpeed = tileSize;
 const jumpSpeed = tileSize / 1.64;
 const walkAccel = 2;
-const airAccel = 0.5;
+const airAccel = 1;
 
 const restartCap = 20;
 
@@ -356,6 +356,7 @@ const updatePlayerPositions = () => {
 const clipCamera = (playerId) => {
   const player = playState.players[playerId];
   const level = playState.levels[player.levelId];
+  //  console.log("playercamY before clip: " + player.camY);
   const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
   player.camX = Math.min(
     player.camX,
@@ -365,8 +366,13 @@ const clipCamera = (playerId) => {
     player.camY,
     Math.floor(level.rows * tileSize - player.canvasHeight / canvasToAbstractRatio)
   );
+  // console.log("intermediate clip: " + player.camY);
   player.camX = Math.max(0, player.camX);
   player.camY = Math.max(0, player.camY);
+  // console.log("playercamY after clip: " + player.camY);
+  if (player.camY % 2 !== 0) {
+    player.camY -= 1; // lazy fix
+  }
 };
 
 /**
@@ -460,7 +466,7 @@ const getSlice = (playerId) => {
     for (let j = colStart; j < colStart + tilesWide; j++) {
       const iSlice = i * level.cols + j;
       if (level.gridTiles[iSlice] === null) {
-        slice.push("eraser tile");
+        slice.push(null);
       } else {
         slice.push(level.gridTiles[i * level.cols + j]._id);
       }
@@ -498,6 +504,8 @@ const instructionsForPlayer = (playerId) => {
     background: level.background,
     restartFraction: player.restartTimer / restartCap,
   };
+  console.log("camY unfloord: " + player.camY);
+  console.log("returning camY: " + ret.camY);
   return ret;
 };
 

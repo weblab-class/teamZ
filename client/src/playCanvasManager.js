@@ -93,7 +93,7 @@ const drawTiles = (canvas, instructions, tiles) => {
       if (isTileOnCanvas(row, col)) {
         const tileId = instructions.slice[iSlice(row, col)];
         const tileImage = tileId in tiles ? tiles[tileId].image : null;
-        drawTile(canvas, tileImage, canvasCors.x, canvasCors.y);
+        drawTile(canvas, tileImage, Math.floor(canvasCors.x), Math.floor(canvasCors.y));
       }
     }
   }
@@ -133,6 +133,7 @@ export const drawPlayCanvas = (canvas, instructions, tiles, charSpriteImage, bac
   // disable smoothing
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
+  console.log("instructions camY: " + instructions.camY);
   clearCanvas(canvas);
   drawBackground(canvas, backgroundImage);
   drawTiles(canvas, instructions, tiles);

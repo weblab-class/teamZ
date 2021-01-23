@@ -168,7 +168,7 @@ class Play extends Component {
         <div className="playButtonsContainer">
           <Link
             className="u-clickable"
-            to={this.props.didComeFromEditor ? "/edit/" + this.props.levelId : "/"}
+            to={this.props.didComeFromEditor === "true" ? "/edit/" + this.props.levelId : "/"}
           >
             Back
           </Link>

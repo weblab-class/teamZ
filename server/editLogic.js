@@ -143,6 +143,10 @@ const addTile = (playerId, tileId) => {
  */
 const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
   // console.log("addPlayer is called in editLogic");
+  //hard code creator-only for now:
+  console.log("add player playerId: ", playerId);
+  console.log("level creator: ", level.creator);
+  if (playerId.toString() !== level.creator.toString()) return;
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
@@ -153,10 +157,11 @@ const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
     // we have to add this level.
     editState.levels[levelId] = level;
   }
+  const canvasToAbstractRatio = tileSizeOnCanvas / tileSize;
   editState.players[playerId] = {
     levelId: levelId,
-    camX: 0,
-    camY: 0,
+    camX: Math.floor(level.startX - canvasWidth / canvasToAbstractRatio / 2),
+    camY: Math.floor(level.startY - canvasHeight / canvasToAbstractRatio / 2),
     currentTile: null,
     mouseX: -1,
     mouseY: -1,

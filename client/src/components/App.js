@@ -77,7 +77,7 @@ class App extends Component {
             userId={this.state.userId}
           />
           <Play
-            path="/play/:levelId"
+            path="/play/:levelId/:didComeFromEditor"
             handleLogin={this.handleLogin}
             handleLogout={this.handleLogout}
             userId={this.state.userId}

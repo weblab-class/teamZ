@@ -9,6 +9,10 @@ const keyTranslator = {
   S: "s",
   d: "d",
   D: "d",
+  ArrowLeft: "a",
+  ArrowRight: "d",
+  ArrowUp: "w",
+  ArrowDown: "s",
 };
 const handleKeyDown = (e) => {
   if (e.key in keyTranslator) {

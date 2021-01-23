@@ -37,7 +37,7 @@ class ToolBar extends Component {
         </div>
         <Link
           className="u-clickable"
-          to={"/play/" + this.props.levelId}
+          to={"/play/" + this.props.levelId + "/true"}
           onClick={(e) => {
             this.props.onPlay();
           }}
