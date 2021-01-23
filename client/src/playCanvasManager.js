@@ -1,4 +1,16 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
+
+import defaultChar from "/client/src/public/defaultChar.png";
+let defaultCharSprite = null;
+const img = document.createElement("img");
+img.onload = () => {
+  // console.log("default char img loaded");
+  createImageBitmap(img).then((bitmap) => {
+    defaultCharSprite = bitmap;
+  });
+};
+img.src = defaultChar;
+
 /** helper functions */
 const drawShade = (canvas, perc) => {
   const context = canvas.getContext("2d");
@@ -21,7 +33,7 @@ const drawBackground = (canvas, backgroundImage) => {
 
 /**Draws tile */
 const drawTile = (canvas, tileImage, x, y) => {
-  // console.log(`drawTile(x: ${x}, y: ${y})`);
+  // // console.log(`drawTile(x: ${x}, y: ${y})`);
   const context = canvas.getContext("2d");
   if (tileImage !== null) {
     context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
@@ -75,7 +87,7 @@ const drawTiles = (canvas, instructions, tiles) => {
       isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
       isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y) ||
       isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.x)
+      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.y)
     );
   };
   // compute the tile under the mouse
@@ -99,17 +111,30 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
-const drawCharSprite = (canvas, charSpriteImage, x, y) => {
+const drawCharSprite = (canvas, charSpriteImage, charSpriteImageFlipped, x, y, isFacingRight) => {
   const context = canvas.getContext("2d");
   if (charSpriteImage === null) {
-    context.fillStyle = "rgba(230,230,230,1)";
-    context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    if (defaultCharSprite === null) {
+      context.fillStyle = "rgba(230,230,230,1)";
+      context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    } else {
+      context.drawImage(defaultCharSprite, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    }
   } else {
-    context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    if (isFacingRight) {
+      context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    } else {
+      if (charSpriteImageFlipped !== null) {
+        context.drawImage(charSpriteImageFlipped, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+      } else {
+        console.log("null flipped img, drawwing unflipped img");
+        context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+      }
+    }
   }
 };
 
-const drawChar = (canvas, instructions, charSpriteImage) => {
+const drawChar = (canvas, instructions, charSpriteImage, charSpriteImageFlipped) => {
   const context = canvas.getContext("2d");
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
@@ -120,23 +145,37 @@ const drawChar = (canvas, instructions, charSpriteImage) => {
     return { x: retX, y: retY };
   };
   const charCanvasCors = getCanvasCor(instructions.x, instructions.y);
-  drawCharSprite(canvas, charSpriteImage, charCanvasCors.x, charCanvasCors.y);
+  drawCharSprite(
+    canvas,
+    charSpriteImage,
+    charSpriteImageFlipped,
+    charCanvasCors.x,
+    charCanvasCors.y,
+    instructions.isFacingRight
+  );
 };
 const clearCanvas = (canvas) => {
   const context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
 };
-export const drawPlayCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
-  // console.log(
+export const drawPlayCanvas = (
+  canvas,
+  instructions,
+  tiles,
+  charSpriteImage,
+  charSpriteImageFlipped,
+  backgroundImage
+) => {
+  // // console.log(
   //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
   // );
   // disable smoothing
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
-  console.log("instructions camY: " + instructions.camY);
+  // console.log("instructions camY: " + instructions.camY);
   clearCanvas(canvas);
   drawBackground(canvas, backgroundImage);
   drawTiles(canvas, instructions, tiles);
-  drawChar(canvas, instructions, charSpriteImage);
+  drawChar(canvas, instructions, charSpriteImage, charSpriteImageFlipped);
   drawShade(canvas, instructions.restartFraction);
 };

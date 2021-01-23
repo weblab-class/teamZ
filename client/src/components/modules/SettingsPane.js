@@ -94,7 +94,7 @@ class SettingsPane extends Component {
     }
     return (
       <div className="u-cover">
-        <div className="u-window settingsPaneContainer">
+        <div className="u-window u-largeWindow settingsPaneContainer">
           <div className="settingsPaneBar">
             SettingsPane
             <div

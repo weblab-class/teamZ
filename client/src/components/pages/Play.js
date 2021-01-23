@@ -24,6 +24,7 @@ class Play extends Component {
     this.lastFetchedCharSprite = null;
     this.charSprite = null;
     this.charSpriteImage = null;
+    this.charSpriteImageFlipped = null;
     this.lastFetchedBackground = null;
     this.background = null;
     this.backgroundImage = null;
@@ -78,12 +79,12 @@ class Play extends Component {
       this.fetching = await Object.assign({}, this.fetching, fetchingDict);
       post("/api/tilesWithId", { tileIds: tilesToFetch }).then(async (tileDict) => {
         // image is STRING
-        // console.log("received tileDict from tilesWithID call");
+        // // console.log("received tileDict from tilesWithID call");
         await Object.keys(tileDict).forEach((tileId) => {
-          // console.log("one key in loop: " + tileId);
+          // // console.log("one key in loop: " + tileId);
           const tileObject = tileDict[tileId];
           const imString = tileObject.image;
-          console.log("got imString in edit.js: " + imString);
+          // console.log("got imString in edit.js: " + imString);
           const img = document.createElement("img");
           img.onload = () => {
             createImageBitmap(img).then((bitmap) => {
@@ -96,7 +97,7 @@ class Play extends Component {
             });
           };
           img.src = imString;
-          console.log("img: ", img);
+          // console.log("img: ", img);
         });
       });
     }
@@ -105,13 +106,25 @@ class Play extends Component {
       if (update.charSprite === null) {
         this.charSprite = null;
         this.charSpriteImage = null;
+        this.charSpriteImageFlipped = null;
       } else {
-        console.log("update.charSprite: " + update.charSprite);
+        // console.log("update.charSprite: " + update.charSprite);
         post("/api/fetchImage", { patternId: update.charSprite }).then((imObj) => {
           const imString = imObj.image;
           const img = document.createElement("img");
           img.onload = () => {
             createImageBitmap(img).then((bitmap) => {
+              const canvasFlipped = document.createElement("canvas");
+              const ctxFlipped = canvasFlipped.getContext("2d");
+              canvasFlipped.width = tileSize;
+              canvasFlipped.height = tileSize;
+              ctxFlipped.translate(tileSize, 0);
+              ctxFlipped.scale(-1, 1);
+              ctxFlipped.drawImage(bitmap, 0, 0);
+              createImageBitmap(canvasFlipped).then((bitmapFlipped) => {
+                this.charSpriteImageFlipped = bitmapFlipped;
+              });
+
               this.charSprite = update.charSprite;
               this.charSpriteImage = bitmap;
             });
@@ -126,7 +139,7 @@ class Play extends Component {
         this.background = null;
         this.backgroundImage = null;
       } else {
-        console.log("update.background: " + update.background);
+        // console.log("update.background: " + update.background);
         post("/api/fetchImage", { patternId: update.background }).then((imObj) => {
           const imString = imObj.image;
           const img = document.createElement("img");
@@ -145,6 +158,7 @@ class Play extends Component {
       update,
       this.tiles,
       this.charSpriteImage,
+      this.charSpriteImageFlipped,
       this.backgroundImage
     );
   };
@@ -156,7 +170,7 @@ class Play extends Component {
         <canvas
           ref={(canvas) => {
             if (!canvas) {
-              console.log("no canvas play");
+              // console.log("no canvas play");
               return;
             }
             this.canvas = canvas;

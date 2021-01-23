@@ -1,6 +1,16 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
-// const tileSize = 16;
-// const tileSizeOnCanvas = 64;
+
+import defaultChar from "/client/src/public/defaultChar.png";
+let defaultCharSprite = null;
+const img = document.createElement("img");
+img.onload = () => {
+  console.log("default char img loaded");
+  createImageBitmap(img).then((bitmap) => {
+    defaultCharSprite = bitmap;
+  });
+};
+img.src = defaultChar;
+
 /** helper functions */
 
 const darken = (canvas, x, y) => {
@@ -93,7 +103,7 @@ const drawTiles = (canvas, instructions, tiles) => {
       isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
       isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y) ||
       isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.x)
+      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.y)
     );
   };
   // compute the tile under the mouse
@@ -126,8 +136,12 @@ const drawTiles = (canvas, instructions, tiles) => {
 const drawCharSprite = (canvas, charSpriteImage, x, y, isDarkened) => {
   const context = canvas.getContext("2d");
   if (charSpriteImage === null) {
-    context.fillStyle = "rgba(230,230,230,1)";
-    context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    if (defaultCharSprite === null) {
+      context.fillStyle = "rgba(230,230,230,1)";
+      context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    } else {
+      context.drawImage(defaultCharSprite, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    }
   } else {
     context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   }

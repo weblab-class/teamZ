@@ -84,7 +84,7 @@ class TileDesignerModal extends Component {
   render() {
     return (
       <div className="u-cover">
-        <div className="u-window">
+        <div className="u-window u-largeWindow">
           Tile designer modal:
           <div
             className="u-clickable"
