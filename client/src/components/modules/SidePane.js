@@ -56,25 +56,24 @@ class SidePane extends Component {
     return (
       <div className="u-flexColumn sidePaneContainer">
         <div
-          className="u-clickable layerSwitchButton"
+          className="u-clickable u-clickableMid u-chocoThemed layerSwitchButton"
           onClick={(e) => {
             this.setState({ layer: this.state.layer === "Platform" ? "Background" : "Platform" });
           }}
         >
           {this.state.layer}
         </div>
-        <div className="tileButtonContainer">{tileButtons}</div>
-        <div className="currentBlockContainer">
+        <div className="tileButtonContainer u-chocoThemed">{tileButtons}</div>
+        <div className="currentBlockContainer u-chocoThemed">
           {this.props.currentTile in this.props.tiles
             ? this.props.tiles[this.props.currentTile].name
             : "Eraser"}
           <canvas
-            width="128"
-            height="128"
+            width="120"
+            height="120"
             ref={(canvas) => {
               if (!canvas) {
                 console.log("no canvas (currentTile)");
-                // TODO draw eraser static im
                 return;
               } else {
                 const context = canvas.getContext("2d");
@@ -83,18 +82,21 @@ class SidePane extends Component {
                   // draw
                   const im = this.props.tiles[this.props.currentTile].image;
                   context.drawImage(im, 0, 0, canvas.width, canvas.height);
+                } else {
+                  // hard code eraser tile as blank for now:
+                  context.clearRect(0, 0, canvas.width, canvas.height);
                 }
               }
             }}
           />
         </div>
         <div
-          className="u-clickable"
+          className="u-clickable u-clickableMid u-chocoThemed addTileButton"
           onClick={(e) => {
             this.props.displayTileDesigner();
           }}
         >
-          Create new tile
+          + Add Tile
         </div>
       </div>
     );

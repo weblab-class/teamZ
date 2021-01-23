@@ -251,7 +251,7 @@ class Edit extends Component {
             post("/api/save");
           }}
           onSave={() => {
-            post("/api/save");
+            return post("/api/save");
           }}
           onPlay={() => {
             post("/api/save");

@@ -13,37 +13,43 @@
   cursor: pointer;
 }
 .layerSwitchButton {
-  border-radius: 8px;
-  padding: 4px;
-  font-size: 24px;
+  align-self: stretch;
 }
 .currentBlockContainer {
-  border: 1px solid black;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  align-self: stretch;
+  padding: 4px;
 }
 
 .sidePaneContainer {
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: space-between;
-  width: min-content;
-  min-width: 304px;
-  background: #fdecc2;
+  justify-content: space-around;
+  width: 384px;
+  background: #ffe3b8;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .tileButtonContainer {
   display: flex;
   overflow-y: auto;
-  width: min-content;
-  min-width: 288px;
+  align-self: stretch;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-content: flex-start;
   height: 50vh;
-  border: 1px solid black;
+  border-radius: 4px;
+}
+
+.addTileButton {
+  align-self: stretch;
 }
 
 /* ::-webkit-scrollbar {

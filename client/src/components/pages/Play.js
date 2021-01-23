@@ -167,13 +167,13 @@ class Play extends Component {
         />
         <div className="playButtonsContainer">
           <Link
-            className="u-clickable"
+            className="u-clickable u-clickableSmall u-marginLeft playButton"
             to={this.props.didComeFromEditor === "true" ? "/edit/" + this.props.levelId : "/"}
           >
             Back
           </Link>
           <div
-            className="u-clickable"
+            className="u-clickable u-clickableSmall u-marginLeft playButton"
             onClick={(e) => {
               playRestartPlayer();
             }}

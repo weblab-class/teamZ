@@ -13,6 +13,9 @@ class ToolBar extends Component {
     // onPlay
     // onOpenSettings
     // levelId
+    this.state = {
+      isSaving: false,
+    };
   }
 
   render() {
@@ -20,7 +23,7 @@ class ToolBar extends Component {
       <div className="toolBarContainer">
         <Link
           to={"/"}
-          className="u-clickable"
+          className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
           onClick={(e) => {
             this.props.onBack();
           }}
@@ -28,15 +31,19 @@ class ToolBar extends Component {
           Back
         </Link>
         <div
-          className="u-clickable"
+          className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
           onClick={(e) => {
-            this.props.onSave();
+            this.setState({ isSaving: true }, () => {
+              this.props.onSave().then((x) => {
+                this.setState({ isSaving: false });
+              });
+            });
           }}
         >
-          Save
+          {this.state.isSaving ? "Saving..." : "Save"}
         </div>
         <Link
-          className="u-clickable"
+          className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
           to={"/play/" + this.props.levelId + "/true"}
           onClick={(e) => {
             this.props.onPlay();
@@ -45,7 +52,7 @@ class ToolBar extends Component {
           Play
         </Link>
         <div
-          className="u-clickable"
+          className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
           onClick={(e) => {
             this.props.onOpenSettings();
           }}
