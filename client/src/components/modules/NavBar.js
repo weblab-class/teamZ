@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "@reach/router";
+import GoogleLogin, { GoogleLogout } from "react-google-login";
+import CreateLevelForm from "./CreateLevelForm.js";
 
 import "../../utilities.css";
 import "./NavBar.css";
@@ -16,15 +18,30 @@ class NavBar extends Component {
 
   render() {
     return (
-      <div className="navBarContainer">
-        NavBar
-        <div>left</div>
+      <div className="navBarContainer u-flexRow">
+        <div className="left u-flexRow">
+          <Link className="u-clickable u-marginLeft u-smallFont navBarButton" to={"/"}>
+            View published levels
+          </Link>
+          <Link className="u-clickable u-marginLeft u-smallFont navBarButton" to={"/my"}>
+            Edit your levels
+          </Link>
+          <div
+            className="u-clickable u-marginLeft u-smallFont navBarButton"
+            onClick={(e) => {
+              this.setState({ showingCreateLevelPopup: true });
+            }}
+          >
+            Create a level
+          </div>
+        </div>
         <GoogleLogout
           clientId={GOOGLE_CLIENT_ID}
           buttonText="Logout"
           onLogoutSuccess={this.props.handleLogout}
           onFailure={(err) => console.log(err)}
         />
+        {this.state.showingCreateLevelPopup ? <CreateLevelForm /> : null}
       </div>
     );
   }

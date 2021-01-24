@@ -321,7 +321,9 @@ router.post("/joinGame", async (req, res) => {
  * req.query is the query
  */
 router.get("/levels", (req, res) => {
-  Level.find({ ...req.query }).then((levels) => res.send(levels));
+  Level.find({ ...req.query })
+    .populate("creator")
+    .then((levels) => res.send(levels));
 });
 
 // anything else falls to this "not found" case

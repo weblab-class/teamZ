@@ -6,6 +6,8 @@ import Landing from "./pages/Landing.js";
 import Test from "./pages/Test.js";
 import Edit from "./pages/Edit.js";
 import Play from "./pages/Play.js";
+import PublishedLevels from "./pages/PublishedLevels.js";
+import MyLevels from "./pages/MyLevels.js";
 
 import "../utilities.css";
 
@@ -65,7 +67,19 @@ class App extends Component {
       <>
         <Router>
           <Test
+            path="/test"
+            handleLogin={this.handleLogin}
+            handleLogout={this.handleLogout}
+            userId={this.state.userId}
+          />
+          <PublishedLevels
             path="/"
+            handleLogin={this.handleLogin}
+            handleLogout={this.handleLogout}
+            userId={this.state.userId}
+          />
+          <MyLevels
+            path="/my"
             handleLogin={this.handleLogin}
             handleLogout={this.handleLogout}
             userId={this.state.userId}
