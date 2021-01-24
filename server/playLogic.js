@@ -143,7 +143,16 @@ const addPlayer = (playerId, level, modifiedGridTilesArr, canvasWidth, canvasHei
 /** Remove a player from the game state if they DC */
 const removePlayer = (playerId) => {
   if (playerId in playState.players) {
+    const levelId = playState.players[playerId].levelId;
     delete playState.players[playerId];
+    if (
+      Object.keys(playState.players).filter((otherPlayerId) => {
+        return playState.players[otherPlayerId].levelId.toString() === levelId.toString();
+      }).length === 0
+    ) {
+      // no other player is playing this level. delete.
+      delete playState.levels[levelId];
+    }
   }
 };
 
@@ -225,7 +234,11 @@ const clipCharCors = (playerId) => {
   player.x = Math.max(0, player.x);
   player.y = Math.max(0, player.y);
   player.x = Math.min(level.cols * tileSize - tileSize, player.x);
-  player.y = Math.min(level.rows * tileSize - tileSize, player.y);
+  player.y = Math.min(level.rows * tileSize + 2 * tileSize, player.y);
+  // reset player if off screen
+  if (player.y > level.rows * tileSize) {
+    player.isRestarting = true;
+  }
 };
 
 const updatePlayerPosition = (playerId) => {

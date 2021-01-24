@@ -61,8 +61,9 @@ class Test extends Component {
 
   render() {
     let levels = this.state.levels.map((level, i) => (
-      <li key={i}>
-        <Link to={"/edit/" + level._id}>{level.title}</Link>
+      <li key={i} className="u-flexColumn">
+        <Link to={"/edit/" + level._id}>{"edit " + level.title}</Link>
+        <Link to={"/play/" + level._id + "/false"}>{"play " + level.title}</Link>
       </li>
     ));
     return (

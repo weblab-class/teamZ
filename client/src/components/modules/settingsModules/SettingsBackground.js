@@ -24,7 +24,7 @@ class SettingsBackground extends Component {
         img.onload = () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
-          const scaleFactor = Math.floor(Math.max(1, Math.max(img.width, img.height) / 450));
+          const scaleFactor = Math.floor(Math.max(1, Math.max(img.width, img.height) / 150));
           canvas.width = Math.floor(img.width / scaleFactor);
           canvas.height = Math.floor(img.height / scaleFactor);
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);

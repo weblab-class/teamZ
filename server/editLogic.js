@@ -176,7 +176,16 @@ const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
 /** Remove a player from the game state if they DC */
 const removePlayer = (playerId) => {
   if (playerId in editState.players) {
+    const levelId = editState.players[playerId].levelId;
     delete editState.players[playerId];
+    if (
+      Object.keys(editState.players).filter((otherPlayerId) => {
+        return editState.players[otherPlayerId].levelId.toString() === levelId.toString();
+      }).length === 0
+    ) {
+      // no other player is editing this level. delete.
+      delete editState.levels[levelId];
+    }
   }
 };
 
