@@ -41,7 +41,9 @@ class NavBar extends Component {
           onLogoutSuccess={this.props.handleLogout}
           onFailure={(err) => console.log(err)}
         />
-        {this.state.showingCreateLevelPopup ? <CreateLevelForm /> : null}
+        {this.state.showingCreateLevelPopup ? (
+          <CreateLevelForm onCancel={() => this.setState({ showingCreateLevelPopup: false })} />
+        ) : null}
       </div>
     );
   }

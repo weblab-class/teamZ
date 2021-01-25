@@ -114,6 +114,7 @@ form {
 
 .u-window {
   display: flex;
+  padding: 8px;
   background: rgba(240, 240, 240, 1);
   filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.25));
 }
@@ -150,6 +151,33 @@ form {
   color: black;
   margin-top: 32px;
   margin-bottom: 48px;
+}
+.u-windowHeader {
+  font-size: 24px;
+  color: rgb(0, 0, 0);
+  border-bottom: 1px solid grey;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.u-cancelButton {
+  background: rgba(201, 72, 72, 1);
+  color: rgba(240, 240, 240, 1);
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.u-cancelButton:hover {
+  cursor: pointer;
 }
 /*
   u-clickable elements are rounded white-button-y kinda elements
