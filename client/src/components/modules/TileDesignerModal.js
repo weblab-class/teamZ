@@ -2,8 +2,10 @@ import React, { Component } from "react";
 
 import "../../utilities.css";
 import "./TileDesignerModal.css";
-
 import { tileSize } from "../../../../constants.js";
+
+import TileEditor from "./tileEditor/TileEditor";
+
 class TileDesignerModal extends Component {
   constructor(props) {
     /* TileDesignerModal is a pop-up whose job is to design and output a tile.
@@ -96,6 +98,11 @@ class TileDesignerModal extends Component {
               Cancel
             </div>
           </div>
+          
+          <div className="u-tileEditor" >
+            <TileEditor />
+          </div>
+        
           <div className="u-inputContainer">
             Name
             <textarea
