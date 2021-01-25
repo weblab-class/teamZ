@@ -5,7 +5,7 @@ const gravity = 0.7;
 const maxWalkSpeed = tileSize / 4;
 const maxAirSpeed = tileSize;
 const jumpSpeed = tileSize / 1.64;
-const walkAccel = 2;
+const walkAccel = 1.764;
 const airAccel = 1;
 
 const restartCap = 20;
