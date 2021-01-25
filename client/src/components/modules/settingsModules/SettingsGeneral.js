@@ -12,8 +12,8 @@ class SettingsGeneral extends Component {
     //  - description
     //  - onSubmit
     this.state = {
-      title: "",
-      description: "",
+      title: props.title.toString(),
+      description: props.description.toString(),
     };
   }
 
@@ -21,34 +21,43 @@ class SettingsGeneral extends Component {
     console.log("settingsGeneral received: " + this.props.title);
     return (
       <div className="settingsGeneralContainer">
-        general settings component
-        <textarea
-          type="text"
-          className="u-input"
-          placeholder="Title..."
-          defaultValue={this.props.title}
-          onChange={(e) => {
-            this.setState({ title: e.target.value });
-          }}
-          className="textInput"
-        ></textarea>
-        <textarea
-          type="text"
-          className="u-input"
-          placeholder="Description..."
-          defaultValue={this.props.description}
-          onChange={(e) => {
-            this.setState({ description: e.target.value });
-          }}
-          className="textInput"
-        ></textarea>
-        <div
-          className="u-clickable"
-          onClick={(e) => {
-            this.props.onSubmit(this.state.title, this.state.description);
-          }}
-        >
-          Submit
+        <div className="u-inputContainer u-marginTop">
+          Title
+          <textarea
+            type="text"
+            className="u-input"
+            placeholder=""
+            value={this.state.title}
+            onChange={(e) =>
+              this.setState({
+                title: e.target.value,
+              })
+            }
+          ></textarea>
+        </div>
+        <div className="u-inputContainer u-marginTop">
+          Description
+          <textarea
+            type="text"
+            className="u-input descriptionInput"
+            placeholder=""
+            value={this.state.description}
+            onChange={(e) =>
+              this.setState({
+                description: e.target.value,
+              })
+            }
+          ></textarea>
+        </div>
+        <div className="u-submitRow">
+          <div
+            className="u-submitButton u-midFont u-marginTop submitButton"
+            onClick={(e) => {
+              this.props.onSubmit(this.state.title, this.state.description);
+            }}
+          >
+            Submit
+          </div>
         </div>
       </div>
     );

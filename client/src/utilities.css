@@ -205,6 +205,12 @@ form {
 .u-submitButton:hover {
   cursor: pointer;
 }
+.u-submitRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  height: 64px;
+}
 .u-errorMessage {
   color: rgb(165, 0, 0);
   font-style: italic;

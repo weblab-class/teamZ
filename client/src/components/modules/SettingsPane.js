@@ -36,7 +36,10 @@ class SettingsPane extends Component {
     const menuButtons = menuStrings.map((menuString, i) => {
       return (
         <div
-          className="settingsPaneMenuOption"
+          className={
+            "u-clickable settingsPaneMenuOption" +
+            (this.state.displayPaneOption === i ? " settingsPaneMenuOptionActive" : "")
+          }
           key={i}
           onClick={(e) => {
             this.setState({ displayPaneOption: i });
@@ -95,10 +98,10 @@ class SettingsPane extends Component {
     return (
       <div className="u-cover">
         <div className="u-window u-largeWindow settingsPaneContainer">
-          <div className="settingsPaneBar">
-            SettingsPane
+          <div className="settingsPaneBar u-windowHeader">
+            Level Settings
             <div
-              className="u-clickable redX"
+              className="u-cancelButton"
               onClick={(e) => {
                 this.props.onCancel();
               }}

@@ -58,7 +58,7 @@ class CreateLevelForm extends Component {
               type="text"
               className="u-input"
               placeholder=""
-              value={this.state.name}
+              value={this.state.title}
               onChange={(e) =>
                 this.setState({
                   title: e.target.value,
@@ -72,7 +72,7 @@ class CreateLevelForm extends Component {
               type="text"
               className="u-input descriptionInput"
               placeholder=""
-              value={this.state.name}
+              value={this.state.description}
               onChange={(e) =>
                 this.setState({
                   description: e.target.value,
