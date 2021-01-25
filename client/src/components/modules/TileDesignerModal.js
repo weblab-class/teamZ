@@ -84,32 +84,47 @@ class TileDesignerModal extends Component {
   render() {
     return (
       <div className="u-cover">
-        <div className="u-window u-largeWindow">
-          Tile designer modal:
-          <div
-            className="u-clickable"
-            onClick={(e) => {
-              this.props.onCancel();
-            }}
-          >
-            Cancel
+        <div className="u-window u-largeWindow u-flexColumn">
+          <div className="u-windowHeader u-spaceBetween">
+            Tile Designer
+            <div
+              className="u-cancelButton"
+              onClick={(e) => {
+                this.props.onCancel();
+              }}
+            >
+              Cancel
+            </div>
           </div>
-          <textarea
-            type="text"
-            placeholder="name..."
-            value={this.state.name}
-            onChange={(e) => this.setState({ name: e.target.value })}
-          ></textarea>
-          <select
-            defaultValue="Platform"
-            onChange={(e) => {
-              console.log("changed select: " + e.target.value);
-              this.setState({ layer: e.target.value });
-            }}
-          >
-            <option value="Platform">Platform</option>
-            <option value="Background">Background</option>
-          </select>
+          <div className="u-inputContainer">
+            Name
+            <textarea
+              type="text"
+              className="u-input"
+              placeholder=""
+              value={this.state.name}
+              onChange={(e) =>
+                this.setState({
+                  name: e.target.value,
+                })
+              }
+            ></textarea>
+          </div>
+          <div className="u-inputContainer u-marginTop">
+            Layer
+            <select
+              value={this.state.layer}
+              className="u-input"
+              onChange={(e) => {
+                console.log("changed select: " + e.target.value);
+                this.setState({ layer: e.target.value });
+              }}
+            >
+              <option value="Platform">Platform</option>
+              <option value="Background">Background</option>
+            </select>
+          </div>
+
           <input type="file" name="files[]" accept="image/*" onChange={this.uploadImage} />
           <div
             className="u-clickable"
