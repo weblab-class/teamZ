@@ -21,7 +21,7 @@ class SettingsGeneral extends Component {
     console.log("settingsGeneral received: " + this.props.title);
     return (
       <div className="settingsGeneralContainer">
-        <div className="u-inputContainer u-marginTop">
+        <div className="u-inputContainer">
           Title
           <textarea
             type="text"

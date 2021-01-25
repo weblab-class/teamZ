@@ -50,3 +50,15 @@
 .submitButton {
   width: 128px;
 }
+.sizeRow {
+  display: flex;
+  flex-direction: row;
+  font-family: monospace;
+}
+
+.sizeCaption {
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid grey;
+  margin-bottom: 8px;
+}
