@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 
 import "../../utilities.css";
 import "./ToolBar.css";
@@ -42,15 +42,16 @@ class ToolBar extends Component {
         >
           {this.state.isSaving ? "Saving..." : "Save"}
         </div>
-        <Link
+        <div
           className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
-          to={"/play/" + this.props.levelId + "/true"}
           onClick={(e) => {
-            this.props.onPlay();
+            this.props.onPlay().then((x) => {
+              navigate("/play/" + this.props.levelId + "/true");
+            });
           }}
         >
           Play
-        </Link>
+        </div>
         <div
           className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
           onClick={(e) => {

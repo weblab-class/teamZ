@@ -220,7 +220,7 @@ router.post("/fetchImage", async (req, res) => {
  */
 router.post("/newLevel", (req, res) => {
   // request should have attributes of level
-  const newLevel = new Level({ ...req.body });
+  const newLevel = new Level(Object.assign({}, { ...req.body }, { creator: req.user._id }));
   newLevel.save().then((level) => res.send(level));
 });
 

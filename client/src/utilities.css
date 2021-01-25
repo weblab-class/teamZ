@@ -122,6 +122,9 @@ form {
   width: 90vw;
   height: 90vh;
 }
+.u-largeHorizontalWindow {
+  width: 90vw;
+}
 
 .u-page {
   display: flex;
@@ -132,6 +135,12 @@ form {
   min-height: 100vh;
 }
 
+.u-flexStart {
+  justify-content: flex-start;
+}
+.u-spaceBetween {
+  justify-content: space-between;
+}
 .u-smallFont {
   font-size: 16px;
   opacity: 0.777;
@@ -178,6 +187,45 @@ form {
 }
 .u-cancelButton:hover {
   cursor: pointer;
+}
+.u-submitButton {
+  background: #1a73e8;
+  color: rgba(250, 250, 250, 1);
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+.u-submitButton:hover {
+  cursor: pointer;
+}
+.u-errorMessage {
+  color: rgb(165, 0, 0);
+  font-style: italic;
+  font-size: 18px;
+}
+
+.u-inputContainer {
+  font-size: 24px;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+}
+.u-input {
+  border: 2px solid black;
+  font-size: 20px;
+  resize: none;
+  overflow-y: initial;
+}
+.u-marginTop {
+  margin-top: 8px;
 }
 /*
   u-clickable elements are rounded white-button-y kinda elements

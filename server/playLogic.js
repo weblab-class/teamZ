@@ -55,6 +55,9 @@ const playState = {
 const registerKeyDown = (playerId, key) => {
   if (!(playerId in playState.players)) return;
   const player = playState.players[playerId];
+  if (key === "w" && !player.keyDownMap["w"] && onGround(playerId)) {
+    player.yspeed = -1 * jumpSpeed;
+  }
   player.keyDownMap[key] = true;
   if (key === "a") {
     player.isFacingRight = false;
@@ -325,10 +328,6 @@ const updatePlayerPosition = (playerId) => {
   player.y += player.yspeed;
   // finally, update the player's speed based on gravity, keypresses, etc
   if (onGround(playerId)) {
-    if (player.keyDownMap["w"]) {
-      // player is jumping
-      player.yspeed = -1 * jumpSpeed;
-    }
     if (player.keyDownMap["a"]) {
       // player is moving left
       player.xspeed -= walkAccel;

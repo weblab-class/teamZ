@@ -249,13 +249,13 @@ class Edit extends Component {
         <ToolBar
           levelId={this.props.levelId}
           onBack={() => {
-            post("/api/save");
+            return post("/api/save");
           }}
           onSave={() => {
             return post("/api/save");
           }}
           onPlay={() => {
-            post("/api/save");
+            return post("/api/save");
           }}
           onOpenSettings={() => {
             this.setState({ isSettingsPaneOpen: true }, () => {
