@@ -53,6 +53,7 @@ class Play extends Component {
   componentWillUnmount() {
     this.state.clearInputFn();
     post("/api/removePlayerFromGame");
+    socket.off("update");
   }
 
   getCanvas = () => {

@@ -62,6 +62,14 @@ class MyLevels extends Component {
     let levels = this.state.levels.map((level) => (
       <Card level={level} key={level._id} toEdit={true} />
     ));
+    if (levels.length === 0) {
+      levels = (
+        <div>
+          You don't have any level yet. Create a level by clicking on the corresponding button in
+          the nav-bar above.
+        </div>
+      );
+    }
     return (
       <div className="u-flexColumnReverse">
         <div className="u-page">

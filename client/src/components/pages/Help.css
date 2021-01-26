@@ -1,0 +1,9 @@
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  padding-top: 0px;
+  margin-top: 72px;
+  border-radius: 8px;
+  width: 80vw;
+}

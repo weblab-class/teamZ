@@ -73,6 +73,7 @@ class Edit extends Component {
   componentWillUnmount() {
     this.clearInputFn();
     post("/api/removePlayer");
+    socket.off("update");
   }
 
   getCanvas = () => {

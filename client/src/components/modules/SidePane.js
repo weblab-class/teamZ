@@ -19,7 +19,7 @@ class SidePane extends Component {
   }
 
   render() {
-    const tileButtons = Object.keys(this.props.tiles)
+    let tileButtons = Object.keys(this.props.tiles)
       .filter((tileId) => {
         return this.props.tiles[tileId].layer === this.state.layer;
       })
@@ -53,15 +53,23 @@ class SidePane extends Component {
           </div>
         );
       });
+    if (tileButtons.length === 0) {
+      tileButtons = (
+        <div className="u-italic u-padding">
+          You don't have any tile yet for this layer. Create one with the button below.
+        </div>
+      );
+    }
     return (
       <div className="u-flexColumn sidePaneContainer">
         <div
-          className="u-clickable u-clickableMid u-chocoThemed layerSwitchButton"
+          className="u-clickable u-clickableMid u-chocoThemed layerSwitchButton u-flexColumn"
           onClick={(e) => {
             this.setState({ layer: this.state.layer === "Platform" ? "Background" : "Platform" });
           }}
         >
           {this.state.layer}
+          <div className="u-italic u-superSmallFont">(Click to switch layer)</div>
         </div>
         <div className="tileButtonContainer u-chocoThemed">{tileButtons}</div>
         <div className="currentBlockContainer u-chocoThemed">

@@ -40,6 +40,7 @@ class CreateLevelForm extends Component {
       startY: 0,
       charSprite: null,
       background: null,
+      isPublished: false,
     });
   };
   render() {

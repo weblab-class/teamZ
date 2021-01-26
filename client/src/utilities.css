@@ -76,7 +76,9 @@ form {
 .u-bold {
   font-weight: 600;
 }
-
+.u-italic {
+  font-style: italic;
+}
 .u-textCenter {
   text-align: center;
 }
@@ -111,7 +113,13 @@ form {
   align-items: center;
   justify-content: center;
 }
-
+.u-padding {
+  padding: 8px;
+}
+.u-superSmallFont {
+  font-size: 14px;
+  opacity: 0.8;
+}
 .u-window {
   display: flex;
   padding: 8px;
