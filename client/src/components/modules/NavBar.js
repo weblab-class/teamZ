@@ -34,6 +34,14 @@ class NavBar extends Component {
           >
             + Create a level
           </div>
+          <a
+            className="u-clickable u-marginLeft u-smallFont navBarButton"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="/help"
+          >
+            Help
+          </a>
         </div>
         <GoogleLogout
           clientId={GOOGLE_CLIENT_ID}

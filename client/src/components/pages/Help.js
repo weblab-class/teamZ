@@ -26,11 +26,13 @@ class Help extends Component {
             stand on and collide with tiles in the "Platform" layer , while tiles in the
             "Background" layer are purely for decoration. Place down a tile by clicking / dragging
             your mouse over the editor. Switch into eraser mode by pressing the `e` key on your
-            keyboard, or temporarily switch into eraser mode by holding down `SHIFT`. You can modify
-            level settings by clicking on the `settings` button on the toolbar on the top of the
-            screen. Here, you can change the title, description, size, character sprite, and
-            background image of the level. You can also choose to publish the level, which will make
-            your level accessible for everyone to play. To play your level, click `play`.
+            keyboard, or temporarily switch into eraser mode by holding down `SHIFT`. Change the
+            starting position of the character by dragging the character sprite (initially at the
+            top left). You can modify level settings by clicking on the `settings` button on the
+            toolbar on the top of the screen. Here, you can change the title, description, size,
+            character sprite, and background image of the level. You can also choose to publish the
+            level, which will make your level accessible for everyone to play. To play your level,
+            click `play`.
           </div>
           <h1>Playing a level</h1>
           <div>

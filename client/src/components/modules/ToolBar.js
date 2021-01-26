@@ -60,6 +60,14 @@ class ToolBar extends Component {
         >
           Settings
         </div>
+        <a
+          className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="/help"
+        >
+          Help
+        </a>
       </div>
     );
   }
