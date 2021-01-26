@@ -10,7 +10,7 @@ import SettingsSize from "./settingsModules/SettingsSize.js";
 import SettingsCharacter from "./settingsModules/SettingsCharacter.js";
 import SettingsBackground from "./settingsModules/SettingsBackground.js";
 
-const menuStrings = ["General", "Level Size", "Character", "Background", "Sharing"];
+const menuStrings = ["General", "Level Size", "Character", "Background"];
 class SettingsPane extends Component {
   constructor(props) {
     super(props);
