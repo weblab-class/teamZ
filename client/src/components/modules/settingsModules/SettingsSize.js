@@ -94,12 +94,17 @@ class SettingsSize extends Component {
                 up: this.state.up,
                 down: this.state.down,
               });
-              this.setState({
-                left: 0,
-                right: 0,
-                up: 0,
-                down: 0,
-              });
+              this.setState(
+                {
+                  left: 0,
+                  right: 0,
+                  up: 0,
+                  down: 0,
+                },
+                () => {
+                  this.props.onCancel();
+                }
+              );
             }}
           >
             Submit

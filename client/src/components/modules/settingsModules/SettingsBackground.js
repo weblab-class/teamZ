@@ -75,6 +75,7 @@ class SettingsBackground extends Component {
             className="u-submitButton u-midFont u-marginTop submitButton"
             onClick={(e) => {
               this.props.onSubmit(this.state.image);
+              this.props.onCancel();
             }}
           >
             Submit

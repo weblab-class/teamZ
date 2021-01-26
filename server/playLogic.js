@@ -9,7 +9,7 @@ const walkAccel = 1.764;
 const airAccel = 1;
 
 const restartCap = 20;
-
+const groundTolerance = 5;
 // keys used in level-editor; initialize keys to not-pressed-down
 const keys = ["w", "a", "s", "d"];
 
@@ -228,7 +228,10 @@ const playerCors = (playerId) => {
 const onGround = (playerId) => {
   const player = playState.players[playerId];
   const pcors = playerCors(playerId);
-  return hitTest(player.levelId, pcors.down.x, pcors.down.y + 1);
+  return (
+    hitTest(player.levelId, pcors.down.x - groundTolerance, pcors.down.y + 1) ||
+    hitTest(player.levelId, pcors.down.x + groundTolerance, pcors.down.y + 1)
+  );
 };
 
 const clipCharCors = (playerId) => {
@@ -248,7 +251,18 @@ const updatePlayerPosition = (playerId) => {
   if (!(playerId in playState.players)) return;
   const player = playState.players[playerId];
   // first, if player is stuck in platform, move them out, and reset their speed
-  while (hitTest(player.levelId, playerCors(playerId).down.x, playerCors(playerId).down.y)) {
+  while (
+    hitTest(
+      player.levelId,
+      playerCors(playerId).down.x - groundTolerance,
+      playerCors(playerId).down.y
+    ) ||
+    hitTest(
+      player.levelId,
+      playerCors(playerId).down.x + groundTolerance,
+      playerCors(playerId).down.y
+    )
+  ) {
     player.y--;
     player.yspeed = 0;
   }
@@ -270,13 +284,29 @@ const updatePlayerPosition = (playerId) => {
   if (
     hitTest(
       player.levelId,
-      diamondFromTopLeft(playerNextPos.x, playerNextPos.y).down.x,
+      diamondFromTopLeft(playerNextPos.x, playerNextPos.y).down.x - groundTolerance,
+      diamondFromTopLeft(playerNextPos.x, playerNextPos.y).down.y
+    ) ||
+    hitTest(
+      player.levelId,
+      diamondFromTopLeft(playerNextPos.x, playerNextPos.y).down.x + groundTolerance,
       diamondFromTopLeft(playerNextPos.x, playerNextPos.y).down.y
     )
   ) {
     player.y += player.yspeed;
     player.yspeed = 0;
-    while (hitTest(player.levelId, playerCors(playerId).down.x, playerCors(playerId).down.y)) {
+    while (
+      hitTest(
+        player.levelId,
+        playerCors(playerId).down.x - groundTolerance,
+        playerCors(playerId).down.y
+      ) ||
+      hitTest(
+        player.levelId,
+        playerCors(playerId).down.x + groundTolerance,
+        playerCors(playerId).down.y
+      )
+    ) {
       player.y--;
     }
   }

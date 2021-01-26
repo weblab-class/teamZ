@@ -58,6 +58,7 @@ class SettingsPane extends Component {
           title={this.props.title}
           description={this.props.description}
           isPublished={this.props.isPublished}
+          onCancel={this.props.onCancel}
           onSubmit={(title, description, isPublished) => {
             modifyLevel({ title: title, description: description, isPublished: isPublished });
             post("/api/save");
@@ -70,6 +71,7 @@ class SettingsPane extends Component {
         <SettingsSize
           rows={this.props.rows}
           cols={this.props.cols}
+          onCancel={this.props.onCancel}
           onSubmit={(deltas) => {
             resizeLevel(deltas);
             post("/api/save");
@@ -80,6 +82,7 @@ class SettingsPane extends Component {
     if (this.state.displayPaneOption === 2) {
       content = (
         <SettingsCharacter
+          onCancel={this.props.onCancel}
           onSubmit={(image) => {
             this.props.changeCharSprite(image);
             () => post("/api/save");
@@ -90,6 +93,7 @@ class SettingsPane extends Component {
     if (this.state.displayPaneOption === 3) {
       content = (
         <SettingsBackground
+          onCancel={this.props.onCancel}
           onSubmit={(image) => {
             this.props.changeBackground(image);
             () => post("/api/save");

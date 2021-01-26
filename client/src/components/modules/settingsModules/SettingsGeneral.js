@@ -68,6 +68,7 @@ class SettingsGeneral extends Component {
             className="u-submitButton u-midFont u-marginTop submitButton"
             onClick={(e) => {
               this.props.onSubmit(this.state.title, this.state.description, this.state.isPublished);
+              this.props.onCancel();
             }}
           >
             Submit

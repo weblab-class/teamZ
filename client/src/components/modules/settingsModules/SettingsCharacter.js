@@ -64,6 +64,7 @@ class SettingsCharacter extends Component {
           className="u-clickable"
           onClick={(e) => {
             this.props.onSubmit(this.state.image);
+            this.props.onCancel();
           }}
         >
           Submit
