@@ -1,11 +1,11 @@
 import React, {PureComponent, Component} from "react";
 import ndarray from "ndarray";
 import ops from "ndarray-ops";
-import { Shaders, Node, GLSL, Bus } from "gl-react";
-import { Surface } from "gl-react-dom";
+import { Shaders, Node, GLSL, Bus, Surface } from "gl-react";
+//import { Surface } from "gl-react-dom";
 import rainbowPNG from "./rainbow.png";
 import "./TileEditor.css";
-type Vec2 = [number, number];
+//type Vec2 = [number, number];
 
 const shaders = Shaders.create({
   paint: {
@@ -123,7 +123,7 @@ class PixelEditor extends PureComponent {
   }
 }
 
-function getPosition(e: any): Vec2 {
+function getPosition(e) {
   const rect = e.target.getBoundingClientRect();
   return [
     (e.clientX - rect.left) / rect.width,
@@ -182,13 +182,13 @@ export default class Example extends Component {
     );
   }
 
-  onColorChange = ({ rgb: { r, g, b, a } }: any) => {
+  onColorChange = ({ rgb: { r, g, b, a } }) => {
     const color = [r, g, b].map(n => n / 255).concat([a]);
     this.props.setToolState({ color });
   };
 
-  paintNode: Node;
-  onPaintNodeRef = (ref: Node) => {
+  //paintNode: Node;
+  onPaintNodeRef = (ref) => {
     this.paintNode = ref;
   };
 
@@ -214,6 +214,7 @@ export default class Example extends Component {
     });
   };
 
+/*
   colorPick = ([x, y]: Vec2) => {
     x = Math.floor(x * size[0]);
     y = Math.floor(y * size[1]);
@@ -222,8 +223,9 @@ export default class Example extends Component {
       color: Array.from(ndarray.data).map(n => n / 255),
     });
   };
+*/
 
-  onMouseDown = (e: MouseEvent) => {
+  onMouseDown = (e) => {
     const mouse = getPosition(e);
     this.setState({
       drawing: true,
@@ -234,7 +236,7 @@ export default class Example extends Component {
     }
   };
 
-  onMouseMove = (e: MouseEvent) => {
+  onMouseMove = (e) => {
     const mouse = getPosition(e);
     this.setState({ mouse });
     if (this.state.drawing && tools[this.props.toolKey].colorPick) {
