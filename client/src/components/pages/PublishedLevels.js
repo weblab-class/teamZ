@@ -24,7 +24,7 @@ class PublishedLevels extends Component {
   }
 
   loadLevels = () => {
-    get("/api/levels", {}).then((levels) => this.setState({ levels: levels }));
+    get("/api/levels", { isPublished: true }).then((levels) => this.setState({ levels: levels }));
   };
 
   // /**

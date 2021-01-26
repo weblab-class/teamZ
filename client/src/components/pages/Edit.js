@@ -48,6 +48,7 @@ class Edit extends Component {
       description: "",
       rows: 0,
       cols: 0,
+      isPublished: false,
       isSettingsPaneOpen: false,
       isTileDesignerModalOpen: false,
     };
@@ -184,6 +185,9 @@ class Edit extends Component {
     if (update.description !== this.state.description) {
       this.setState({ description: update.description });
     }
+    if (update.isPublished !== this.state.isPublished) {
+      this.setState({ isPublished: update.isPublished });
+    }
     if (update.rows !== this.state.rows) {
       this.setState({ rows: update.rows });
     }
@@ -298,6 +302,7 @@ class Edit extends Component {
           <SettingsPane
             title={this.state.title}
             description={this.state.description}
+            isPublished={this.state.isPublished}
             rows={this.state.rows}
             cols={this.state.cols}
             changeCharSprite={this.changeCharSprite}

@@ -21,6 +21,8 @@ const editState = {
   // startX: 0, // abstract cors of start position
   // startY: 0,
   // charSprite
+  // background
+  // isPublished
   // ........
   // player-specific information:
   players: {},
@@ -472,6 +474,7 @@ const instructionsForPlayer = (playerId) => {
     description: level.description,
     charSprite: level.charSprite,
     background: level.background,
+    isPublished: level.isPublished,
     rows: level.rows,
     cols: level.cols,
     camX: player.camX,

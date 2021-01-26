@@ -17,6 +17,7 @@ class SettingsPane extends Component {
     // props needed:
     //  - title
     //  - description
+    //-isPublished
     //  - rows
     //  - cols
     //  - changeCharSprite
@@ -56,8 +57,9 @@ class SettingsPane extends Component {
         <SettingsGeneral
           title={this.props.title}
           description={this.props.description}
-          onSubmit={(title, description) => {
-            modifyLevel({ title: title, description: description });
+          isPublished={this.props.isPublished}
+          onSubmit={(title, description, isPublished) => {
+            modifyLevel({ title: title, description: description, isPublished: isPublished });
             post("/api/save");
           }}
         />

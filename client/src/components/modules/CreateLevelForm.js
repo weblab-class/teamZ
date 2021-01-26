@@ -83,7 +83,7 @@ class CreateLevelForm extends Component {
           <div className="u-flexRow u-spaceBetween">
             <div className="u-flexRow u-flexStart">
               <div className="u-inputContainer u-marginTop">
-                Rows
+                Height
                 <input
                   type="number"
                   className="u-input"
@@ -96,7 +96,7 @@ class CreateLevelForm extends Component {
                 />
               </div>
               <div className="u-marginLeft u-inputContainer u-marginTop">
-                Columns
+                Width
                 <input
                   type="number"
                   className="u-input"

@@ -40,9 +40,9 @@ const drawTile = (canvas, tileImage, x, y, isDarkened) => {
   if (tileImage === null) {
     // if null, draw semi-opaque rect
     context.strokeStyle = "rgba(0,0,0,0)";
-    context.fillStyle = "rgba(240,240,240,0.2)";
+    context.fillStyle = "rgba(240,240,240,0.21)";
     if (isDarkened) {
-      context.fillStyle = "rgba(240,240,240,0.4)";
+      context.fillStyle = "rgba(240,240,240,0.425)";
     }
     context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   } else {

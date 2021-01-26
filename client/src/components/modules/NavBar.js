@@ -32,7 +32,7 @@ class NavBar extends Component {
               this.setState({ showingCreateLevelPopup: true });
             }}
           >
-            Create a level
+            + Create a level
           </div>
         </div>
         <GoogleLogout

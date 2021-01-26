@@ -14,6 +14,7 @@ class SettingsGeneral extends Component {
     this.state = {
       title: props.title.toString(),
       description: props.description.toString(),
+      isPublished: props.isPublished ? true : false,
     };
   }
 
@@ -49,11 +50,24 @@ class SettingsGeneral extends Component {
             }
           ></textarea>
         </div>
+        <div className="u-inputContainer u-marginTop">
+          Publish level?
+          <select
+            value={this.state.isPublished}
+            className="u-input"
+            onChange={(e) => {
+              this.setState({ isPublished: e.target.value });
+            }}
+          >
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
+          </select>
+        </div>
         <div className="u-submitRow">
           <div
             className="u-submitButton u-midFont u-marginTop submitButton"
             onClick={(e) => {
-              this.props.onSubmit(this.state.title, this.state.description);
+              this.props.onSubmit(this.state.title, this.state.description, this.state.isPublished);
             }}
           >
             Submit

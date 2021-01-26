@@ -29,6 +29,7 @@ const attributesOfLevel = [
   "startY",
   "charSprite",
   "background",
+  "isPublished",
 ];
 
 // import editLogic

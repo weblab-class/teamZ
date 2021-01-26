@@ -14,6 +14,7 @@ const LevelSchema = new mongoose.Schema({
   startY: Number, // y_cor of character spawn point
   charSprite: { type: ObjectId, ref: "pattern" }, // facing right
   background: { type: ObjectId, ref: "pattern" },
+  isPublished: Boolean,
 });
 
 // compile model from schema

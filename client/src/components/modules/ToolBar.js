@@ -22,7 +22,7 @@ class ToolBar extends Component {
     return (
       <div className="toolBarContainer">
         <Link
-          to={"/"}
+          to={"/my"}
           className="u-clickable u-clickableSmall u-marginLeft u-chocoThemed"
           onClick={(e) => {
             this.props.onBack();
