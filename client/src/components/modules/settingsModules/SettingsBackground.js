@@ -18,7 +18,7 @@ class SettingsBackground extends Component {
     console.log(fileInput);
     this.readImage(fileInput.files[0])
       .then((image) => {
-        fileInput.value = null;
+        // fileInput.value = null;
         // scale image down to 16 x 16
         const img = document.createElement("img");
         img.onload = () => {
@@ -58,17 +58,27 @@ class SettingsBackground extends Component {
 
   render() {
     return (
-      <div className="">
-        Change background:
-        <input type="file" name="files[]" accept="image/*" onChange={this.uploadImage} />
-        <div
-          className="u-clickable"
-          onClick={(e) => {
-            this.props.onSubmit(this.state.image);
-          }}
-        >
-          Submit
-          {this.state.image === null ? "stateImage is null" : ""}
+      <div className="u-flexColumn">
+        <div className="u-inputContainer u-marginTop">
+          Upload a background image
+          <input
+            className="u-input"
+            type="file"
+            name="files[]"
+            accept="image/*"
+            onChange={this.uploadImage}
+          />
+        </div>
+
+        <div className="u-submitRow">
+          <div
+            className="u-submitButton u-midFont u-marginTop submitButton"
+            onClick={(e) => {
+              this.props.onSubmit(this.state.image);
+            }}
+          >
+            Submit
+          </div>
         </div>
       </div>
     );
