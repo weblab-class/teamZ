@@ -59,7 +59,7 @@ class SettingsCharacter extends Component {
     return (
       <div className="u-flexColumn">
         <div className="u-monoFont u-midFont">
-          Design a character using the canvas, or upload an image.
+          Design a character (facing right) using the canvas, or upload an image.
         </div>
         <TileDesigner
           onSubmit={(im) => {
