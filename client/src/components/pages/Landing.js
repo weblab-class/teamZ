@@ -19,25 +19,31 @@ class Landing extends Component {
   }
 
   render() {
+    const googleLoginButton = this.props.userId ? (
+      <GoogleLogout
+        clientId={GOOGLE_CLIENT_ID}
+        buttonText="Logout"
+        onLogoutSuccess={this.props.handleLogout}
+        onFailure={(err) => console.log(err)}
+      />
+    ) : (
+      <GoogleLogin
+        clientId={GOOGLE_CLIENT_ID}
+        buttonText="Login"
+        onSuccess={this.props.handleLogin}
+        onFailure={(err) => console.log(err)}
+      />
+    );
     return (
-      <>
-        {this.props.userId ? (
-          <GoogleLogout
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Logout"
-            onLogoutSuccess={this.props.handleLogout}
-            onFailure={(err) => console.log(err)}
-          />
-        ) : (
-          <GoogleLogin
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Login"
-            onSuccess={this.props.handleLogin}
-            onFailure={(err) => console.log(err)}
-          />
-        )}
-        <div>You have reached the landing page.</div>
-      </>
+      <div className="landingPageContainer">
+        <div className="topBar">
+          <div className="topText">playPix</div>
+          {googleLoginButton}
+        </div>
+        <div className="landingBody">
+          <div className="headerText">Welcome to playPix.</div>
+        </div>
+      </div>
     );
   }
 }
