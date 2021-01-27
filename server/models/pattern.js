@@ -2,7 +2,9 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const PatternSchema = new mongoose.Schema({
-  image: String,
+  width: Number,
+  height: Number,
+  image: [Number], //
 });
 
 // compile model from schema

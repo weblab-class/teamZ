@@ -1,34 +1,23 @@
-import { tileSize, tileSizeOnCanvas } from "../../constants.js";
-
-import defaultChar from "/client/src/public/defaultChar.png";
-let defaultCharSprite = null;
-const img = document.createElement("img");
-img.onload = () => {
-  console.log("default char img loaded");
-  createImageBitmap(img).then((bitmap) => {
-    defaultCharSprite = bitmap;
-  });
-};
-img.src = defaultChar;
-
+// import { tileSize, tileSizeOnCanvas } from "../../constants.js";
+const tileSize = 16;
+const tileSizeOnCanvas = 64;
 /** helper functions */
 
 const darken = (canvas, x, y) => {
   const context = canvas.getContext("2d");
-  context.fillStyle = "rgba(0, 0, 0, .4)";
+  context.fillStyle = "rgba(0, 0, 0, .5)";
   context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
 
 // hard code backgroundImage to be black for now
-const drawBackground = (canvas, backgroundImage) => {
+const drawBackground = (
+  canvas
+  /*, backgroundImage*/
+) => {
   const context = canvas.getContext("2d");
-  if (backgroundImage === null) {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  } else {
-    // TODO: "center" the background
-    context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  }
+  context.fillStyle = "black";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  // context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 };
 
 /**Draws tile */
@@ -38,22 +27,20 @@ const drawTile = (canvas, tileImage, x, y, isDarkened) => {
   // TODO: add border to tile?
   // HARD CODE FOR NOW
   if (tileImage === null) {
-    // if null, draw semi-opaque rect
-    context.strokeStyle = "rgba(0,0,0,0)";
-    context.fillStyle = "rgba(240,240,240,0.21)";
-    if (isDarkened) {
-      context.fillStyle = "rgba(240,240,240,0.425)";
-    }
-    context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    // if null, just draw an outline
+    context.strokeStyle = "red";
+    if (isDarkened) context.strokeStyle = "green"; // just pretend green is darkened for now
+    context.lineWidth = 2;
+    context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   } else {
     // tileImage is not null
     context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    if (isDarkened) darken(canvas, x, y);
+    // draw border
+    context.strokeStyle = "gray";
+    if (isDarkened) context.strokeStyle = "green";
+    context.lineWidth = 1;
+    context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   }
-  // draw border
-  context.strokeStyle = "rgba(200,200,200,0.8)";
-  context.lineWidth = 2;
-  context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
 
 /**
@@ -103,7 +90,7 @@ const drawTiles = (canvas, instructions, tiles) => {
       isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
       isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y) ||
       isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.y)
+      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.x)
     );
   };
   // compute the tile under the mouse
@@ -133,24 +120,16 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
-const drawCharSprite = (canvas, charSpriteImage, x, y, isDarkened) => {
+const drawCharSprite = (canvas, x, y, isDarkened) => {
   const context = canvas.getContext("2d");
-  if (charSpriteImage === null) {
-    if (defaultCharSprite === null) {
-      context.fillStyle = "rgba(230,230,230,1)";
-      context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    } else {
-      context.drawImage(defaultCharSprite, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    }
-  } else {
-    context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-  }
+  context.fillStyle = "rgba(230,230,230,1)";
+  context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
   if (isDarkened) {
     darken(canvas, x, y);
   }
 };
 
-const drawChar = (canvas, instructions, charSpriteImage) => {
+const drawChar = (canvas, instructions) => {
   const context = canvas.getContext("2d");
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
@@ -175,23 +154,14 @@ const drawChar = (canvas, instructions, charSpriteImage) => {
     instructions.startY <= mouseAbsCors.y &&
     mouseAbsCors.y < instructions.startY + tileSize;
   const shouldDarken = playerMouseOnChar || instructions.isDraggingChar;
-  drawCharSprite(canvas, charSpriteImage, charCanvasCors.x, charCanvasCors.y, shouldDarken);
+  drawCharSprite(canvas, charCanvasCors.x, charCanvasCors.y, shouldDarken);
 };
 
-const clearCanvas = (canvas) => {
-  const context = canvas.getContext("2d");
-  context.clearRect(0, 0, canvas.width, canvas.height);
-};
-
-export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
+export const drawEditCanvas = (canvas, instructions, tiles) => {
   // console.log(
   //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
   // );
-  // don't smooth:
-  const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingEnabled = false;
-  clearCanvas(canvas);
-  drawBackground(canvas, backgroundImage);
+  drawBackground(canvas);
   drawTiles(canvas, instructions, tiles);
-  drawChar(canvas, instructions, charSpriteImage);
+  drawChar(canvas, instructions);
 };

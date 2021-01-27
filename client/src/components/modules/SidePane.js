@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 
 import "../../utilities.css";
-import "./SidePane.css";
 
-const tileButtonSize = 64;
 class SidePane extends Component {
   constructor(props) {
     super(props);
@@ -13,99 +11,40 @@ class SidePane extends Component {
     // callbacks:
     //  -  setCurrentTile
     //  -  displayTileDesigner
-    this.state = {
-      layer: "Platform",
-    };
+    this.state = {};
   }
 
   render() {
-    let tileButtons = Object.keys(this.props.tiles)
-      .filter((tileId) => {
-        return this.props.tiles[tileId].layer === this.state.layer;
-      })
-      .map((tileId) => {
-        return (
-          <div
-            className="u-clickable tileButton"
-            key={tileId}
+    const tileButtons = Object.keys(this.props.tiles).map((tileId) => {
+      return (
+        <li key={tileId}>
+          <button
             onClick={(e) => {
               this.props.setCurrentTile(tileId);
             }}
           >
-            <canvas
-              width={tileButtonSize}
-              height={tileButtonSize}
-              ref={(canvas) => {
-                if (!canvas) {
-                  console.log("no canvas");
-                  return;
-                } else {
-                  const context = canvas.getContext("2d");
-                  context.imageSmoothingEnabled = false;
-                  if (tileId in this.props.tiles) {
-                    // draw
-                    const im = this.props.tiles[tileId].image;
-                    context.drawImage(im, 0, 0, canvas.width, canvas.height);
-                  }
-                }
-              }}
-            />
-          </div>
-        );
-      });
-    if (tileButtons.length === 0) {
-      tileButtons = (
-        <div className="u-italic u-padding">
-          You don't have any tile yet for this layer. Create one with the button below.
-        </div>
+            {`Tile: ${this.props.tiles[tileId].name}`}
+          </button>
+        </li>
       );
-    }
+    });
     return (
-      <div className="u-flexColumn sidePaneContainer">
-        <div
-          className="u-clickable u-clickableMid u-chocoThemed layerSwitchButton u-flexColumn"
-          onClick={(e) => {
-            this.setState({ layer: this.state.layer === "Platform" ? "Background" : "Platform" });
-          }}
-        >
-          {this.state.layer}
-          <div className="u-italic u-superSmallFont">(Click to switch layer)</div>
-        </div>
-        <div className="tileButtonContainer u-chocoThemed">{tileButtons}</div>
-        <div className="currentBlockContainer u-chocoThemed">
+      <div className="u-flexColumn">
+        <div>Side pane</div>
+        <ul>{tileButtons}</ul>
+        <div>
+          Current tile:{" "}
           {this.props.currentTile in this.props.tiles
             ? this.props.tiles[this.props.currentTile].name
-            : "Eraser"}
-          <canvas
-            width="120"
-            height="120"
-            ref={(canvas) => {
-              if (!canvas) {
-                console.log("no canvas (currentTile)");
-                return;
-              } else {
-                const context = canvas.getContext("2d");
-                context.imageSmoothingEnabled = false;
-                if (this.props.currentTile in this.props.tiles) {
-                  // draw
-                  const im = this.props.tiles[this.props.currentTile].image;
-                  context.drawImage(im, 0, 0, canvas.width, canvas.height);
-                } else {
-                  // hard code eraser tile as blank for now:
-                  context.clearRect(0, 0, canvas.width, canvas.height);
-                }
-              }
-            }}
-          />
+            : "badTile :("}
         </div>
-        <div
-          className="u-clickable u-clickableMid u-chocoThemed addTileButton"
+        <button
           onClick={(e) => {
             this.props.displayTileDesigner();
           }}
         >
-          + Add Tile
-        </div>
+          Create new tile
+        </button>
       </div>
     );
   }

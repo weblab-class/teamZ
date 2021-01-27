@@ -9,12 +9,6 @@ const keyTranslator = {
   S: "s",
   d: "d",
   D: "d",
-  e: "e",
-  E: "e",
-  ArrowLeft: "a",
-  ArrowRight: "d",
-  ArrowUp: "w",
-  ArrowDown: "s",
   Shift: "SHIFT",
   " ": "SHIFT",
 };
