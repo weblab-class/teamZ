@@ -62,7 +62,7 @@ class PublishedLevels extends Component {
     ));
     return (
       <div className="u-flexColumnReverse">
-        <div className="u-page">
+        <div className="u-page u-paddingBottom">
           <div className="u-header">Play published levels</div>
           {levels}
         </div>{" "}

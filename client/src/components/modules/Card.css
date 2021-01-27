@@ -1,6 +1,6 @@
 .cardContainer {
   background: #ffe3b8;
-  min-width: 80vh;
+  width: 80vh;
   min-height: 80px;
   display: flex;
   flex-direction: column;
