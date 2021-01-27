@@ -4,9 +4,7 @@ import "../../utilities.css";
 import "./TileDesignerModal.css";
 import { tileSize } from "../../../../constants.js";
 import ReactDOM from "react-dom";
-import TileIndex from "./tileEditor/TileIndex.js";
-
-//import TileEditor from "./tileEditor/TileEditor";
+import TileDesigner from "./TileDesigner/TileDesigner.js";
 
 class TileDesignerModal extends Component {
   constructor(props) {
@@ -102,7 +100,7 @@ class TileDesignerModal extends Component {
           </div>
 
           <div>
-            < TileIndex />
+            < TileDesigner/>
           </div>
           
           <div className="u-inputContainer">

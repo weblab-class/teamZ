@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Editor.scss";
+import "./TileDesigner.css";
 import { CirclePicker } from "react-color";
 import DrawingPanel from "./DrawingPanel";
 

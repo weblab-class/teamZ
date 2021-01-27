@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./pixel.scss";
+import "./Pixel.css";
 
 export default function Pixel(props) {
   const { selectedColor } = props;

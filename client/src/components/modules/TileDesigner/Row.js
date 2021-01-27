@@ -1,5 +1,5 @@
 import React from "react";
-import "./Row.scss";
+import "./Row.css";
 import Pixel from "./Pixel";
 
 export default function Row(props) {
