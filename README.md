@@ -30,11 +30,6 @@ Note: we'll be getting to this in lecture in week 2, so don't worry if you don't
 - If you are using socket, consider what you want to do with the FIXME in server-socket.js
 
 
-## How to integrate into your own project
-
-On GitHub download this repository as a zip file, then extract the files into your own repository.
-Warning: make sure you copy the hidden files too: .babelrc, .gitignore, .npmrc, and .prettierrc
-
 ## don't touch
 
 the following files students do not need to edit. feel free to read them if you would like.
