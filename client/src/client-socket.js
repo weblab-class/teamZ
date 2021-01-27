@@ -38,6 +38,44 @@ export const addTile = (tileId) => {
   socket.emit("addTile", tileId);
 };
 
+export const enableEdit = () => {
+  socket.emit("enableEdit");
+};
+
+export const disableEdit = () => {
+  console.log("disableEdit called");
+  socket.emit("disableEdit");
+};
+
 export const changeTile = (tileId) => {
   socket.emit("changeTile", tileId);
+};
+
+export const modifyLevel = (newValues) => {
+  socket.emit("modifyLevel", newValues);
+};
+
+export const modifyPlayer = (newValues) => {
+  socket.emit("modifyPlayer", newValues);
+};
+
+export const resizeLevel = (deltas) => {
+  console.log("resizing called client socket: ", deltas);
+  socket.emit("resizeLevel", deltas);
+};
+
+export const playKeyDown = (key) => {
+  socket.emit("playKeyDown", key);
+};
+
+export const playKeyUp = (key) => {
+  socket.emit("playKeyUp", key);
+};
+
+export const playModifyPlayer = (newValues) => {
+  socket.emit("playModifyPlayer", newValues);
+};
+
+export const playRestartPlayer = () => {
+  socket.emit("playRestartPlayer");
 };

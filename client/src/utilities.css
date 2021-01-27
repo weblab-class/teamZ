@@ -64,6 +64,11 @@ form {
   align-items: center;
 }
 
+.u-flexColumnReverse {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
 .u-inlineBlock {
   display: inline-block;
 }
@@ -71,7 +76,9 @@ form {
 .u-bold {
   font-weight: 600;
 }
-
+.u-italic {
+  font-style: italic;
+}
 .u-textCenter {
   text-align: center;
 }
@@ -92,4 +99,208 @@ form {
 
 .u-link:hover {
   color: var(--primary--dim);
+}
+
+.u-cover {
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.u-padding {
+  padding: 8px;
+}
+.u-superSmallFont {
+  font-size: 14px;
+  opacity: 0.8;
+}
+.u-window {
+  display: flex;
+  padding: 8px;
+  background: rgba(240, 240, 240, 1);
+  filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.25));
+}
+.u-largeWindow {
+  width: 90vw;
+  height: 90vh;
+}
+.u-largeHorizontalWindow {
+  width: 90vw;
+}
+
+.u-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: #ff9f75;
+  min-height: 100vh;
+}
+.u-flexGrow {
+  flex-grow: 1;
+}
+.u-marginRight {
+  margin-right: 8px;
+}
+.u-flexStart {
+  justify-content: flex-start;
+}
+.u-spaceBetween {
+  justify-content: space-between;
+}
+.u-smallFont {
+  font-size: 16px;
+  opacity: 0.777;
+}
+.u-midFont {
+  font-size: 24px;
+  opacity: 1;
+}
+.u-mediumSmallFont {
+  font-size: 20px;
+  opacity: 0.95;
+}
+.u-borderLeft {
+  border-left: 1px solid grey;
+}
+.u-header {
+  font-size: 72px;
+  opacity: 1;
+  font-weight: bold;
+  color: black;
+  margin-top: 32px;
+  margin-bottom: 48px;
+}
+.u-windowHeader {
+  font-size: 24px;
+  color: rgb(0, 0, 0);
+  border-bottom: 1px solid grey;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.u-cancelButton {
+  background: rgba(201, 72, 72, 1);
+  color: rgba(240, 240, 240, 1);
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.u-cancelButton:hover {
+  cursor: pointer;
+}
+.u-submitButton {
+  background: #1a73e8;
+  color: rgba(250, 250, 250, 1);
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+.u-submitButton:hover {
+  cursor: pointer;
+}
+.u-submitRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  height: 64px;
+}
+.u-errorMessage {
+  color: rgb(165, 0, 0);
+  font-style: italic;
+  font-size: 18px;
+}
+
+.u-inputContainer {
+  font-size: 24px;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+}
+.u-input {
+  border: 2px solid black;
+  font-size: 20px;
+  resize: none;
+  overflow-y: initial;
+}
+.u-marginTop {
+  margin-top: 8px;
+}
+/*
+  u-clickable elements are rounded white-button-y kinda elements
+  that will appear very often in our website.
+  Don't modify font size, color, opacity, margin, or padding here.
+*/
+.u-clickable {
+  border-radius: 4px;
+  background: rgba(240, 240, 240, 1);
+  text-decoration: none;
+  color: black;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.u-chocoThemed {
+  background: #fdecc2;
+  color: rgba(155, 100, 17, 1);
+}
+.u-clickableSmall {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 16px;
+  height: 28px;
+  min-width: 40px;
+  font-weight: var(--m);
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.u-marginLeft {
+  margin-left: 8px;
+}
+.u-clickableMid {
+  font-size: 30px;
+  font-weight: bold;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.u-clickable:hover {
+  cursor: pointer;
+}
+.u-clickable:active {
+  filter: drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.25));
+}
+
+.u-monoFont {
+  font-family: monospace;
+}
+
+.u-flexEnd {
+  display: flex;
+  justify-content: flex-end;
+}
+.u-marginTop {
+  margin-top: 8px;
 }

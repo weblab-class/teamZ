@@ -1,42 +1,56 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 import { get, post } from "../../utilities.js";
-import { socket, addTile, changeTile } from "../../client-socket";
+import {
+  socket,
+  addTile,
+  changeTile,
+  enableEdit,
+  disableEdit,
+  modifyLevel,
+  modifyPlayer,
+} from "../../client-socket";
 import { drawEditCanvas } from "../../editCanvasManager";
 import { initInput } from "../../editInput.js";
 import { Link } from "@reach/router";
 
 import SidePane from "../modules/SidePane.js";
+import ToolBar from "../modules/ToolBar.js";
+import SettingsPane from "../modules/SettingsPane.js";
+import TileDesignerModal from "../modules/TileDesignerModal.js";
 
 import "../../utilities.css";
 import "./Edit.css";
 
-//TODO: REPLACE WITH YOUR OWN CLIENT_ID
-const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.googleusercontent.com";
-
-const tileSize = 16;
+import { tileSize } from "../../../../constants";
 class Edit extends Component {
   constructor(props) {
     super(props);
-    this.canvasRef = React.createRef();
-    this.canvasWidth = 900;
-    this.canvasHeight = 700;
+    this.canvas = null;
     const emptyFn = () => {
       console.log("empty fn");
     };
     // for now, the only prop the Edit page should take is :levelId
     // Initialize Default State
+    this.fetching = {};
+    this.lastFetchedCharSprite = null;
+    this.lastFetchedBackground = null;
+    this.clearInputFn = emptyFn;
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
       //            tile object has name, layer, image attributes
-      fetching: {}, // tileIds -> true
+      charSprite: null,
+      charSpriteImage: null,
+      background: null,
+      backgroundImage: null,
       currentTile: "no current tile", // tileId of currentTile
-      tempNewTileName: "",
-      tempNewTileLayer: "Platform",
-      tempNewTileR: 128,
-      tempNewTileG: 128,
-      tempNewTileB: 128,
-      clearInputFn: emptyFn,
+      title: "",
+      description: "",
+      rows: 0,
+      cols: 0,
+      isPublished: false,
+      isSettingsPaneOpen: false,
+      isTileDesignerModalOpen: false,
     };
   }
 
@@ -44,11 +58,11 @@ class Edit extends Component {
     // api calls here
     post("/api/joinLevel", {
       levelId: this.props.levelId,
-      canvasWidth: this.canvasWidth,
-      canvasHeight: this.canvasHeight,
+      canvasWidth: this.canvas ? this.canvas.width : 32,
+      canvasHeight: this.canvas ? this.canvas.height : 32,
     }).then((garbage) => {
       const clearInputFn = initInput({ canvas: this.getCanvas() });
-      this.setState({ clearInputFn: clearInputFn });
+      this.clearInputFn = clearInputFn;
     });
     socket.on("update", (update) => {
       // console.log(`mouseX: ${update.mouseX}, mouseY: ${update.mouseY}`);
@@ -57,11 +71,13 @@ class Edit extends Component {
   }
 
   componentWillUnmount() {
-    this.state.clearInputFn();
+    this.clearInputFn();
+    post("/api/removePlayer");
+    socket.off("update");
   }
 
   getCanvas = () => {
-    return this.canvasRef.current;
+    return this.canvas;
   };
 
   processUpdate = async (update) => {
@@ -72,65 +88,124 @@ class Edit extends Component {
     const fetchingDict = {};
     for (let i = 0; i < updateAvailableTiles.length; i++) {
       const tileId = updateAvailableTiles[i];
-      if (!(tileId in this.state.tiles) && !(tileId in this.state.fetching)) {
+      if (!(tileId in this.state.tiles) && !(tileId in this.fetching)) {
         tilesToFetch.push(tileId);
         fetchingDict[tileId] = true;
       }
     }
-    // if (tilesToFetch.length > 0) {
-    //   console.log("tilesToFetch: " + tilesToFetch);
-    //   console.log("tilesToFetchLength: " + tilesToFetch.length);
-    //   console.log("first elem of tilesToFetch: " + tilesToFetch[0]);
-    // }
     if (tilesToFetch.length > 0) {
-      await this.setState((prevState) => {
-        return {
-          fetching: Object.assign({}, prevState.fetching, fetchingDict),
-        };
-      });
+      this.fetching = await Object.assign({}, this.fetching, fetchingDict);
       // Object.keys(this.state.fetching).forEach((key) => {
       //   console.log("a key in fetching: " + key);
       // });
       post("/api/tilesWithId", { tileIds: tilesToFetch }).then(async (tileDict) => {
+        // image is STRING
         // console.log("received tileDict from tilesWithID call");
-        const newTiles = {};
         await Object.keys(tileDict).forEach((tileId) => {
           // console.log("one key in loop: " + tileId);
           const tileObject = tileDict[tileId];
-          const imArray = tileObject.image;
-          const imArrayClamped = new Uint8ClampedArray(imArray.length);
-          for (let i = 0; i < imArray.length; i++) {
-            imArrayClamped[i] = imArray[i];
-          }
-          const tileImageData = new ImageData(imArrayClamped, tileObject.width, tileObject.height);
-          createImageBitmap(tileImageData).then((bitmap) => {
-            // console.log("created butmap successfully: " + bitmap);
-            newTiles[tileId] = {
-              _id: tileObject._id,
-              name: tileObject.name,
-              layer: tileObject.layer,
-              image: bitmap,
-            };
-          });
+          const imString = tileObject.image;
+          console.log("got imString in edit.js: " + imString);
+          const img = document.createElement("img");
+          img.onload = () => {
+            createImageBitmap(img).then((bitmap) => {
+              // console.log("created butmap successfully: " + bitmap);
+              const newEntry = {};
+              newEntry[tileId] = {
+                _id: tileObject._id,
+                name: tileObject.name,
+                layer: tileObject.layer,
+                image: bitmap,
+              };
+              this.setState((prevState) => {
+                return { tiles: Object.assign({}, prevState.tiles, newEntry) };
+              });
+            });
+          };
+          img.src = imString;
+          console.log("img: ", img);
         });
-        // console.log("newTiles len: " + Object.keys(newTiles).length);
-        await this.setState((prevState) => {
-          return { tiles: Object.assign({}, prevState.tiles, newTiles) };
-        });
-        // console.log("new state tiles len: " + Object.keys(this.state.tiles).length);
-        // if (Object.keys(this.state.tiles).length > 0) {
-        //   console.log("state tiles: " + this.state.tiles);
-        // }
       });
+    }
+    if (
+      update.charSprite !== this.state.charSprite &&
+      update.charSprite !== this.lastFetchedCharSprite
+    ) {
+      this.lastFetchedCharSprite = update.charSprite;
+      if (update.charSprite === null) {
+        this.setState((prevState) => {
+          return { charSprite: null, charSpriteImage: null };
+        });
+      } else {
+        console.log("update.charSprite: " + update.charSprite);
+        post("/api/fetchImage", { patternId: update.charSprite }).then((imObj) => {
+          const imString = imObj.image;
+          const img = document.createElement("img");
+          img.onload = () => {
+            createImageBitmap(img).then((bitmap) => {
+              this.setState((prevState) => {
+                return { charSprite: update.charSprite, charSpriteImage: bitmap };
+              });
+            });
+          };
+          img.src = imString;
+        });
+      }
+    }
+    if (
+      update.background !== this.state.background &&
+      update.background !== this.lastFetchedBackground
+    ) {
+      this.lastFetchedBackground = update.background;
+      if (update.background === null) {
+        this.setState((prevState) => {
+          return { background: null, backgroundImage: null };
+        });
+      } else {
+        console.log("update.background: " + update.background);
+        post("/api/fetchImage", { patternId: update.background }).then((imObj) => {
+          const imString = imObj.image;
+          const img = document.createElement("img");
+          img.onload = () => {
+            createImageBitmap(img).then((bitmap) => {
+              this.setState((prevState) => {
+                return { background: update.background, backgroundImage: bitmap };
+              });
+            });
+          };
+          img.src = imString;
+        });
+      }
     }
     if (update.currentTile !== this.state.currentTile) {
       this.setState({ currentTile: update.currentTile });
     }
-    drawEditCanvas(this.getCanvas(), update, this.state.tiles);
+    if (update.title !== this.state.title) {
+      this.setState({ title: update.title });
+    }
+    if (update.description !== this.state.description) {
+      this.setState({ description: update.description });
+    }
+    if (update.isPublished !== this.state.isPublished) {
+      this.setState({ isPublished: update.isPublished });
+    }
+    if (update.rows !== this.state.rows) {
+      this.setState({ rows: update.rows });
+    }
+    if (update.cols !== this.state.cols) {
+      this.setState({ cols: update.cols });
+    }
+    drawEditCanvas(
+      this.getCanvas(),
+      update,
+      this.state.tiles,
+      this.state.charSpriteImage,
+      this.state.backgroundImage
+    );
   };
 
   /**
-   * @param image has to be an actual image ||| FOR NOW image is just array
+   * @param image has to be a bas64 encoded string
    */
   createTile = (tileName, layer, image) => {
     // console.log(`TileName: ${tileName}, layer: ${layer}, image: ${image}`);
@@ -145,88 +220,111 @@ class Edit extends Component {
     });
   };
 
+  /**
+   *
+   * @param {*} image base64 encoded str
+   */
+  changeCharSprite = (image) => {
+    if (image === null) {
+      modifyLevel({ charSprite: null });
+      return;
+    }
+    post("/api/newImage", {
+      image: image,
+    }).then((patternId) => {
+      modifyLevel({ charSprite: patternId });
+    });
+  };
+
+  changeBackground = (image) => {
+    if (image === null) {
+      modifyLevel({ background: null });
+      return;
+    }
+    post("/api/newImage", {
+      image: image,
+    }).then((patternId) => {
+      modifyLevel({ background: patternId });
+    });
+  };
+
   render() {
     return (
-      <div className="u-flexRow">
-        <div className="u-flexColumn">
-          <div>
-            <Link
-              to={"/"}
-              onClick={(e) => {
-                post("/api/save");
-              }}
-            >
-              Go Back
-            </Link>
-            <button
-              type="submit"
-              onClick={(e) => {
-                post("/api/save");
-              }}
-            >
-              save level
-            </button>
-          </div>
-          <canvas ref={this.canvasRef} width={this.canvasWidth} height={this.canvasHeight} />
-        </div>
-        <SidePane
-          tiles={this.state.tiles}
-          currentTile={this.state.currentTile}
-          setCurrentTile={(tileId) => {
-            changeTile(tileId);
+      <div className="u-flexColumn editPageContainer">
+        <ToolBar
+          levelId={this.props.levelId}
+          onBack={() => {
+            return post("/api/save");
           }}
-          displayTileDesigner={() => {
-            /* TODO */
+          onSave={() => {
+            return post("/api/save");
+          }}
+          onPlay={() => {
+            return post("/api/save");
+          }}
+          onOpenSettings={() => {
+            this.setState({ isSettingsPaneOpen: true }, () => {
+              disableEdit();
+            });
           }}
         />
-        <div>
-          Temporary tile creator
-          <textarea
-            type="text"
-            placeholder="TileName"
-            value={this.state.tempNewTileName}
-            onChange={(e) => this.setState({ tempNewTileName: e.target.value })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileLayer"
-            value={this.state.tempNewTileLayer}
-            onChange={(e) => this.setState({ tempNewTileLayer: e.target.value })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileR"
-            value={this.state.tempNewTileR}
-            onChange={(e) => this.setState({ tempNewTileR: parseInt(e.target.value) })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileG"
-            value={this.state.tempNewTileG}
-            onChange={(e) => this.setState({ tempNewTileG: parseInt(e.target.value) })}
-          ></textarea>
-          <textarea
-            type="text"
-            placeholder="TileB"
-            value={this.state.tempNewTileB}
-            onChange={(e) => this.setState({ tempNewTileB: parseInt(e.target.value) })}
-          ></textarea>
-          <button
-            type="submit"
-            onClick={(e) => {
-              const arr = [];
-              for (let i = 0; i < 4 * tileSize * tileSize; i += 4) {
-                arr.push(this.state.tempNewTileR);
-                arr.push(this.state.tempNewTileG);
-                arr.push(this.state.tempNewTileB);
-                arr.push(255);
-              }
-              this.createTile(this.state.tempNewTileName, this.state.tempNewTileLayer, arr);
+        <div className="u-flexRow editRow">
+          <div className="editorContainer">
+            <canvas
+              ref={(canvas) => {
+                if (!canvas) {
+                  console.log("no canvas edit");
+                  return;
+                }
+                this.canvas = canvas;
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+                modifyPlayer({
+                  canvasWidth: canvas.width,
+                  canvasHeight: canvas.height,
+                });
+              }}
+            />
+          </div>
+          <SidePane
+            tiles={this.state.tiles}
+            currentTile={this.state.currentTile}
+            setCurrentTile={(tileId) => {
+              changeTile(tileId);
             }}
-          >
-            Add tile
-          </button>
+            displayTileDesigner={() => {
+              this.setState({ isTileDesignerModalOpen: true }, () => {
+                disableEdit();
+              });
+            }}
+          />
         </div>
+        {this.state.isSettingsPaneOpen ? (
+          <SettingsPane
+            title={this.state.title}
+            description={this.state.description}
+            isPublished={this.state.isPublished}
+            rows={this.state.rows}
+            cols={this.state.cols}
+            changeCharSprite={this.changeCharSprite}
+            changeBackground={this.changeBackground}
+            onCancel={() => {
+              this.setState({ isSettingsPaneOpen: false }, () => {
+                enableEdit();
+              });
+            }}
+          />
+        ) : null}
+        {this.state.isTileDesignerModalOpen ? (
+          <TileDesignerModal
+            onSubmit={this.createTile}
+            onCancel={() => {
+              this.setState({ isTileDesignerModalOpen: false }, () => {
+                enableEdit();
+              });
+            }}
+          />
+        ) : null}
       </div>
     );
   }

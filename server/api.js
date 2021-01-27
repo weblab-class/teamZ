@@ -6,7 +6,8 @@
 | This file defines the routes for your server.
 |
 */
-const tileSize = 16;
+const constants = require("../constants");
+const tileSize = constants.tileSize;
 const express = require("express");
 
 // import models so we can interact with the database
@@ -15,8 +16,27 @@ const Tile = require("./models/tile");
 const Level = require("./models/level");
 const Pattern = require("./models/pattern");
 
+const attributesOfLevel = [
+  "_id",
+  "title",
+  "description",
+  "creator",
+  "rows",
+  "cols",
+  "gridTiles",
+  "availableTiles",
+  "startX",
+  "startY",
+  "charSprite",
+  "background",
+  "isPublished",
+];
+
 // import editLogic
 const editLogic = require("./editLogic.js");
+const playLogic = require("./playLogic.js");
+
+const { uploadImagePromise, deleteImagePromise, downloadImagePromise } = require("./storageTalk");
 
 // import authentication library
 const auth = require("./auth");
@@ -61,6 +81,11 @@ router.post("/removePlayer", (req, res) => {
   res.send({});
 });
 
+router.post("/removePlayerFromGame", (req, res) => {
+  if (req.user) playLogic.removePlayer(req.user._id);
+  res.send({});
+});
+
 /**
  * Sends back an empty tile (i.e. tile with layer "None")
  */
@@ -79,29 +104,75 @@ router.post("/emptyTile", async (req, res) => {
  * req.body contains attributes of tile
  * .name
  * .layer
- * .image : clamped array of numbers
+ * .image : string representing image, base 64 encoded
  */
-router.post("/newTile", async (req, res) => {
-  const pattern = await new Pattern({
-    width: tileSize,
-    height: tileSize,
-    image: req.body.image,
-  }).save();
-  const tile = await new Tile({
-    name: req.body.name,
-    layer: req.body.layer,
-    image: pattern._id,
-  }).save();
-  res.send(tile._id);
-  // TODO DISCREPENCY: req.body.image is actual image, but Tile.image
-  // is a String reference to tile. must deal with this once we get
-  // image storage set up
+router.post("/newTile", (req, res) => {
+  // console.log("/newTile called");
+  if (typeof req.body.image !== "string") {
+    throw new Error(
+      "Can only handle images encoded as strings. Got type: " + typeof req.body.image
+    );
+  }
+  uploadImagePromise(req.body.image)
+    .then((imageName) => {
+      // console.log("imageName in newTile: " + imageName);
+      return new Pattern({
+        image: imageName,
+      }).save();
+    })
+    .then((pattern) => {
+      // console.log("created pattern: ", pattern);
+      return new Tile({
+        name: req.body.name,
+        layer: req.body.layer,
+        image: pattern._id,
+      }).save();
+    })
+    .then((tile) => {
+      // console.log("created tile: ", tile);
+      res.send(tile._id);
+    })
+    .catch((err) => {
+      console.log("ERR: upload image: " + err);
+      res.status(500).send({
+        message: "error uploading",
+      });
+    });
+});
+
+/**
+ * req.body.image is string
+ */
+router.post("/newImage", (req, res) => {
+  if (typeof req.body.image !== "string") {
+    throw new Error(
+      "Can only handle images encoded as strings. Got type: " + typeof req.body.image
+    );
+  }
+  uploadImagePromise(req.body.image)
+    .then((imageName) => {
+      // console.log("imageName in newTile: " + imageName);
+      return new Pattern({
+        image: imageName,
+      }).save();
+    })
+    .then((pattern) => {
+      // console.log("created tile: ", tile);
+      res.send(pattern._id);
+    })
+    .catch((err) => {
+      console.log("ERR: upload image: " + err);
+      res.status(500).send({
+        message: "error uploading",
+      });
+    });
 });
 
 /**
  * req.query.tileIds is a list of tileIds
  */
 router.post("/tilesWithId", async (req, res) => {
+  console.log("user name and id: " + req.user.googleid + ", " + req.user.name);
   // console.log("entered tilesWithId api call");
   // console.log("req.body.tileIds: " + req.body.tileIds.toString());
   const tileIdList = req.body.tileIds;
@@ -113,17 +184,20 @@ router.post("/tilesWithId", async (req, res) => {
     // console.log("tileId variable: " + tileId);
     // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
     // tileObject has to contain actual image
+    //console.log("inTilesWithId: trying to find tile with Id: " + tileId);
     const tile = await Tile.findOne({ _id: tileId });
-    // console.log("found tile: " + tile);
+    //console.log("found tile: " + tile);
     const pattern = await Pattern.findOne({ _id: tile.image });
+    //console.log("found pattern: ", pattern);
+    const imageName = pattern.image;
+    const imString = await downloadImagePromise(imageName);
+    //console.log("found imageString: " + imString);
     // console.log("found pattern, proof: " + pattern.image[0]);
     const tileObject = {
       _id: tile._id,
       name: tile.name,
       layer: tile.layer,
-      width: pattern.width,
-      height: pattern.height,
-      image: pattern.image,
+      image: imString,
     };
     ret[tileId] = tileObject;
   }
@@ -132,23 +206,40 @@ router.post("/tilesWithId", async (req, res) => {
 });
 
 /**
+ * req.body.patternId
+ * res sends back image string
+ */
+router.post("/fetchImage", async (req, res) => {
+  const pattern = await Pattern.findOne({ _id: req.body.patternId });
+  const imageName = pattern.image;
+  const imString = await downloadImagePromise(imageName);
+  res.send({ image: imString });
+});
+
+/**
  * req.body contains attributes of the level (i.e. title, rows, cols, etc)
  */
 router.post("/newLevel", (req, res) => {
   // request should have attributes of level
-  const newLevel = new Level({ ...req.body });
+  const newLevel = new Level(Object.assign({}, { ...req.body }, { creator: req.user._id }));
   newLevel.save().then((level) => res.send(level));
 });
 
 router.post("/save", async (req, res) => {
+  if (!(req.user._id in editLogic.editState.players)) {
+    return;
+  }
   const levelId = editLogic.editState.players[req.user._id].levelId;
+  console.log("playerDict: ", editLogic.editState.players[req.user._id]);
+  console.log("save levelId: " + levelId);
   const levelInEditState = editLogic.editState.levels[levelId];
   const level = await Level.findOne({ _id: levelId });
-  level.title = levelInEditState.title;
-  level.rows = levelInEditState.rows;
-  level.cols = levelInEditState.cols;
-  level.gridTiles = levelInEditState.gridTiles;
-  level.availableTiles = levelInEditState.availableTiles;
+  for (let i = 0; i < attributesOfLevel.length; i++) {
+    const attr = attributesOfLevel[i];
+    if (attr !== "_id") {
+      level[attr] = levelInEditState[attr];
+    }
+  }
   await level.save();
   res.send({});
 });
@@ -158,8 +249,72 @@ router.post("/save", async (req, res) => {
  */
 router.post("/joinLevel", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
+  const levelCopy = {};
+  /*
+  title: String,
+  description: String,
+  creator: { type: ObjectId, ref: "user" },
+  emptyTile: { type: ObjectId, ref: "tile" },
+  rows: Number,
+  cols: Number,
+  gridTiles: [{ type: ObjectId, ref: "tile" }], // of Tile, length should be exactly rows * cols
+  availableTiles: [{ type: ObjectId, ref: "tile" }], // of Tile
+  startX: Number, // x_cor of character spawn point
+  startY: Number, // y_cor of character spawn point
+  charSprite: { type: ObjectId, ref: "pattern" }, // facing right
+  background: { type: ObjectId, ref: "pattern" },
+  */
+
+  for (let i = 0; i < attributesOfLevel.length; i++) {
+    const attr = attributesOfLevel[i];
+    levelCopy[attr] = level[attr];
+  }
   // assume level has all fields required as specified in editLogic
-  editLogic.addPlayer(req.user._id, level, req.body.canvasWidth, req.body.canvasHeight);
+  editLogic.addPlayer(req.user._id, levelCopy, req.body.canvasWidth, req.body.canvasHeight);
+  res.send({});
+});
+
+/**
+ * request consists of levelId
+ */
+router.post("/joinGame", async (req, res) => {
+  const level = await Level.findOne({ _id: req.body.levelId });
+  const levelPopulated = await Level.findOne({ _id: req.body.levelId }).populate("gridTiles");
+  const modifiedGridTiles = [];
+  let iPop = 0;
+  for (let i = 0; i < level.gridTiles.length; i++) {
+    if (level.gridTiles[i] === null) {
+      modifiedGridTiles.push(null);
+    } else {
+      modifiedGridTiles.push(levelPopulated.gridTiles[iPop]);
+      iPop++;
+    }
+  }
+  // console.log("---BEGIN TEST---");
+  // console.log("level.gridTiles len: " + level.gridTiles.length);
+  // let count = 0;
+  // for (let i = 0; i < level.gridTiles.length; i++) {
+  //   if (level.gridTiles[i] === null) {
+  //     count++;
+  //   }
+  // }
+  // console.log(`Found ${count} instances of null in gridTiles`);
+  // const levelPopulated = await Level.findOne({ _id: req.body.levelId }).populate("gridTiles");
+  // console.log("length of populated gridTiles: " + levelPopulated.gridTiles.length);
+  // console.log("---END TEST");
+  // const gridTileArr = [];
+  // for (let i = 0; i < level.gridTiles.length; i++) {
+  //   const tileObject = await Tile.findOne({ _id: level.gridTiles[i] });
+  //   gridTileArr.push(tileObject);
+  // }
+  // assume level has all fields required as specified in editLogic
+  playLogic.addPlayer(
+    req.user._id,
+    level,
+    modifiedGridTiles,
+    req.body.canvasWidth,
+    req.body.canvasHeight
+  );
   res.send({});
 });
 
@@ -167,7 +322,9 @@ router.post("/joinLevel", async (req, res) => {
  * req.query is the query
  */
 router.get("/levels", (req, res) => {
-  Level.find({ ...req.query }).then((levels) => res.send(levels));
+  Level.find({ ...req.query })
+    .populate("creator")
+    .then((levels) => res.send(levels));
 });
 
 // anything else falls to this "not found" case

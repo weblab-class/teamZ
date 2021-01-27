@@ -1,0 +1,10 @@
+.toolBarContainer {
+  display: flex;
+  flex-direction: row;
+  background: #ffcba6;
+  height: 48px;
+  align-items: center;
+}
+.toolBarButton {
+  background: #fdecc2;
+}

@@ -6,7 +6,7 @@ import { Link } from "@reach/router";
 import "../../utilities.css";
 
 //TODO: REPLACE WITH YOUR OWN CLIENT_ID
-const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "968597986163-jb2ki4cdo7df3jfui7j1vshv8vc2j3dp.apps.googleusercontent.com";
 
 class Test extends Component {
   constructor(props) {
@@ -40,10 +40,11 @@ class Test extends Component {
     const emptyTile = await post("/api/emptyTile");
     const gridTiles = [];
     for (let i = 0; i < rows * cols; i++) {
-      gridTiles.push(emptyTile._id);
+      gridTiles.push(null);
     }
     await post("/api/newLevel", {
       title: this.state.newLevelTitle,
+      description: "hard coded description",
       creator: this.props.userId,
       rows: rows,
       cols: cols,
@@ -51,6 +52,8 @@ class Test extends Component {
       availableTiles: [],
       startX: 0,
       startY: 0,
+      charSprite: null,
+      background: null,
     });
     this.setState({ newLevelTitle: "", newLevelRows: 10, newLevelCols: 10 });
     this.loadLevels();
@@ -58,8 +61,9 @@ class Test extends Component {
 
   render() {
     let levels = this.state.levels.map((level, i) => (
-      <li key={i}>
-        <Link to={"/edit/" + level._id}>{level.title}</Link>
+      <li key={i} className="u-flexColumn">
+        <Link to={"/edit/" + level._id}>{"edit " + level.title}</Link>
+        <Link to={"/play/" + level._id + "/false"}>{"play " + level.title}</Link>
       </li>
     ));
     return (

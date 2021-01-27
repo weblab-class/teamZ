@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import "../../utilities.css";
 import "./TileDesignerModal.css";
 
-const tileSize = 16; // use this constant rather than the number `16` when referencing tile size.
+import { tileSize } from "../../../../constants.js";
 class TileDesignerModal extends Component {
   constructor(props) {
     /* TileDesignerModal is a pop-up whose job is to design and output a tile.
@@ -33,25 +33,109 @@ class TileDesignerModal extends Component {
     super(props);
     this.state = {
       // TODO: initialize state
+      name: "",
+      layer: "Platform",
+      image: null,
     };
   }
 
-  //for the MVP, the modal will only be able to upload images
+  uploadImage = (event) => {
+    const fileInput = event.target;
+    console.log(fileInput);
+    this.readImage(fileInput.files[0])
+      .then((image) => {
+        fileInput.value = null;
+        // scale image down to 16 x 16
+        const img = document.createElement("img");
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = tileSize;
+          canvas.height = tileSize;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const scaledImageString = canvas.toDataURL();
+          this.setState({ image: scaledImageString });
+        };
+        img.src = image;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  readImage = (blob) => {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onloadend = () => {
+        if (r.error) {
+          reject(r.error.message);
+          return;
+        } else if (!r.result.startsWith("data:image/")) {
+          reject("not an image!");
+          return;
+        } else {
+          resolve(r.result);
+        }
+      };
+      r.readAsDataURL(blob);
+    });
+  };
 
   render() {
     return (
-      <div className="modal-wrapper">
-        <div className="modal-header">
-          <p>Design a tile or upload your own image</p>
-          <span className="close-modal-btn"></span>
-        </div>
-        <div className="modal-content">
-          <div className="modal-body">
-            <h4>Modal</h4>
-            <button onClick={this.props.onSubmit(name, layer, image)} className="btn-submit">Upload Image</button> 
+      <div className="u-cover">
+        <div className="u-window u-largeWindow u-flexColumn">
+          <div className="u-windowHeader u-spaceBetween">
+            Tile Designer
+            <div
+              className="u-cancelButton"
+              onClick={(e) => {
+                this.props.onCancel();
+              }}
+            >
+              Cancel
+            </div>
           </div>
-          <div className="modal-footer">
-            <button onClick={this.props.onCancel()} className="btn-cancel">Cancel</button>
+          <div className="u-inputContainer">
+            Name
+            <textarea
+              type="text"
+              className="u-input"
+              placeholder=""
+              value={this.state.name}
+              onChange={(e) =>
+                this.setState({
+                  name: e.target.value,
+                })
+              }
+            ></textarea>
+          </div>
+          <div className="u-inputContainer u-marginTop">
+            Layer
+            <select
+              value={this.state.layer}
+              className="u-input"
+              onChange={(e) => {
+                console.log("changed select: " + e.target.value);
+                this.setState({ layer: e.target.value });
+              }}
+            >
+              <option value="Platform">Platform</option>
+              <option value="Background">Background</option>
+            </select>
+          </div>
+
+          <input type="file" name="files[]" accept="image/*" onChange={this.uploadImage} />
+          <div
+            className="u-clickable"
+            onClick={(e) => {
+              if (this.state.image !== null) {
+                this.props.onSubmit(this.state.name, this.state.layer, this.state.image);
+              }
+            }}
+          >
+            Submit
+            {this.state.image === null ? "stateImage is null" : ""}
           </div>
         </div>
       </div>
