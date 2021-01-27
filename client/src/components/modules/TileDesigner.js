@@ -6,7 +6,7 @@ import "./TileDesigner.css";
 
 import { tileSize } from "../../../../constants.js";
 
-const pixelsPerPixel = 36;
+const pixelsPerPixel = 32;
 const transparent = "rgba(0,0,0,0)";
 
 const arrOf = (len, val) => {
@@ -99,7 +99,10 @@ class TileDesigner extends Component {
 
   drawPixelSquare = (canvas, index, color) => {
     const context = canvas.getContext("2d");
-    context.fillStyle = "rgba(0, 0, 0, 1)"; // hard code init black fill for now
+    context.fillStyle =
+      (index + Math.floor(index / tileSize)) % 2 === 0
+        ? "rgba(128,128,128,1)"
+        : "rgba(192,192,192,1)";
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = color;
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -206,7 +209,7 @@ class TileDesigner extends Component {
           <div className="u-flexColumn u-marginLeft">
             <SketchPicker
               color={this.state.color}
-              width={560}
+              width={480}
               onChange={(color) => {
                 this.setState({ color: color.hex });
               }}
