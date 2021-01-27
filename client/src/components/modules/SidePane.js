@@ -89,6 +89,7 @@ class SidePane extends Component {
                 if (this.props.currentTile in this.props.tiles) {
                   // draw
                   const im = this.props.tiles[this.props.currentTile].image;
+                  context.clearRect(0, 0, canvas.width, canvas.height);
                   context.drawImage(im, 0, 0, canvas.width, canvas.height);
                 } else {
                   // hard code eraser tile as blank for now:
