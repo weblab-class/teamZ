@@ -25,7 +25,8 @@ class Help extends Component {
               <strong>Scroll View</strong>
             </p>
             <p className="helpSpec">
-              Use <span>WASD</span> or the <span>arrow keys</span> to scroll around the editor view.
+              Use <span className="span">WASD</span> or the <span className="span">arrow keys</span>{" "}
+              to scroll around the editor view.
             </p>
 
             <p className="helpSection">
@@ -66,8 +67,9 @@ class Help extends Component {
               Place down a tile by clicking or dragging your mouse over the editor.
             </p>
             <p className="helpSpec">
-              Switch into <em>Eraser Mode</em> by pressing the <span>e</span> key on your keyboard,
-              or temporarily switch into eraser mode by holding down <span>SHIFT</span>.
+              Switch into <em>Eraser Mode</em> by pressing the <span className="span">e</span> key
+              on your keyboard, or temporarily switch into eraser mode by holding down{" "}
+              <span className="span">SHIFT</span>.
             </p>
 
             <p className="helpSection">
@@ -94,8 +96,9 @@ class Help extends Component {
           <h1 className="helpHeader">Playing a level</h1>
           <div className="helpText">
             <p className="helpCenter">
-              Use <span>WASD</span> or the <span>arrow keys</span> to move. Click <mark>Retry</mark>{" "}
-              on the top left to restart the level. Click <mark>Back</mark> to go back. That's all!
+              Use <span className="span">WASD</span> or the <span className="span">arrow keys</span>{" "}
+              to move. Click <mark>Retry</mark> on the top left to restart the level. Click{" "}
+              <mark>Back</mark> to go back. That's all!
             </p>
           </div>
         </div>

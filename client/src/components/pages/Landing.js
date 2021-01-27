@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import GoogleLogin, { GoogleLogout } from "react-google-login";
 
+import grassRow from "../../public/grassRow.png";
+
 import "../../utilities.css";
 import "./Landing.css";
 
@@ -42,6 +44,7 @@ class Landing extends Component {
         </div>
         <div className="landingBody">
           <div className="headerText">Welcome to playPix.</div>
+          <div className="subheaderText">Explore pixel art through platforming!</div>
         </div>
       </div>
     );

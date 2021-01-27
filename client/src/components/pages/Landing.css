@@ -1,4 +1,4 @@
-/* .topBar {
+.topBar {
   display: flex;
   flex-direction: row;
   background: #ffcba6;
@@ -17,6 +17,7 @@
   font-weight: bold;
   font-family: sans-serif;
   height: 24px;
+  margin-bottom: 6px;
 }
 .landingBody {
   background: #ff9f75;
@@ -28,13 +29,15 @@
 }
 .headerText {
   font-size: 72px;
+  font-family: sans-serif;
 }
 .subheaderText {
   font-size: 48px;
+  font-family: sans-serif;
 }
 .landingPageContainer {
   height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
-} */
+}
