@@ -1,9 +1,9 @@
-const constants = require("../constants.js");
-const tileSize = constants.tileSize;
-const tileSizeOnCanvas = constants.tileSizeOnCanvas;
+// import { tileSize, tileSizeOnCanvas } from "../constants.js";
+const tileSize = 16;
+const tileSizeOnCanvas = 64;
 
 // keys used in level-editor; initialize keys to not-pressed-down
-const keys = ["w", "a", "s", "d", "e", "SHIFT"];
+const keys = ["w", "a", "s", "d", "SHIFT"];
 
 // state of level editor
 const editState = {
@@ -12,7 +12,6 @@ const editState = {
   levels: {}, // maps levelId to level information consisting of
   // title, rows, cols, gridTiles, availableTiles, etc
   // title: "",
-  // desc
   // don't need to store creator, since that won't change. might store collaborators later
   // rows: 0,
   // cols: 0,
@@ -20,9 +19,6 @@ const editState = {
   // availableTiles: [], // list of available tileIds
   // startX: 0, // abstract cors of start position
   // startY: 0,
-  // charSprite
-  // background
-  // isPublished
   // ........
   // player-specific information:
   players: {},
@@ -39,8 +35,6 @@ const editState = {
        mouseY
        mouseDown -- is player's mouse down?
        isDraggingChar -- is player dragging the character and changing its start cors?
-       isEditing -- can the player scroll / place tiles, or are they in the 
-                    settings / add tiles view?
      }
    */
 };
@@ -53,9 +47,6 @@ const editState = {
 const registerKeyDown = (playerId, key) => {
   if (!(playerId in editState.players)) return;
   editState.players[playerId].keyDownMap[key] = true;
-  if (key === "e") {
-    editState.players[playerId].currentTile = null;
-  }
 };
 
 const registerKeyUp = (playerId, key) => {
@@ -109,16 +100,6 @@ const registerMouseUp = (playerId) => {
   editState.players[playerId].isDraggingChar = false;
 };
 
-const enableEdit = (playerId) => {
-  if (!(playerId in editState.players)) return;
-  editState.players[playerId].isEditing = true;
-};
-
-const disableEdit = (playerId) => {
-  if (!(playerId in editState.players)) return;
-  editState.players[playerId].isEditing = false;
-};
-
 /**
  * change the current tile of player with given id to newTileId.
  * if the player is erasing, newTileId is null
@@ -145,10 +126,6 @@ const addTile = (playerId, tileId) => {
  */
 const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
   // console.log("addPlayer is called in editLogic");
-  //hard code creator-only for now:
-  console.log("add player playerId: ", playerId);
-  console.log("level creator: ", level.creator);
-  if (playerId.toString() !== level.creator.toString()) return;
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
@@ -159,193 +136,77 @@ const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
     // we have to add this level.
     editState.levels[levelId] = level;
   }
-  const canvasToAbstractRatio = tileSizeOnCanvas / tileSize;
   editState.players[playerId] = {
     levelId: levelId,
-    camX: Math.floor(level.startX - canvasWidth / canvasToAbstractRatio / 2),
-    camY: Math.floor(level.startY - canvasHeight / canvasToAbstractRatio / 2),
+    camX: 0,
+    camY: 0,
     currentTile: null,
-    mouseX: -1,
-    mouseY: -1,
+    mouseX: 0,
+    mouseY: 0,
     mouseDown: false,
     keyDownMap: keyDownMap,
     canvasWidth: canvasWidth,
     canvasHeight: canvasHeight,
-    isEditing: true,
   };
 };
 
 /** Remove a player from the game state if they DC */
 const removePlayer = (playerId) => {
   if (playerId in editState.players) {
-    const levelId = editState.players[playerId].levelId;
     delete editState.players[playerId];
-    if (
-      Object.keys(editState.players).filter((otherPlayerId) => {
-        return editState.players[otherPlayerId].levelId.toString() === levelId.toString();
-      }).length === 0
-    ) {
-      // no other player is editing this level. delete.
-      delete editState.levels[levelId];
-    }
   }
-};
-
-const modifyPlayer = (playerId, newValues) => {
-  if (!(playerId in editState.players)) return;
-  const player = editState.players[playerId];
-  Object.keys(newValues).forEach((key) => {
-    player[key] = newValues[key];
-  });
-};
-
-const modifyLevel = (playerId, newValues) => {
-  if (!(playerId in editState.players)) return;
-  const level = editState.levels[editState.players[playerId].levelId];
-  Object.keys(newValues).forEach((key) => {
-    level[key] = newValues[key];
-  });
-};
-
-/**
- *
- * @param {*} playerId
- * @param {*} deltas a dictionary containing left, right, up, down for resize
- */
-const resizeLevel = (playerId, deltas) => {
-  if (!(playerId in editState.players)) return;
-  const level = editState.levels[editState.players[playerId].levelId];
-  // first, make sure the deltas dont go over level dims.
-  if (deltas.left + level.cols <= 0) return;
-  if (deltas.right + level.cols <= 0) return;
-  if (deltas.left + deltas.right + level.cols <= 0) return;
-  if (deltas.up + level.rows <= 0) return;
-  if (deltas.down + level.rows <= 0) return;
-  if (deltas.up + deltas.down + level.rows <= 0) return;
-  // construct 2d copy of gridTiles
-  let copyGrid = [];
-  for (let i = 0; i < level.rows; i++) {
-    const nextRow = [];
-    for (let j = 0; j < level.cols; j++) {
-      nextRow.push(level.gridTiles[i * level.cols + j]);
-    }
-    copyGrid.push(nextRow);
-  }
-  const arrEmpty = (len) => {
-    const ret = [];
-    for (let i = 0; i < len; i++) {
-      ret.push(null);
-    }
-    return ret;
-  };
-  let levelRows = level.rows;
-  let levelCols = level.cols;
-  // now resize vertically
-  if (deltas.down > 0) {
-    for (let i = 0; i < deltas.down; i++) {
-      copyGrid.push(arrEmpty(levelCols));
-    }
-  } else if (deltas.down < 0) {
-    for (let i = 0; i < -1 * deltas.down; i++) {
-      copyGrid.pop();
-    }
-  }
-  if (deltas.up > 0) {
-    const tempArr = [];
-    for (let i = 0; i < deltas.up; i++) {
-      tempArr.push(arrEmpty(levelCols));
-    }
-    console.log("tempArr: ", tempArr);
-    console.log("grid before: ", copyGrid);
-    copyGrid = tempArr.concat(copyGrid);
-    console.log("grid after: ", copyGrid);
-  } else if (deltas.up < 0) {
-    copyGrid = copyGrid.slice(-1 * deltas.up);
-  }
-  levelRows += deltas.down + deltas.up;
-  // resize horizontally
-  if (deltas.right > 0) {
-    for (let i = 0; i < levelRows; i++) {
-      for (let j = 0; j < deltas.right; j++) {
-        copyGrid[i].push(null);
-      }
-    }
-  } else if (deltas.right < 0) {
-    for (let i = 0; i < levelRows; i++) {
-      for (let j = 0; j < deltas.right; j++) {
-        copyGrid[i].pop();
-      }
-    }
-  }
-  if (deltas.left > 0) {
-    for (let i = 0; i < levelRows; i++) {
-      copyGrid[i] = [...arrEmpty(deltas.left), ...copyGrid[i]];
-    }
-  } else if (deltas.left < 0) {
-    for (let i = 0; i < levelRows; i++) {
-      copyGrid[i] = copyGrid[i].slice(-1 * deltas.left);
-    }
-  }
-  levelCols += deltas.left + deltas.right;
-  // construct 1D array from copyGrid.
-  const newGrid = [];
-  for (let i = 0; i < levelRows; i++) {
-    for (let j = 0; j < levelCols; j++) {
-      newGrid.push(copyGrid[i][j]);
-    }
-  }
-  // adjust level size and set grid
-  level.rows = levelRows;
-  level.cols = levelCols;
-  level.gridTiles = newGrid;
-  // last thing to do is move level char start to account for level resize
-  level.startY += deltas.up * tileSize;
-  level.startX += deltas.left * tileSize;
 };
 
 // ... helper functions for update ...
 
+const clipPadding = 0; // number of tiles
 /**
- * mutates player camera to be good.
+ * Given camera coordinates, returns coordinates that are the given cors if they are valid,
+ * else closest coordinate that is valid
+ * @param {*} camX
+ * @param {*} camY
+ * @param {*} levelId
  */
-const clipCamera = (playerId) => {
-  const player = editState.players[playerId];
-  const level = editState.levels[player.levelId];
-  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-  player.camX = Math.min(
-    player.camX,
-    Math.floor(level.cols * tileSize - player.canvasWidth / canvasToAbstractRatio)
-  );
-  player.camY = Math.min(
-    player.camY,
-    Math.floor(level.rows * tileSize - player.canvasHeight / canvasToAbstractRatio)
-  );
-  player.camX = Math.max(0, player.camX);
-  player.camY = Math.max(0, player.camY);
+const clipCamera = (camX, camY, levelId) => {
+  let retX = camX;
+  let retY = camY;
+  retX = Math.max(0, retX);
+  retY = Math.max(0, retY);
+  // lazy bottom-right clipping for now
+  retX = Math.min(retX, tileSize * editState.levels[levelId].cols);
+  retY = Math.min(retY, tileSize * editState.levels[levelId].rows);
+  // retX = Math.max(-clipPadding * tileSize, retX);
+  // retX = Math.min(clipPadding * tileSize + editState.levels[levelId].cols * tileSize - 1);
+  // retY = Math.max(-clipPadding * tileSize, retY);
+  // retY = Math.min(clipPadding * tileSize + editState.levels[levelId].rows * tileSize - 1);
+  return {
+    x: retX,
+    y: retY,
+  };
 };
 
 // update players' camera coordinates
-const scrollSpeed = 8;
+const scrollSpeed = 4;
 const updateCameras = () => {
-  Object.keys(editState.players).forEach((playerId) => {
-    const player = editState.players[playerId];
-    if (player.isEditing) {
-      if (player.keyDownMap["w"]) {
-        player.camY -= scrollSpeed;
-      }
-      if (player.keyDownMap["s"]) {
-        player.camY += scrollSpeed;
-      }
-      if (player.keyDownMap["a"]) {
-        player.camX -= scrollSpeed;
-      }
-      if (player.keyDownMap["d"]) {
-        player.camX += scrollSpeed;
-      }
-      // we need to make sure the player's camera coordinates are valid
-      // apply the clipping helper fn
-      clipCamera(playerId);
+  Object.keys(editState.players).forEach((key) => {
+    const player = editState.players[key];
+    if (player.keyDownMap["w"]) {
+      player.camY -= scrollSpeed;
     }
+    if (player.keyDownMap["s"]) {
+      player.camY += scrollSpeed;
+    }
+    if (player.keyDownMap["a"]) {
+      player.camX -= scrollSpeed;
+    }
+    if (player.keyDownMap["d"]) {
+      player.camX += scrollSpeed;
+    }
+    // we need to make sure the player's camera coordinates are valid
+    // apply the clipping helper fn
+    const clippedCors = clipCamera(player.camX, player.camY, player.levelId);
+    player.camX = clippedCors.x;
+    player.camY = clippedCors.y;
   });
 };
 
@@ -371,23 +232,21 @@ const playerMouseOnCanvas = (playerId) => {
 const updateTiles = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
-    if (player.isEditing) {
-      const level = editState.levels[player.levelId];
-      if (!player.isDraggingChar) {
-        const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
-        const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-        const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
-        const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
-        if (
-          player.mouseDown &&
-          corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
-          playerMouseOnCanvas(key)
-        ) {
-          const row = Math.floor(mouseYAbs / tileSize);
-          const col = Math.floor(mouseXAbs / tileSize);
-          // console.log(`placing tile at row ${row} , col ${col}`);
-          level.gridTiles[row * level.cols + col] = tileIdToPlace;
-        }
+    const level = editState.levels[player.levelId];
+    if (!player.isDraggingChar) {
+      const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
+      const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
+      const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
+      const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
+      if (
+        player.mouseDown &&
+        corsInGrid(mouseXAbs, mouseYAbs, player.levelId) &&
+        playerMouseOnCanvas(key)
+      ) {
+        const row = Math.floor(mouseYAbs / tileSize);
+        const col = Math.floor(mouseXAbs / tileSize);
+        // console.log(`placing tile at row ${row} , col ${col}`);
+        level.gridTiles[row * level.cols + col] = tileIdToPlace;
       }
     }
   });
@@ -404,15 +263,13 @@ const clipCharCors = (levelId) => {
 const updateStartPosition = () => {
   Object.keys(editState.players).forEach((key) => {
     const player = editState.players[key];
-    if (player.isEditing) {
-      const level = editState.levels[player.levelId];
-      if (player.isDraggingChar) {
-        const newStartCors = toAbstractCors(player.mouseX, player.mouseY, player.camX, player.camY);
-        level.startX = Math.floor(newStartCors.x - tileSize / 2);
-        level.startY = Math.floor(newStartCors.y - tileSize / 2);
-      }
-      clipCharCors(player.levelId);
+    const level = editState.levels[player.levelId];
+    if (player.isDraggingChar) {
+      const newStartCors = toAbstractCors(player.mouseX, player.mouseY, player.camX, player.camY);
+      level.startX = Math.floor(newStartCors.x - tileSize / 2);
+      level.startY = Math.floor(newStartCors.y - tileSize / 2);
     }
+    clipCharCors(player.levelId);
   });
 };
 
@@ -470,13 +327,6 @@ const instructionsForPlayer = (playerId) => {
   const ret = {
     availableTiles: level.availableTiles,
     currentTile: player.currentTile,
-    title: level.title,
-    description: level.description,
-    charSprite: level.charSprite,
-    background: level.background,
-    isPublished: level.isPublished,
-    rows: level.rows,
-    cols: level.cols,
     camX: player.camX,
     camY: player.camY,
     mouseX: player.mouseX,
@@ -511,14 +361,9 @@ module.exports = {
   registerMouseDown,
   registerMouseMove,
   registerMouseUp,
-  enableEdit,
-  disableEdit,
   addTile,
   changeTile,
   addPlayer,
   removePlayer,
   update,
-  modifyLevel,
-  modifyPlayer,
-  resizeLevel,
 };

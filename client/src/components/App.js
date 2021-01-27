@@ -5,11 +5,6 @@ import Skeleton from "./pages/Skeleton.js";
 import Landing from "./pages/Landing.js";
 import Test from "./pages/Test.js";
 import Edit from "./pages/Edit.js";
-import Play from "./pages/Play.js";
-import PublishedLevels from "./pages/PublishedLevels.js";
-import MyLevels from "./pages/MyLevels.js";
-import Help from "./pages/Help.js";
-import TileDesigner from "./modules/TileDesigner.js";
 
 import "../utilities.css";
 
@@ -68,34 +63,14 @@ class App extends Component {
     return (
       <>
         <Router>
-          <Help path="/help" />
-          <TileDesigner path="/tile" />
           <Test
-            path="/test"
-            handleLogin={this.handleLogin}
-            handleLogout={this.handleLogout}
-            userId={this.state.userId}
-          />
-          <PublishedLevels
             path="/"
-            handleLogin={this.handleLogin}
-            handleLogout={this.handleLogout}
-            userId={this.state.userId}
-          />
-          <MyLevels
-            path="/my"
             handleLogin={this.handleLogin}
             handleLogout={this.handleLogout}
             userId={this.state.userId}
           />
           <Edit
             path="/edit/:levelId"
-            handleLogin={this.handleLogin}
-            handleLogout={this.handleLogout}
-            userId={this.state.userId}
-          />
-          <Play
-            path="/play/:levelId/:didComeFromEditor"
             handleLogin={this.handleLogin}
             handleLogout={this.handleLogout}
             userId={this.state.userId}

@@ -35,7 +35,7 @@ const socketManager = require("./server-socket");
 
 // Server configuration below
 // Follow MongoDB setup instructions and make a file with name `.env` in folder TeamZ.
-// Copy the mongo connection URL, and in the `.env` file, type in:
+// Copy the mongo connection URL, and in the `.env` file, type in: 
 // MONGO_SRV=<mongo connection URL, without quotes>
 // You will also need to run `npm install dotenv`
 const mongoConnectionURL = process.env.MONGO_SRV;
@@ -61,7 +61,7 @@ app.use(express.json());
 // set up a session, which will persist login data across requests
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: "session-secret",
     resave: false,
     saveUninitialized: false,
   })
@@ -99,7 +99,7 @@ app.use((err, req, res, next) => {
 });
 
 // hardcode port to 3000 for now
-const port = process.env.PORT || 3000;
+const port = 3000;
 const server = http.Server(app);
 socketManager.init(server);
 
