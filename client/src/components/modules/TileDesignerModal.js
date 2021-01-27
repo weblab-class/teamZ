@@ -4,6 +4,7 @@ import "../../utilities.css";
 import "./TileDesignerModal.css";
 
 import { tileSize } from "../../../../constants.js";
+import TileDesigner from "./TileDesigner.js";
 class TileDesignerModal extends Component {
   constructor(props) {
     /* TileDesignerModal is a pop-up whose job is to design and output a tile.
@@ -84,7 +85,7 @@ class TileDesignerModal extends Component {
   render() {
     return (
       <div className="u-cover">
-        <div className="u-window u-largeWindow u-flexColumn">
+        <div className="u-window u-largeWindow u-flexColumn u-overflowY">
           <div className="u-windowHeader u-spaceBetween">
             Tile Designer
             <div
@@ -97,7 +98,7 @@ class TileDesignerModal extends Component {
             </div>
           </div>
           <div className="u-inputContainer">
-            Name
+            Name of tile
             <textarea
               type="text"
               className="u-input"
@@ -124,19 +125,14 @@ class TileDesignerModal extends Component {
               <option value="Background">Background</option>
             </select>
           </div>
-
-          <input type="file" name="files[]" accept="image/*" onChange={this.uploadImage} />
-          <div
-            className="u-clickable"
-            onClick={(e) => {
-              if (this.state.image !== null) {
-                this.props.onSubmit(this.state.name, this.state.layer, this.state.image);
-              }
-            }}
-          >
-            Submit
-            {this.state.image === null ? "stateImage is null" : ""}
+          <div className="u-monoFont u-midFont u-marginTop u-marginBottom">
+            Design a tile using the canvas, or upload an image.
           </div>
+          <TileDesigner
+            onSubmit={(image) => {
+              this.props.onSubmit(this.state.name, this.state.layer, image);
+            }}
+          />
         </div>
       </div>
     );

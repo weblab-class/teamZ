@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import "../../../utilities.css";
-
+import TileDesigner from "../TileDesigner.js";
 import { tileSize } from "../../../../../constants.js";
 class SettingsCharacter extends Component {
   constructor(props) {
@@ -57,19 +57,16 @@ class SettingsCharacter extends Component {
 
   render() {
     return (
-      <div className="">
-        Character designer:
-        <input type="file" name="files[]" accept="image/*" onChange={this.uploadImage} />
-        <div
-          className="u-clickable"
-          onClick={(e) => {
-            this.props.onSubmit(this.state.image);
+      <div className="u-flexColumn">
+        <div className="u-monoFont u-midFont">
+          Design a character using the canvas, or upload an image.
+        </div>
+        <TileDesigner
+          onSubmit={(im) => {
+            this.props.onSubmit(im);
             this.props.onCancel();
           }}
-        >
-          Submit
-          {this.state.image === null ? "stateImage is null" : ""}
-        </div>
+        />
       </div>
     );
   }

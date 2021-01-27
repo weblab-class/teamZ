@@ -100,7 +100,9 @@ form {
 .u-link:hover {
   color: var(--primary--dim);
 }
-
+.u-overflowY {
+  overflow-y: auto;
+}
 .u-cover {
   background: rgba(0, 0, 0, 0.7);
   position: fixed;
@@ -127,8 +129,8 @@ form {
   filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.25));
 }
 .u-largeWindow {
-  width: 90vw;
-  height: 90vh;
+  width: 96vw;
+  height: 92vh;
 }
 .u-largeHorizontalWindow {
   width: 90vw;
@@ -147,6 +149,9 @@ form {
 }
 .u-marginRight {
   margin-right: 8px;
+}
+.u-marginBottom {
+  margin-bottom: 8px;
 }
 .u-flexStart {
   justify-content: flex-start;
