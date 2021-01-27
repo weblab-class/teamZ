@@ -131,6 +131,7 @@ class TileDesignerModal extends Component {
           <TileDesigner
             onSubmit={(image) => {
               this.props.onSubmit(this.state.name, this.state.layer, image);
+              this.props.onCancel();
             }}
           />
         </div>
