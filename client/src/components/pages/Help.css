@@ -1,9 +1,53 @@
 .textContainer {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  align-self: center;
   padding: 8px;
   padding-top: 0px;
-  margin-top: 72px;
+  margin: 72px 0;
   border-radius: 8px;
   width: 80vw;
+  line-height: 1.2em;
+}
+
+h1.helpHeader {
+  font-size: 3.8em;
+  line-height: 1em;
+  padding-left: 0.3em;
+  padding-bottom: 0em;
+}
+
+.helpText {
+  font-size: 1.2em;
+  padding: 0 1em 1em 1em;
+
+  line-height: 1.2em;
+}
+
+.helpList {
+  padding-left: 3em;
+}
+
+.helpSection {
+  padding: 0em;
+}
+
+.helpSpec {
+  padding-left: 1em;
+  padding-bottom: 1em;
+}
+
+.helpCenter {
+  align-self: center;
+  padding-bottom: 0.8em;
+}
+
+span {
+  background-color:tan;
+  color:black;
+}
+
+mark {
+  background-color:burlywood;
 }
