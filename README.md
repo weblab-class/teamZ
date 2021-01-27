@@ -1,4 +1,4 @@
-# Project Skeleton
+# PlayPix
 
 ## What we provide
 
