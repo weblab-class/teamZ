@@ -9,6 +9,7 @@ import Play from "./pages/Play.js";
 import PublishedLevels from "./pages/PublishedLevels.js";
 import MyLevels from "./pages/MyLevels.js";
 import Help from "./pages/Help.js";
+import TileDesigner from "./modules/TileDesigner.js";
 
 import "../utilities.css";
 
@@ -68,6 +69,7 @@ class App extends Component {
       <>
         <Router>
           <Help path="/help" />
+          <TileDesigner path="/tile" />
           <Test
             path="/test"
             handleLogin={this.handleLogin}
