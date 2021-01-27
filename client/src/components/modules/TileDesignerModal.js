@@ -3,6 +3,8 @@ import React, { Component } from "react";
 import "../../utilities.css";
 import "./TileDesignerModal.css";
 import { tileSize } from "../../../../constants.js";
+import ReactDOM from "react-dom";
+import TileIndex from "./tileEditor/TileIndex.js";
 
 //import TileEditor from "./tileEditor/TileEditor";
 
@@ -98,9 +100,11 @@ class TileDesignerModal extends Component {
               Cancel
             </div>
           </div>
+
+          <div>
+            < TileIndex />
+          </div>
           
-          
-        
           <div className="u-inputContainer">
             Name
             <textarea
