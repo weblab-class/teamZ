@@ -22,11 +22,13 @@ class TileDesigner extends Component {
     super(props);
     this.isMouseDown = false;
     const pixels = arrOf(tileSize * tileSize, transparent);
+    this.pixels = arrOf(tileSize * tileSize, transparent);
+    this.canvases = arrOf(tileSize * tileSize, null);
     this.state = {
       // TODO: initialize state
       color: "rgba(255,255,255,1)",
       isErasing: false,
-      pixels: pixels,
+      // pixels: pixels,
     };
   }
   registerMouseDown = (e) => {
@@ -70,7 +72,9 @@ class TileDesigner extends Component {
           }
           // console.log("imArr len: ", imArr.length);
           // console.log("imArr first elem ", imArr[0]);
-          this.setState({ pixels: imArr });
+          // this.setState({ pixels: imArr });
+          this.pixels = imArr;
+          this.redrawPixels();
         };
         img.src = image;
       })
@@ -108,12 +112,33 @@ class TileDesigner extends Component {
     context.fillRect(0, 0, canvas.width, canvas.height);
   };
 
-  changePixelSquare = (index, color) => {
-    const pixelsCopy = [...this.state.pixels];
-    pixelsCopy[index] = color;
-    this.setState({ pixels: pixelsCopy });
+  drawPixelSquareAt = (index, color) => {
+    const canvas = this.canvases[index];
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    context.fillStyle =
+      (index + Math.floor(index / tileSize)) % 2 === 0
+        ? "rgba(128,128,128,1)"
+        : "rgba(192,192,192,1)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = color;
+    context.fillRect(0, 0, canvas.width, canvas.height);
   };
 
+  redrawPixelSquareAt = (index) => {
+    this.drawPixelSquareAt(index, this.pixels[index]);
+  };
+
+  // changePixelSquare = (index, color) => {
+  //   const pixelsCopy = [...this.state.pixels];
+  //   pixelsCopy[index] = color;
+  //   this.setState({ pixels: pixelsCopy });
+  // };
+  redrawPixels = () => {
+    for (let i = 0; i < this.pixels.length; i++) {
+      this.drawPixelSquareAt(i, this.pixels[i]);
+    }
+  };
   /**
    * from: https://gist.github.com/oriadam/396a4beaaad465ca921618f2f2444d49
    * @param {*} color
@@ -170,27 +195,36 @@ class TileDesigner extends Component {
             width={pixelsPerPixel}
             height={pixelsPerPixel}
             onMouseDown={(e) => {
-              this.changePixelSquare(
-                row * tileSize + col,
-                this.state.isErasing ? transparent : this.state.color
-              );
+              this.pixels[row * tileSize + col] = this.state.isErasing
+                ? transparent
+                : this.state.color;
+              this.redrawPixelSquareAt(row * tileSize + col);
+              // this.changePixelSquare(
+              //   row * tileSize + col,
+              //   this.state.isErasing ? transparent : this.state.color
+              // );
             }}
             onMouseEnter={(e) => {
               if (this.isMouseDown) {
-                this.changePixelSquare(
-                  row * tileSize + col,
-                  this.state.isErasing ? transparent : this.state.color
-                );
+                this.pixels[row * tileSize + col] = this.state.isErasing
+                  ? transparent
+                  : this.state.color;
+                this.redrawPixelSquareAt(row * tileSize + col);
+                // this.changePixelSquare(
+                //   row * tileSize + col,
+                //   this.state.isErasing ? transparent : this.state.color
+                // );
               }
             }}
             ref={(canvas) => {
               if (!canvas) return;
               canvas.width = pixelsPerPixel;
               canvas.height = pixelsPerPixel;
+              this.canvases[row * tileSize + col] = canvas;
               this.drawPixelSquare(
                 canvas,
                 row * tileSize + col,
-                this.state.pixels[row * tileSize + col]
+                this.pixels[row * tileSize + col] //this.state.pixels[row * tileSize + col]
               );
             }}
           />
@@ -237,15 +271,25 @@ class TileDesigner extends Component {
                 Erase
               </div>
               <div
-                onClick={(e) =>
-                  this.setState({ pixels: arrOf(tileSize * tileSize, this.state.color) })
+                onClick={
+                  (e) => {
+                    this.pixels = arrOf(tileSize * tileSize, this.state.color);
+                    this.redrawPixels();
+                  }
+                  //this.setState({ pixels: arrOf(tileSize * tileSize, this.state.color) })
                 }
                 className="u-clickable u-midFont u-padding designerButton"
               >
                 Fill
               </div>
               <div
-                onClick={(e) => this.setState({ pixels: arrOf(tileSize * tileSize, transparent) })}
+                onClick={
+                  (e) => {
+                    this.pixels = arrOf(tileSize * tileSize, transparent);
+                    this.redrawPixels();
+                  }
+                  //this.setState({ pixels: arrOf(tileSize * tileSize, transparent) })
+                }
                 className="u-clickable u-midFont u-padding designerButton"
               >
                 Clear
@@ -270,7 +314,7 @@ class TileDesigner extends Component {
             onClick={async (e) => {
               const clampedArr = new Uint8ClampedArray(4 * tileSize * tileSize);
               for (let i = 0; i < tileSize * tileSize; i++) {
-                const colorArr = this.colorValues(this.state.pixels[i]);
+                const colorArr = this.colorValues(this.pixels[i]);
                 // console.log("colorArr: ", colorArr);
                 clampedArr[4 * i + 0] = colorArr[0];
                 clampedArr[4 * i + 1] = colorArr[1];
