@@ -1,14 +1,25 @@
 import React, { Component } from "react";
+import { SketchPicker } from "react-color";
 
 import "../../utilities.css";
 import "./TileDesigner.css";
 
 import { tileSize } from "../../../../constants.js";
+
+const pixelsPerPixel = 20;
+const transparent = "rgba(0,0,0,0)";
 class TileDesigner extends Component {
   constructor(props) {
     super(props);
+    const pixels = [];
+    for (let i = 0; i < tileSize * tileSize; i++) {
+      pixels.push(transparent);
+    }
     this.state = {
       // TODO: initialize state
+      color: "rgba(255,255,255,1)",
+      isErasing: false,
+      pixels: pixels,
     };
   }
 
@@ -55,7 +66,20 @@ class TileDesigner extends Component {
   };
 
   render() {
-    return <div className="">Tile designer</div>;
+    return (
+      <div>
+        tile designer
+        <SketchPicker
+          color={this.state.color}
+          onChange={(color) => {
+            this.setState({ color: color.hex });
+          }}
+          onChangeComplete={(color) => {
+            this.setState({ color: color.hex });
+          }}
+        />
+      </div>
+    );
   }
 }
 
