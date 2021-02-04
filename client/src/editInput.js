@@ -31,9 +31,6 @@ const handleKeyUp = (e) => {
 
 const getMousePosition = (e, canvas) => {
   const rect = canvas.getBoundingClientRect();
-  // console.log(
-  //   "getMousePosition newX: " + ((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width
-  // );
   return {
     x: Math.floor(((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width),
     y: Math.floor(((e.clientY - rect.top) / (rect.bottom - rect.top)) * canvas.height),

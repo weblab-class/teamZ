@@ -6,18 +6,11 @@ import grassRow from "../../public/grassRow.png";
 import "../../utilities.css";
 import "./Landing.css";
 
-//TODO: REPLACE WITH YOUR OWN CLIENT_ID
-const GOOGLE_CLIENT_ID = "968597986163-jb2ki4cdo7df3jfui7j1vshv8vc2j3dp.apps.googleusercontent.com";
+import { GOOGLE_CLIENT_ID } from "../../../../constants.js";
 
 class Landing extends Component {
   constructor(props) {
     super(props);
-    // Initialize Default State
-    this.state = {};
-  }
-
-  componentDidMount() {
-    // remember -- api calls go here!
   }
 
   render() {

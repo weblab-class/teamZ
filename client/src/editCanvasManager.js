@@ -11,32 +11,30 @@ img.onload = () => {
 };
 img.src = defaultChar;
 
-/** helper functions */
-
+/**
+ * Darkens a square at (x,y) of size `tileSizeOnCanvas`
+ * @param {*} canvas
+ * @param {*} x
+ * @param {*} y
+ */
 const darken = (canvas, x, y) => {
   const context = canvas.getContext("2d");
   context.fillStyle = "rgba(0, 0, 0, .4)";
   context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
 };
 
-// hard code backgroundImage to be black for now
 const drawBackground = (canvas, backgroundImage) => {
   const context = canvas.getContext("2d");
   if (backgroundImage === null) {
     context.fillStyle = "black";
     context.fillRect(0, 0, canvas.width, canvas.height);
   } else {
-    // TODO: "center" the background
     context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
   }
 };
 
-/**Draws tile */
 const drawTile = (canvas, tileImage, x, y, isDarkened) => {
-  // console.log(`drawTile(x: ${x}, y: ${y})`);
   const context = canvas.getContext("2d");
-  // TODO: add border to tile?
-  // HARD CODE FOR NOW
   if (tileImage === null) {
     // if null, draw semi-opaque rect
     context.strokeStyle = "rgba(0,0,0,0)";
@@ -65,17 +63,14 @@ const drawTile = (canvas, tileImage, x, y, isDarkened) => {
  *                           camY: player.camY,
  *                           mouseX: player.mouseX,
  *                           mouseY: player.mouseY,
- *                           sliceRowStart: 0, //TODO
- *                           sliceColStart: 0, //TODO
- *                           sliceRows: 0, //TODO
- *                           sliceCols: 0, //TODO
- *                           slice: [], //TODO: row major order of slice
+ *                           sliceRowStart:
+ *                           sliceColStart:
+ *                           sliceRows:
+ *                           sliceCols:
+ *                           slice: row major order of slice
  * @param {*} tiles dict maps tileId to tile obj
  */
 const drawTiles = (canvas, instructions, tiles) => {
-  const context = canvas.getContext("2d");
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
   // safely assume slice contains all the tiles we need.
   const iSlice = (row, col) => {
     return (
@@ -114,10 +109,8 @@ const drawTiles = (canvas, instructions, tiles) => {
     return { x: retX, y: retY };
   };
   const absMouseCors = getAbstractCor(instructions.mouseX, instructions.mouseY);
-  //console.log(`absMouseCors: (${absMouseCors.x}, ${absMouseCors.y})`);
   const colMouse = Math.floor(absMouseCors.x / tileSize);
   const rowMouse = Math.floor(absMouseCors.y / tileSize);
-  //console.log(`colMouse: ${colMouse}, rowMouse: ${rowMouse}`);
   for (let i = 0; i < instructions.sliceCols; i++) {
     for (let j = 0; j < instructions.sliceRows; j++) {
       const col = i + instructions.sliceColStart;
@@ -151,10 +144,7 @@ const drawCharSprite = (canvas, charSpriteImage, x, y, isDarkened) => {
 };
 
 const drawChar = (canvas, instructions, charSpriteImage) => {
-  const context = canvas.getContext("2d");
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
-  // first, draw character. copy n paste cuz im lazy
+  // first, draw character.
   const getCanvasCor = (absX, absY) => {
     const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
     const retX = (absX - instructions.camX) * canvasToAbstractRatio;
@@ -184,9 +174,6 @@ const clearCanvas = (canvas) => {
 };
 
 export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
-  // console.log(
-  //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
-  // );
   // don't smooth:
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;

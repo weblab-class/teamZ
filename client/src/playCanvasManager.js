@@ -11,7 +11,6 @@ img.onload = () => {
 };
 img.src = defaultChar;
 
-/** helper functions */
 const drawShade = (canvas, perc) => {
   const context = canvas.getContext("2d");
   if (perc > 0) {
@@ -26,7 +25,6 @@ const drawBackground = (canvas, backgroundImage) => {
     context.fillStyle = "black";
     context.fillRect(0, 0, canvas.width, canvas.height);
   } else {
-    // TODO: "center" the background
     context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
   }
 };
@@ -57,10 +55,6 @@ const drawTile = (canvas, tileImage, x, y) => {
  * @param {*} tiles dict maps tileId to tile obj
  */
 const drawTiles = (canvas, instructions, tiles) => {
-  const context = canvas.getContext("2d");
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
-  // safely assume slice contains all the tiles we need.
   const iSlice = (row, col) => {
     return (
       (row - instructions.sliceRowStart) * instructions.sliceCols +
@@ -89,13 +83,6 @@ const drawTiles = (canvas, instructions, tiles) => {
       isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y) ||
       isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.y)
     );
-  };
-  // compute the tile under the mouse
-  const getAbstractCor = (canX, canY) => {
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = canX / canvasToAbstractRatio + instructions.camX;
-    const retY = canY / canvasToAbstractRatio + instructions.camY;
-    return { x: retX, y: retY };
   };
   for (let i = 0; i < instructions.sliceCols; i++) {
     for (let j = 0; j < instructions.sliceRows; j++) {
@@ -135,9 +122,6 @@ const drawCharSprite = (canvas, charSpriteImage, charSpriteImageFlipped, x, y, i
 };
 
 const drawChar = (canvas, instructions, charSpriteImage, charSpriteImageFlipped) => {
-  const context = canvas.getContext("2d");
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
   const getCanvasCor = (absX, absY) => {
     const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
     const retX = (absX - instructions.camX) * canvasToAbstractRatio;
@@ -166,13 +150,8 @@ export const drawPlayCanvas = (
   charSpriteImageFlipped,
   backgroundImage
 ) => {
-  // // console.log(
-  //   `now drawing on edit canvas with cors mouseX: ${instructions.mouseX}, mouseY: ${instructions.mouseY}`
-  // );
-  // disable smoothing
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
-  // console.log("instructions camY: " + instructions.camY);
   clearCanvas(canvas);
   drawBackground(canvas, backgroundImage);
   drawTiles(canvas, instructions, tiles);

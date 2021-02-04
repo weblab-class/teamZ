@@ -71,12 +71,6 @@ const registerKeyUp = (playerId, key) => {
   if (!(playerId in playState.players)) return;
   const player = playState.players[playerId];
   player.keyDownMap[key] = false;
-  // if (
-  //   ((key === "a" && player.xspeed < 0) || (key === "d" && player.xspeed > 0)) &&
-  //   !onGround(playerId)
-  // ) {
-  //   player.xspeed = 0;
-  // }
   if (key === "a" || key === "d") {
     player.xspeed = 0;
   }
@@ -170,7 +164,6 @@ const modifyPlayer = (playerId, newValues) => {
 const restartPlayer = (playerId) => {
   if (!(playerId in playState.players)) return;
   playState.players[playerId].isRestarting = true;
-  // console.log("restart player in playLogic called");
 };
 
 const toAbstractCors = (canX, canY, camX, camY) => {
@@ -406,7 +399,6 @@ const updatePlayerPositions = () => {
 const clipCamera = (playerId) => {
   const player = playState.players[playerId];
   const level = playState.levels[player.levelId];
-  //  // console.log("playercamY before clip: " + player.camY);
   const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
   player.camX = Math.min(
     player.camX,
@@ -416,10 +408,8 @@ const clipCamera = (playerId) => {
     player.camY,
     Math.floor(level.rows * tileSize - player.canvasHeight / canvasToAbstractRatio)
   );
-  // // console.log("intermediate clip: " + player.camY);
   player.camX = Math.max(0, player.camX);
   player.camY = Math.max(0, player.camY);
-  // // console.log("playercamY after clip: " + player.camY);
   if (player.camY % 2 !== 0) {
     player.camY -= 1; // lazy fix
   }
@@ -446,15 +436,6 @@ const updateCameras = () => {
     centerCamera(playerId);
     clipCamera(playerId);
   });
-};
-
-const corsInGrid = (x, y, levelId) => {
-  return (
-    x >= 0 &&
-    y >= 0 &&
-    x < playState.levels[levelId].cols * tileSize &&
-    y < playState.levels[levelId].rows * tileSize
-  );
 };
 
 const updatePlayerRestart = (playerId) => {
@@ -487,11 +468,6 @@ const updatePlayerRestarts = () => {
  * called each frame. updates the game state
  */
 const update = () => {
-  // // console.log("printing level gridTiles");
-  // Object.keys(playState.players).forEach((playerId) => {
-  //   const level = playState.levels[playState.players[playerId].levelId];
-  //   // console.log(level.gridTiles);
-  // });
   updatePlayerRestarts();
   updatePlayerPositions();
   updateCameras();
@@ -555,8 +531,6 @@ const instructionsForPlayer = (playerId) => {
     restartFraction: player.restartTimer / restartCap,
     isFacingRight: player.isFacingRight,
   };
-  // console.log("camY unfloord: " + player.camY);
-  // console.log("returning camY: " + ret.camY);
   return ret;
 };
 

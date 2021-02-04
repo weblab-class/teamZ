@@ -385,7 +385,6 @@ const updateTiles = () => {
         ) {
           const row = Math.floor(mouseYAbs / tileSize);
           const col = Math.floor(mouseXAbs / tileSize);
-          // console.log(`placing tile at row ${row} , col ${col}`);
           level.gridTiles[row * level.cols + col] = tileIdToPlace;
         }
       }
@@ -464,9 +463,6 @@ const instructionsForPlayer = (playerId) => {
   const player = editState.players[playerId];
   const level = editState.levels[player.levelId];
   const sliceDict = getSlice(playerId);
-  // if (player.mouseX === 0 && player.mouseY === 0) {
-  //   console.log("about to send 0,0 mouseCors in instructionsForPlayer");
-  // }
   const ret = {
     availableTiles: level.availableTiles,
     currentTile: player.currentTile,

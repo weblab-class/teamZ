@@ -115,13 +115,11 @@ router.post("/newTile", (req, res) => {
   }
   uploadImagePromise(req.body.image)
     .then((imageName) => {
-      // console.log("imageName in newTile: " + imageName);
       return new Pattern({
         image: imageName,
       }).save();
     })
     .then((pattern) => {
-      // console.log("created pattern: ", pattern);
       return new Tile({
         name: req.body.name,
         layer: req.body.layer,
@@ -129,7 +127,6 @@ router.post("/newTile", (req, res) => {
       }).save();
     })
     .then((tile) => {
-      // console.log("created tile: ", tile);
       res.send(tile._id);
     })
     .catch((err) => {
@@ -151,13 +148,11 @@ router.post("/newImage", (req, res) => {
   }
   uploadImagePromise(req.body.image)
     .then((imageName) => {
-      // console.log("imageName in newTile: " + imageName);
       return new Pattern({
         image: imageName,
       }).save();
     })
     .then((pattern) => {
-      // console.log("created tile: ", tile);
       res.send(pattern._id);
     })
     .catch((err) => {
@@ -173,26 +168,16 @@ router.post("/newImage", (req, res) => {
  */
 router.post("/tilesWithId", async (req, res) => {
   console.log("user name and id: " + req.user.googleid + ", " + req.user.name);
-  // console.log("entered tilesWithId api call");
-  // console.log("req.body.tileIds: " + req.body.tileIds.toString());
   const tileIdList = req.body.tileIds;
-  // console.log("tileIdList var length: " + tileIdList.length);
   const ret = {};
   for (let i = 0; i < tileIdList.length; i++) {
-    // console.log("entered loop");
     const tileId = tileIdList[i];
-    // console.log("tileId variable: " + tileId);
-    // TODO fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
+    // fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
     // tileObject has to contain actual image
-    //console.log("inTilesWithId: trying to find tile with Id: " + tileId);
     const tile = await Tile.findOne({ _id: tileId });
-    //console.log("found tile: " + tile);
     const pattern = await Pattern.findOne({ _id: tile.image });
-    //console.log("found pattern: ", pattern);
     const imageName = pattern.image;
     const imString = await downloadImagePromise(imageName);
-    //console.log("found imageString: " + imString);
-    // console.log("found pattern, proof: " + pattern.image[0]);
     const tileObject = {
       _id: tile._id,
       name: tile.name,
@@ -201,7 +186,6 @@ router.post("/tilesWithId", async (req, res) => {
     };
     ret[tileId] = tileObject;
   }
-  // console.log("ret: length: " + Object.keys(ret).length);
   res.send(ret);
 });
 
@@ -250,21 +234,6 @@ router.post("/save", async (req, res) => {
 router.post("/joinLevel", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
   const levelCopy = {};
-  /*
-  title: String,
-  description: String,
-  creator: { type: ObjectId, ref: "user" },
-  emptyTile: { type: ObjectId, ref: "tile" },
-  rows: Number,
-  cols: Number,
-  gridTiles: [{ type: ObjectId, ref: "tile" }], // of Tile, length should be exactly rows * cols
-  availableTiles: [{ type: ObjectId, ref: "tile" }], // of Tile
-  startX: Number, // x_cor of character spawn point
-  startY: Number, // y_cor of character spawn point
-  charSprite: { type: ObjectId, ref: "pattern" }, // facing right
-  background: { type: ObjectId, ref: "pattern" },
-  */
-
   for (let i = 0; i < attributesOfLevel.length; i++) {
     const attr = attributesOfLevel[i];
     levelCopy[attr] = level[attr];
@@ -290,23 +259,6 @@ router.post("/joinGame", async (req, res) => {
       iPop++;
     }
   }
-  // console.log("---BEGIN TEST---");
-  // console.log("level.gridTiles len: " + level.gridTiles.length);
-  // let count = 0;
-  // for (let i = 0; i < level.gridTiles.length; i++) {
-  //   if (level.gridTiles[i] === null) {
-  //     count++;
-  //   }
-  // }
-  // console.log(`Found ${count} instances of null in gridTiles`);
-  // const levelPopulated = await Level.findOne({ _id: req.body.levelId }).populate("gridTiles");
-  // console.log("length of populated gridTiles: " + levelPopulated.gridTiles.length);
-  // console.log("---END TEST");
-  // const gridTileArr = [];
-  // for (let i = 0; i < level.gridTiles.length; i++) {
-  //   const tileObject = await Tile.findOne({ _id: level.gridTiles[i] });
-  //   gridTileArr.push(tileObject);
-  // }
   // assume level has all fields required as specified in editLogic
   playLogic.addPlayer(
     req.user._id,

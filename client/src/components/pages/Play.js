@@ -13,13 +13,8 @@ import { tileSize, tileSizeOnCanvas } from "../../../../constants";
 class Play extends Component {
   constructor(props) {
     super(props);
+    // props: levelId, didComeFromEditor
     this.canvas = null;
-    const emptyFn = () => {
-      console.log("empty fn");
-    };
-    // for now, the only prop the play page should take is :levelId
-    // also takes :didComeFromEditor prop
-    // Initialize Default State
     this.fetching = {};
     this.lastFetchedCharSprite = null;
     this.charSprite = null;
@@ -28,7 +23,7 @@ class Play extends Component {
     this.lastFetchedBackground = null;
     this.background = null;
     this.backgroundImage = null;
-    this.clearInputFn = emptyFn;
+    this.clearInputFn = () => {};
     this.tiles = {};
     this.state = {
       loaded: false,
@@ -78,14 +73,10 @@ class Play extends Component {
     }
     if (tilesToFetch.length > 0) {
       this.fetching = await Object.assign({}, this.fetching, fetchingDict);
-      post("/api/tilesWithId", { tileIds: tilesToFetch }).then(async (tileDict) => {
-        // image is STRING
-        // // console.log("received tileDict from tilesWithID call");
-        await Object.keys(tileDict).forEach((tileId) => {
-          // // console.log("one key in loop: " + tileId);
+      post("/api/tilesWithId", { tileIds: tilesToFetch }).then((tileDict) => {
+        Object.keys(tileDict).forEach((tileId) => {
           const tileObject = tileDict[tileId];
           const imString = tileObject.image;
-          // console.log("got imString in edit.js: " + imString);
           const img = document.createElement("img");
           img.onload = () => {
             createImageBitmap(img).then((bitmap) => {
@@ -98,7 +89,6 @@ class Play extends Component {
             });
           };
           img.src = imString;
-          // console.log("img: ", img);
         });
       });
     }
@@ -109,7 +99,6 @@ class Play extends Component {
         this.charSpriteImage = null;
         this.charSpriteImageFlipped = null;
       } else {
-        // console.log("update.charSprite: " + update.charSprite);
         post("/api/fetchImage", { patternId: update.charSprite }).then((imObj) => {
           const imString = imObj.image;
           const img = document.createElement("img");
@@ -140,7 +129,6 @@ class Play extends Component {
         this.background = null;
         this.backgroundImage = null;
       } else {
-        // console.log("update.background: " + update.background);
         post("/api/fetchImage", { patternId: update.background }).then((imObj) => {
           const imString = imObj.image;
           const img = document.createElement("img");
