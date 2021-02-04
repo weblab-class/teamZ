@@ -2,13 +2,11 @@ import React, { Component } from "react";
 
 import "../../../utilities.css";
 
-import { tileSize } from "../../../../../constants.js";
 class SettingsBackground extends Component {
   constructor(props) {
-    // for now only prop is onSubmit(image)
+    // only prop is onSubmit(image)
     super(props);
     this.state = {
-      // TODO: initialize state
       image: null,
     };
   }
@@ -19,7 +17,7 @@ class SettingsBackground extends Component {
     this.readImage(fileInput.files[0])
       .then((image) => {
         // fileInput.value = null;
-        // scale image down to 16 x 16
+        // scale image down to at most 150 pixels tall or wide
         const img = document.createElement("img");
         img.onload = () => {
           const canvas = document.createElement("canvas");

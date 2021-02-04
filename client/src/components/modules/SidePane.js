@@ -92,7 +92,7 @@ class SidePane extends Component {
                   context.clearRect(0, 0, canvas.width, canvas.height);
                   context.drawImage(im, 0, 0, canvas.width, canvas.height);
                 } else {
-                  // hard code eraser tile as blank for now:
+                  // eraser tile is blank for now:
                   context.clearRect(0, 0, canvas.width, canvas.height);
                 }
               }

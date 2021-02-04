@@ -22,23 +22,19 @@ import TileDesignerModal from "../modules/TileDesignerModal.js";
 import "../../utilities.css";
 import "./Edit.css";
 
-import { tileSize } from "../../../../constants";
 class Edit extends Component {
   constructor(props) {
     super(props);
     this.canvas = null;
-    const emptyFn = () => {
-      console.log("empty fn");
-    };
     // for now, the only prop the Edit page should take is :levelId
     // Initialize Default State
     this.fetching = {};
     this.lastFetchedCharSprite = null;
     this.lastFetchedBackground = null;
-    this.clearInputFn = emptyFn;
+    this.clearInputFn = () => {};
     this.state = {
       tiles: {}, // maps tileId to tile object, including actual images
-      //            tile object has name, layer, image attributes
+      //         // tile object has name, layer, image attributes
       charSprite: null,
       charSpriteImage: null,
       background: null,
@@ -65,7 +61,6 @@ class Edit extends Component {
       this.clearInputFn = clearInputFn;
     });
     socket.on("update", (update) => {
-      // console.log(`mouseX: ${update.mouseX}, mouseY: ${update.mouseY}`);
       this.processUpdate(update);
     });
   }
@@ -94,22 +89,14 @@ class Edit extends Component {
       }
     }
     if (tilesToFetch.length > 0) {
-      this.fetching = await Object.assign({}, this.fetching, fetchingDict);
-      // Object.keys(this.state.fetching).forEach((key) => {
-      //   console.log("a key in fetching: " + key);
-      // });
-      post("/api/tilesWithId", { tileIds: tilesToFetch }).then(async (tileDict) => {
-        // image is STRING
-        // console.log("received tileDict from tilesWithID call");
-        await Object.keys(tileDict).forEach((tileId) => {
-          // console.log("one key in loop: " + tileId);
+      this.fetching = Object.assign({}, this.fetching, fetchingDict);
+      post("/api/tilesWithId", { tileIds: tilesToFetch }).then((tileDict) => {
+        Object.keys(tileDict).forEach((tileId) => {
           const tileObject = tileDict[tileId];
           const imString = tileObject.image;
-          console.log("got imString in edit.js: " + imString);
           const img = document.createElement("img");
           img.onload = () => {
             createImageBitmap(img).then((bitmap) => {
-              // console.log("created butmap successfully: " + bitmap);
               const newEntry = {};
               newEntry[tileId] = {
                 _id: tileObject._id,
@@ -123,7 +110,6 @@ class Edit extends Component {
             });
           };
           img.src = imString;
-          console.log("img: ", img);
         });
       });
     }
@@ -137,7 +123,6 @@ class Edit extends Component {
           return { charSprite: null, charSpriteImage: null };
         });
       } else {
-        console.log("update.charSprite: " + update.charSprite);
         post("/api/fetchImage", { patternId: update.charSprite }).then((imObj) => {
           const imString = imObj.image;
           const img = document.createElement("img");
@@ -162,7 +147,6 @@ class Edit extends Component {
           return { background: null, backgroundImage: null };
         });
       } else {
-        console.log("update.background: " + update.background);
         post("/api/fetchImage", { patternId: update.background }).then((imObj) => {
           const imString = imObj.image;
           const img = document.createElement("img");
@@ -205,47 +189,36 @@ class Edit extends Component {
   };
 
   /**
-   * @param image has to be a bas64 encoded string
+   * @param image has to be a base64 encoded string
    */
   createTile = (tileName, layer, image) => {
-    // console.log(`TileName: ${tileName}, layer: ${layer}, image: ${image}`);
     post("/api/newTile", {
       name: tileName,
       layer: layer,
       image: image,
     }).then((tileId) => {
-      // consider adding this new tile to state locally, without relying on api call
-      // console.log("created tile with id: " + tileId);
       addTile(tileId);
     });
   };
 
-  /**
-   *
-   * @param {*} image base64 encoded str
-   */
-  changeCharSprite = (image) => {
+  changeAttr = (image, attr) => {
     if (image === null) {
-      modifyLevel({ charSprite: null });
+      modifyLevel({ [attr]: null });
       return;
     }
     post("/api/newImage", {
       image: image,
     }).then((patternId) => {
-      modifyLevel({ charSprite: patternId });
+      modifyLevel({ [attr]: patternId });
     });
   };
 
+  changeCharSprite = (image) => {
+    this.changeAttr(image, "charSprite");
+  };
+
   changeBackground = (image) => {
-    if (image === null) {
-      modifyLevel({ background: null });
-      return;
-    }
-    post("/api/newImage", {
-      image: image,
-    }).then((patternId) => {
-      modifyLevel({ background: patternId });
-    });
+    this.changeAttr(image, "background");
   };
 
   render() {

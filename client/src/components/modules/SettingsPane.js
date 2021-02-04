@@ -17,19 +17,18 @@ class SettingsPane extends Component {
     // props needed:
     //  - title
     //  - description
-    //-isPublished
+    //  - isPublished
     //  - rows
     //  - cols
     //  - changeCharSprite
     //  - onCancel (e.g. the red X button on top right to close settingsPane)
     this.state = {
       displayPaneOption: 0,
-      // five kinds of panes
+      // four kinds of panes
       // - General
       // - Level Size
       // - Character
       // - Background
-      // - Sharing
     };
   }
 

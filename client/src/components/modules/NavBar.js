@@ -6,7 +6,8 @@ import CreateLevelForm from "./CreateLevelForm.js";
 import "../../utilities.css";
 import "./NavBar.css";
 
-const GOOGLE_CLIENT_ID = "968597986163-jb2ki4cdo7df3jfui7j1vshv8vc2j3dp.apps.googleusercontent.com";
+import { GOOGLE_CLIENT_ID } from "../../../../constants.js";
+
 class NavBar extends Component {
   constructor(props) {
     super(props);
