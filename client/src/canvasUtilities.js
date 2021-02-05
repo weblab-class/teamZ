@@ -104,3 +104,33 @@ export const drawCharSprite = (
     }
   }
 };
+
+/**
+ * Draws a tile on the canvas.
+ * @param {*} canvas canvas
+ * @param {*} tileImage a CanvasImageSource representing the image of the tile. If null, then the
+ *                      empty tile is drawn.
+ * @param {*} x top-left x cor of tile
+ * @param {*} y top-left y cor of tile
+ * @param {*} isInEditor boolean: are you drawing this tile in the level editor?
+ */
+export const drawTile = (canvas, tileImage, x, y, isInEditor) => {
+  const context = canvas.getContext("2d");
+  if (tileImage === null) {
+    // if null, draw semi-opaque rect if in editor. else, do nothing.
+    if (isInEditor) {
+      context.strokeStyle = "rgba(0,0,0,0)";
+      context.fillStyle = "rgba(240,240,240,0.21)";
+      context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+    }
+  } else {
+    // tileImage is not null
+    context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  }
+  // draw border if in editor
+  if (isInEditor) {
+    context.strokeStyle = "rgba(200,200,200,0.8)";
+    context.lineWidth = 2;
+    context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
+  }
+};

@@ -1,13 +1,11 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
-import { clearCanvas, drawBackground, drawShade, drawCharSprite } from "./canvasUtilities.js";
-
-/**Draws tile */
-const drawTile = (canvas, tileImage, x, y) => {
-  const context = canvas.getContext("2d");
-  if (tileImage !== null) {
-    context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-  }
-};
+import {
+  clearCanvas,
+  drawBackground,
+  drawShade,
+  drawCharSprite,
+  drawTile,
+} from "./canvasUtilities.js";
 
 /**
  * Draws all tiles on the level editor canvas given instructions.
@@ -63,7 +61,7 @@ const drawTiles = (canvas, instructions, tiles) => {
       if (isTileOnCanvas(row, col)) {
         const tileId = instructions.slice[iSlice(row, col)];
         const tileImage = tileId in tiles ? tiles[tileId].image : null;
-        drawTile(canvas, tileImage, Math.floor(canvasCors.x), Math.floor(canvasCors.y));
+        drawTile(canvas, tileImage, Math.floor(canvasCors.x), Math.floor(canvasCors.y), false);
       }
     }
   }

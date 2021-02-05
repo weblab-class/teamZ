@@ -1,26 +1,11 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
-import { clearCanvas, drawBackground, darken, drawCharSprite } from "./canvasUtilities.js";
-
-const drawTile = (canvas, tileImage, x, y, isDarkened) => {
-  const context = canvas.getContext("2d");
-  if (tileImage === null) {
-    // if null, draw semi-opaque rect
-    context.strokeStyle = "rgba(0,0,0,0)";
-    context.fillStyle = "rgba(240,240,240,0.21)";
-    if (isDarkened) {
-      context.fillStyle = "rgba(240,240,240,0.425)";
-    }
-    context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-  } else {
-    // tileImage is not null
-    context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    if (isDarkened) darken(canvas, x, y);
-  }
-  // draw border
-  context.strokeStyle = "rgba(200,200,200,0.8)";
-  context.lineWidth = 2;
-  context.strokeRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-};
+import {
+  clearCanvas,
+  drawBackground,
+  darken,
+  drawCharSprite,
+  drawTile,
+} from "./canvasUtilities.js";
 
 /**
  * Draws all tiles on the level editor canvas given instructions.
@@ -88,7 +73,10 @@ const drawTiles = (canvas, instructions, tiles) => {
         const shouldDarken = col === colMouse && row === rowMouse;
         const tileId = instructions.slice[iSlice(row, col)];
         const tileImage = tileId in tiles ? tiles[tileId].image : null;
-        drawTile(canvas, tileImage, canvasCors.x, canvasCors.y, shouldDarken);
+        drawTile(canvas, tileImage, canvasCors.x, canvasCors.y, true);
+        if (shouldDarken) {
+          darken(canvas, canvasCors.x, canvasCors.y);
+        }
       }
     }
   }
