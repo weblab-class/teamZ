@@ -6,6 +6,7 @@ import {
   drawCharSprite,
   drawTile,
 } from "./canvasUtilities.js";
+import { toAbstractCors, toCanvasCors, isTileOnCanvas } from "../../logicUtilities.js";
 
 /**
  * Draws all tiles on the level editor canvas given instructions.
@@ -30,35 +31,20 @@ const drawTiles = (canvas, instructions, tiles) => {
       (col - instructions.sliceColStart)
     );
   };
-  const getCanvasCor = (absX, absY) => {
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = (absX - instructions.camX) * canvasToAbstractRatio;
-    const retY = (absY - instructions.camY) * canvasToAbstractRatio;
-    return { x: retX, y: retY };
-  };
-  const isPixelOnCanvas = (x, y) => {
-    return x >= 0 && y >= 0 && x < canvas.width && y < canvas.height;
-  };
-  const isTileOnCanvas = (row, col) => {
-    // abstract (x,y) topleft of tile is (col * tileSize, row * tileSize)
-    const topLeftTileCanvas = getCanvasCor(col * tileSize, row * tileSize);
-    const bottomRightTileCanvas = getCanvasCor(
-      col * tileSize + tileSize - 1,
-      row * tileSize + tileSize - 1
-    );
-    return (
-      isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y) ||
-      isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.y)
-    );
-  };
+
   for (let i = 0; i < instructions.sliceCols; i++) {
     for (let j = 0; j < instructions.sliceRows; j++) {
       const col = i + instructions.sliceColStart;
       const row = j + instructions.sliceRowStart;
-      const canvasCors = getCanvasCor(col * tileSize, row * tileSize);
-      if (isTileOnCanvas(row, col)) {
+      const canvasCors = toCanvasCors(
+        col * tileSize,
+        row * tileSize,
+        instructions.camX,
+        instructions.camY
+      );
+      if (
+        isTileOnCanvas(row, col, instructions.camX, instructions.camY, canvas.width, canvas.height)
+      ) {
         const tileId = instructions.slice[iSlice(row, col)];
         const tileImage = tileId in tiles ? tiles[tileId].image : null;
         drawTile(canvas, tileImage, Math.floor(canvasCors.x), Math.floor(canvasCors.y), false);
@@ -68,13 +54,12 @@ const drawTiles = (canvas, instructions, tiles) => {
 };
 
 const drawChar = (canvas, instructions, charSpriteImage, charSpriteImageFlipped) => {
-  const getCanvasCor = (absX, absY) => {
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = (absX - instructions.camX) * canvasToAbstractRatio;
-    const retY = (absY - instructions.camY) * canvasToAbstractRatio;
-    return { x: retX, y: retY };
-  };
-  const charCanvasCors = getCanvasCor(instructions.x, instructions.y);
+  const charCanvasCors = toCanvasCors(
+    instructions.x,
+    instructions.y,
+    instructions.camX,
+    instructions.camY
+  );
   drawCharSprite(
     canvas,
     charSpriteImage,

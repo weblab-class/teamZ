@@ -6,7 +6,7 @@ import {
   drawCharSprite,
   drawTile,
 } from "./canvasUtilities.js";
-import { toCanvasCors, toAbstractCors } from "../../logicUtilities.js";
+import { toCanvasCors, toAbstractCors, isTileOnCanvas } from "../../logicUtilities.js";
 
 /**
  * Draws all tiles on the level editor canvas given instructions.
@@ -32,30 +32,6 @@ const drawTiles = (canvas, instructions, tiles) => {
       (col - instructions.sliceColStart)
     );
   };
-  const isPixelOnCanvas = (x, y) => {
-    return x >= 0 && y >= 0 && x < canvas.width && y < canvas.height;
-  };
-  const isTileOnCanvas = (row, col) => {
-    // abstract (x,y) topleft of tile is (col * tileSize, row * tileSize)
-    const topLeftTileCanvas = toCanvasCors(
-      col * tileSize,
-      row * tileSize,
-      instructions.camX,
-      instructions.camY
-    );
-    const bottomRightTileCanvas = toCanvasCors(
-      col * tileSize + tileSize - 1,
-      row * tileSize + tileSize - 1,
-      instructions.camX,
-      instructions.camY
-    );
-    return (
-      isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, bottomRightTileCanvas.y) ||
-      isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y) ||
-      isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.y)
-    );
-  };
   // compute the tile under the mouse
   const absMouseCors = toAbstractCors(
     instructions.mouseX,
@@ -75,7 +51,9 @@ const drawTiles = (canvas, instructions, tiles) => {
         instructions.camX,
         instructions.camY
       );
-      if (isTileOnCanvas(row, col)) {
+      if (
+        isTileOnCanvas(row, col, instructions.camX, instructions.camY, canvas.width, canvas.height)
+      ) {
         const shouldDarken = col === colMouse && row === rowMouse;
         const tileId = instructions.slice[iSlice(row, col)];
         const tileImage = tileId in tiles ? tiles[tileId].image : null;
