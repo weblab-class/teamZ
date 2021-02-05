@@ -6,6 +6,7 @@ import {
   drawCharSprite,
   drawTile,
 } from "./canvasUtilities.js";
+import { toCanvasCors, toAbstractCors } from "../../logicUtilities.js";
 
 /**
  * Draws all tiles on the level editor canvas given instructions.
@@ -31,21 +32,22 @@ const drawTiles = (canvas, instructions, tiles) => {
       (col - instructions.sliceColStart)
     );
   };
-  const getCanvasCor = (absX, absY) => {
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = (absX - instructions.camX) * canvasToAbstractRatio;
-    const retY = (absY - instructions.camY) * canvasToAbstractRatio;
-    return { x: retX, y: retY };
-  };
   const isPixelOnCanvas = (x, y) => {
     return x >= 0 && y >= 0 && x < canvas.width && y < canvas.height;
   };
   const isTileOnCanvas = (row, col) => {
     // abstract (x,y) topleft of tile is (col * tileSize, row * tileSize)
-    const topLeftTileCanvas = getCanvasCor(col * tileSize, row * tileSize);
-    const bottomRightTileCanvas = getCanvasCor(
+    const topLeftTileCanvas = toCanvasCors(
+      col * tileSize,
+      row * tileSize,
+      instructions.camX,
+      instructions.camY
+    );
+    const bottomRightTileCanvas = toCanvasCors(
       col * tileSize + tileSize - 1,
-      row * tileSize + tileSize - 1
+      row * tileSize + tileSize - 1,
+      instructions.camX,
+      instructions.camY
     );
     return (
       isPixelOnCanvas(topLeftTileCanvas.x, topLeftTileCanvas.y) ||
@@ -55,20 +57,24 @@ const drawTiles = (canvas, instructions, tiles) => {
     );
   };
   // compute the tile under the mouse
-  const getAbstractCor = (canX, canY) => {
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = canX / canvasToAbstractRatio + instructions.camX;
-    const retY = canY / canvasToAbstractRatio + instructions.camY;
-    return { x: retX, y: retY };
-  };
-  const absMouseCors = getAbstractCor(instructions.mouseX, instructions.mouseY);
+  const absMouseCors = toAbstractCors(
+    instructions.mouseX,
+    instructions.mouseY,
+    instructions.camX,
+    instructions.camY
+  );
   const colMouse = Math.floor(absMouseCors.x / tileSize);
   const rowMouse = Math.floor(absMouseCors.y / tileSize);
   for (let i = 0; i < instructions.sliceCols; i++) {
     for (let j = 0; j < instructions.sliceRows; j++) {
       const col = i + instructions.sliceColStart;
       const row = j + instructions.sliceRowStart;
-      const canvasCors = getCanvasCor(col * tileSize, row * tileSize);
+      const canvasCors = toCanvasCors(
+        col * tileSize,
+        row * tileSize,
+        instructions.camX,
+        instructions.camY
+      );
       if (isTileOnCanvas(row, col)) {
         const shouldDarken = col === colMouse && row === rowMouse;
         const tileId = instructions.slice[iSlice(row, col)];
@@ -84,20 +90,18 @@ const drawTiles = (canvas, instructions, tiles) => {
 
 const drawChar = (canvas, instructions, charSpriteImage) => {
   // first, draw character.
-  const getCanvasCor = (absX, absY) => {
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = (absX - instructions.camX) * canvasToAbstractRatio;
-    const retY = (absY - instructions.camY) * canvasToAbstractRatio;
-    return { x: retX, y: retY };
-  };
-  const getAbstractCor = (canX, canY) => {
-    const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-    const retX = canX / canvasToAbstractRatio + instructions.camX;
-    const retY = canY / canvasToAbstractRatio + instructions.camY;
-    return { x: retX, y: retY };
-  };
-  const charCanvasCors = getCanvasCor(instructions.startX, instructions.startY);
-  const mouseAbsCors = getAbstractCor(instructions.mouseX, instructions.mouseY);
+  const charCanvasCors = toCanvasCors(
+    instructions.startX,
+    instructions.startY,
+    instructions.camX,
+    instructions.camY
+  );
+  const mouseAbsCors = toAbstractCors(
+    instructions.mouseX,
+    instructions.mouseY,
+    instructions.camX,
+    instructions.camY
+  );
   const playerMouseOnChar =
     instructions.startX <= mouseAbsCors.x &&
     mouseAbsCors.x < instructions.startX + tileSize &&
@@ -111,7 +115,6 @@ const drawChar = (canvas, instructions, charSpriteImage) => {
 };
 
 export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
-  // don't smooth:
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
   clearCanvas(canvas);

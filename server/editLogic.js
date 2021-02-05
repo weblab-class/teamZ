@@ -64,11 +64,7 @@ const registerKeyUp = (playerId, key) => {
 };
 
 const registerMouseMove = (playerId, newX, newY) => {
-  // console.log(`registerMouseMove is called with args: newX: ${newX}, newY: ${newY}`);
   if (!(playerId in editState.players)) return;
-  // if (Math.floor(newX) === 0 && Math.floor(newY) === 0) {
-  //   console.log("registerMouseMove called with floored args newX 0, newY 0");
-  // }
   editState.players[playerId].mouseX = Math.floor(newX);
   editState.players[playerId].mouseY = Math.floor(newY);
 };
