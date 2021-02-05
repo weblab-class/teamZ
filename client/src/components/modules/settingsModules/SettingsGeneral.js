@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import "../../../utilities.css";
 import "../SettingsPane.css";
 
-const menuStrings = ["General", "Level Size", "Character", "Background", "Sharing"];
 class SettingsGeneral extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +18,6 @@ class SettingsGeneral extends Component {
   }
 
   render() {
-    console.log("settingsGeneral received: " + this.props.title);
     return (
       <div className="settingsGeneralContainer">
         <div className="u-inputContainer">

@@ -7,6 +7,7 @@ import "./CreateLevelForm.css";
 
 const defaultRows = 25;
 const defaultCols = 40;
+
 class CreateLevelForm extends Component {
   constructor(props) {
     super(props);
@@ -36,8 +37,8 @@ class CreateLevelForm extends Component {
       cols: cols,
       gridTiles: gridTiles,
       availableTiles: [],
-      startX: 0,
-      startY: 0,
+      startX: 8,
+      startY: 8,
       charSprite: null,
       background: null,
       isPublished: false,

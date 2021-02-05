@@ -1,37 +1,8 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
-
-import defaultChar from "/client/src/public/defaultChar.png";
-let defaultCharSprite = null;
-const img = document.createElement("img");
-img.onload = () => {
-  // console.log("default char img loaded");
-  createImageBitmap(img).then((bitmap) => {
-    defaultCharSprite = bitmap;
-  });
-};
-img.src = defaultChar;
-
-const drawShade = (canvas, perc) => {
-  const context = canvas.getContext("2d");
-  if (perc > 0) {
-    context.fillStyle = `rgba(0,0,0,${1 - 2 * Math.abs(0.5 - perc)})`;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  }
-};
-
-const drawBackground = (canvas, backgroundImage) => {
-  const context = canvas.getContext("2d");
-  if (backgroundImage === null) {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  } else {
-    context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  }
-};
+import { clearCanvas, drawBackground, drawShade, drawCharSprite } from "./canvasUtilities.js";
 
 /**Draws tile */
 const drawTile = (canvas, tileImage, x, y) => {
-  // // console.log(`drawTile(x: ${x}, y: ${y})`);
   const context = canvas.getContext("2d");
   if (tileImage !== null) {
     context.drawImage(tileImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
@@ -98,29 +69,6 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
-const drawCharSprite = (canvas, charSpriteImage, charSpriteImageFlipped, x, y, isFacingRight) => {
-  const context = canvas.getContext("2d");
-  if (charSpriteImage === null) {
-    if (defaultCharSprite === null) {
-      context.fillStyle = "rgba(230,230,230,1)";
-      context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    } else {
-      context.drawImage(defaultCharSprite, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    }
-  } else {
-    if (isFacingRight) {
-      context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    } else {
-      if (charSpriteImageFlipped !== null) {
-        context.drawImage(charSpriteImageFlipped, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-      } else {
-        console.log("null flipped img, drawwing unflipped img");
-        context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-      }
-    }
-  }
-};
-
 const drawChar = (canvas, instructions, charSpriteImage, charSpriteImageFlipped) => {
   const getCanvasCor = (absX, absY) => {
     const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
@@ -138,10 +86,7 @@ const drawChar = (canvas, instructions, charSpriteImage, charSpriteImageFlipped)
     instructions.isFacingRight
   );
 };
-const clearCanvas = (canvas) => {
-  const context = canvas.getContext("2d");
-  context.clearRect(0, 0, canvas.width, canvas.height);
-};
+
 export const drawPlayCanvas = (
   canvas,
   instructions,

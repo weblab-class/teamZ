@@ -4,19 +4,19 @@ import "../../../utilities.css";
 
 class SettingsBackground extends Component {
   constructor(props) {
-    // only prop is onSubmit(image)
+    // prop onSubmit, onCancel
     super(props);
     this.state = {
       image: null,
     };
   }
 
+  // helper fn used to handle image uploads
   uploadImage = (event) => {
     const fileInput = event.target;
     console.log(fileInput);
     this.readImage(fileInput.files[0])
       .then((image) => {
-        // fileInput.value = null;
         // scale image down to at most 150 pixels tall or wide
         const img = document.createElement("img");
         img.onload = () => {

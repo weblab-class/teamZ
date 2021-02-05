@@ -84,8 +84,6 @@ const registerKeyUp = (playerId, key) => {
  * @param {*} canvasHeight
  */
 const addPlayer = (playerId, level, modifiedGridTilesArr, canvasWidth, canvasHeight) => {
-  // console.log("addPlayer called, with modified array arg ");
-  // console.log("with len: " + modifiedGridTilesArr.length);
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
@@ -164,14 +162,6 @@ const modifyPlayer = (playerId, newValues) => {
 const restartPlayer = (playerId) => {
   if (!(playerId in playState.players)) return;
   playState.players[playerId].isRestarting = true;
-};
-
-const toAbstractCors = (canX, canY, camX, camY) => {
-  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-  return {
-    x: Math.floor(canX / canvasToAbstractRatio + camX),
-    y: Math.floor(canY / canvasToAbstractRatio + camY),
-  };
 };
 
 // ... helper functions for update ...
@@ -394,7 +384,7 @@ const updatePlayerPositions = () => {
 };
 
 /**
- * mutates player camera to be good.
+ * mutates player camera position to be good e.g. not offscreen
  */
 const clipCamera = (playerId) => {
   const player = playState.players[playerId];

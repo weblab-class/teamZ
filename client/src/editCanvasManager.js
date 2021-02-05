@@ -1,37 +1,5 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
-
-import defaultChar from "/client/src/public/defaultChar.png";
-let defaultCharSprite = null;
-const img = document.createElement("img");
-img.onload = () => {
-  console.log("default char img loaded");
-  createImageBitmap(img).then((bitmap) => {
-    defaultCharSprite = bitmap;
-  });
-};
-img.src = defaultChar;
-
-/**
- * Darkens a square at (x,y) of size `tileSizeOnCanvas`
- * @param {*} canvas
- * @param {*} x
- * @param {*} y
- */
-const darken = (canvas, x, y) => {
-  const context = canvas.getContext("2d");
-  context.fillStyle = "rgba(0, 0, 0, .4)";
-  context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-};
-
-const drawBackground = (canvas, backgroundImage) => {
-  const context = canvas.getContext("2d");
-  if (backgroundImage === null) {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  } else {
-    context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  }
-};
+import { clearCanvas, drawBackground, darken, drawCharSprite } from "./canvasUtilities.js";
 
 const drawTile = (canvas, tileImage, x, y, isDarkened) => {
   const context = canvas.getContext("2d");
@@ -126,23 +94,6 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
-const drawCharSprite = (canvas, charSpriteImage, x, y, isDarkened) => {
-  const context = canvas.getContext("2d");
-  if (charSpriteImage === null) {
-    if (defaultCharSprite === null) {
-      context.fillStyle = "rgba(230,230,230,1)";
-      context.fillRect(x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    } else {
-      context.drawImage(defaultCharSprite, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-    }
-  } else {
-    context.drawImage(charSpriteImage, x, y, tileSizeOnCanvas, tileSizeOnCanvas);
-  }
-  if (isDarkened) {
-    darken(canvas, x, y);
-  }
-};
-
 const drawChar = (canvas, instructions, charSpriteImage) => {
   // first, draw character.
   const getCanvasCor = (absX, absY) => {
@@ -165,12 +116,10 @@ const drawChar = (canvas, instructions, charSpriteImage) => {
     instructions.startY <= mouseAbsCors.y &&
     mouseAbsCors.y < instructions.startY + tileSize;
   const shouldDarken = playerMouseOnChar || instructions.isDraggingChar;
-  drawCharSprite(canvas, charSpriteImage, charCanvasCors.x, charCanvasCors.y, shouldDarken);
-};
-
-const clearCanvas = (canvas) => {
-  const context = canvas.getContext("2d");
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  drawCharSprite(canvas, charSpriteImage, null, charCanvasCors.x, charCanvasCors.y, true);
+  if (shouldDarken) {
+    darken(canvas, charCanvasCors.x, charCanvasCors.y);
+  }
 };
 
 export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {

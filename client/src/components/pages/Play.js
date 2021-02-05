@@ -10,6 +10,8 @@ import "../../utilities.css";
 import "./Play.css";
 
 import { tileSize, tileSizeOnCanvas } from "../../../../constants";
+
+// page for playing a level
 class Play extends Component {
   constructor(props) {
     super(props);
@@ -159,7 +161,6 @@ class Play extends Component {
         <canvas
           ref={(canvas) => {
             if (!canvas) {
-              // console.log("no canvas play");
               return;
             }
             this.canvas = canvas;

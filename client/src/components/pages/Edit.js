@@ -22,14 +22,15 @@ import TileDesignerModal from "../modules/TileDesignerModal.js";
 import "../../utilities.css";
 import "./Edit.css";
 
+// The level editor page.
 class Edit extends Component {
   constructor(props) {
     super(props);
     this.canvas = null;
-    // for now, the only prop the Edit page should take is :levelId
+    // the only prop the Edit page should take is `levelId`
     // Initialize Default State
-    this.fetching = {};
-    this.lastFetchedCharSprite = null;
+    this.fetching = {}; // the set of tileIds that this component has ever sent a fetch request for.
+    this.lastFetchedCharSprite = null; // the id of the last pattern this component has sent a fetch for.
     this.lastFetchedBackground = null;
     this.clearInputFn = () => {};
     this.state = {
@@ -75,7 +76,7 @@ class Edit extends Component {
     return this.canvas;
   };
 
-  processUpdate = async (update) => {
+  processUpdate = (update) => {
     if (this.getCanvas() === null) return; //do nothing if no canvas
     //before drawing, check if update includes any new tiles.
     const updateAvailableTiles = update.availableTiles;

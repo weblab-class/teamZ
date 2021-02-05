@@ -6,9 +6,10 @@ import "./TileDesigner.css";
 
 import { tileSize } from "../../../../constants.js";
 
-const pixelsPerPixel = 32;
+const pixelsPerPixel = 32; // size of a checkerboard square on the canvas, in pixels.
 const transparent = "rgba(0,0,0,0)";
 
+// creates an array of length `len`, where each slot is initialized to `val`
 const arrOf = (len, val) => {
   const ret = [];
   for (let i = 0; i < len; i++) {
@@ -17,6 +18,7 @@ const arrOf = (len, val) => {
   return ret;
 };
 
+// a component to design a 16x16 image. supports upload or drawing on 16x16 canvas
 class TileDesigner extends Component {
   constructor(props) {
     super(props);
@@ -29,20 +31,26 @@ class TileDesigner extends Component {
       isErasing: false,
     };
   }
+
   registerMouseDown = (e) => {
     this.isMouseDown = true;
   };
+
   registerMouseUp = (e) => {
     this.isMouseDown = false;
   };
+
   componentDidMount() {
     window.addEventListener("mousedown", this.registerMouseDown);
     window.addEventListener("mouseup", this.registerMouseUp);
   }
+
   componentWillUnmount() {
     window.removeEventListener("mousedown", this.registerMouseDown);
     window.removeEventListener("mouseup", this.registerMouseUp);
   }
+
+  // helper fn used to handle image uploads
   uploadImage = (event) => {
     const fileInput = event.target;
     console.log(fileInput);
@@ -203,11 +211,7 @@ class TileDesigner extends Component {
               canvas.width = pixelsPerPixel;
               canvas.height = pixelsPerPixel;
               this.canvases[row * tileSize + col] = canvas;
-              this.drawPixelSquare(
-                canvas,
-                row * tileSize + col,
-                this.pixels[row * tileSize + col] //this.state.pixels[row * tileSize + col]
-              );
+              this.drawPixelSquare(canvas, row * tileSize + col, this.pixels[row * tileSize + col]);
             }}
           />
         );
@@ -253,25 +257,19 @@ class TileDesigner extends Component {
                 Erase
               </div>
               <div
-                onClick={
-                  (e) => {
-                    this.pixels = arrOf(tileSize * tileSize, this.state.color);
-                    this.redrawPixels();
-                  }
-                  //this.setState({ pixels: arrOf(tileSize * tileSize, this.state.color) })
-                }
+                onClick={(e) => {
+                  this.pixels = arrOf(tileSize * tileSize, this.state.color);
+                  this.redrawPixels();
+                }}
                 className="u-clickable u-midFont u-padding designerButton"
               >
                 Fill
               </div>
               <div
-                onClick={
-                  (e) => {
-                    this.pixels = arrOf(tileSize * tileSize, transparent);
-                    this.redrawPixels();
-                  }
-                  //this.setState({ pixels: arrOf(tileSize * tileSize, transparent) })
-                }
+                onClick={(e) => {
+                  this.pixels = arrOf(tileSize * tileSize, transparent);
+                  this.redrawPixels();
+                }}
                 className="u-clickable u-midFont u-padding designerButton"
               >
                 Clear

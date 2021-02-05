@@ -4,6 +4,8 @@ import "../../utilities.css";
 import "./SidePane.css";
 
 const tileButtonSize = 64;
+
+// the pane on the right of the level editor used to select tiles / create tiles
 class SidePane extends Component {
   constructor(props) {
     super(props);

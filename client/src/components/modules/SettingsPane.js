@@ -11,6 +11,8 @@ import SettingsCharacter from "./settingsModules/SettingsCharacter.js";
 import SettingsBackground from "./settingsModules/SettingsBackground.js";
 
 const menuStrings = ["General", "Level Size", "Character", "Background"];
+
+// the settings window in the level editor
 class SettingsPane extends Component {
   constructor(props) {
     super(props);

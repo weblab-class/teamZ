@@ -5,7 +5,7 @@ import TileDesigner from "../TileDesigner.js";
 
 class SettingsCharacter extends Component {
   constructor(props) {
-    // for now only prop is onSubmit(image)
+    // props: onSubmit, onCancel
     super(props);
     this.state = {
       image: null,

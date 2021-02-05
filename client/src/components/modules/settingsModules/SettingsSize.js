@@ -15,14 +15,9 @@ class SettingsSize extends Component {
       right: 0,
       up: 0,
       down: 0,
-      displayMessage: "",
+      errorMessage: "",
     };
   }
-
-  isNumeric = (str) => {
-    if (typeof str != "string") return false;
-    return !isNaN(str) && !isNaN(parseFloat(str));
-  };
 
   getNewLevelDims = () => {
     return {
@@ -72,7 +67,7 @@ class SettingsSize extends Component {
           <div
             className="u-submitButton u-midFont u-marginTop submitButton"
             onClick={(e) => {
-              const newLevelDims = this.getNewLevelDims;
+              const newLevelDims = this.getNewLevelDims();
               if (
                 newLevelDims.rows <= 0 ||
                 newLevelDims.cols <= 0 ||
@@ -85,7 +80,7 @@ class SettingsSize extends Component {
                 isNaN(this.state.up) ||
                 isNaN(this.state.down)
               ) {
-                this.setState({ displayMessage: "Invalid resize dimensions." });
+                this.setState({ errorMessage: "Invalid resize dimensions." });
                 return;
               }
               this.props.onSubmit({
@@ -110,7 +105,7 @@ class SettingsSize extends Component {
             Submit
           </div>
         </div>
-        <div className="u-errorMessage u-flexEnd u-marginTop">{this.state.displayMessage}</div>
+        <div className="u-errorMessage u-flexEnd u-marginTop">{this.state.errorMessage}</div>
       </div>
     );
   }
