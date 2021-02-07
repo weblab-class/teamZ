@@ -87,27 +87,12 @@ router.post("/removePlayerFromGame", (req, res) => {
 });
 
 /**
- * Sends back an empty tile (i.e. tile with layer "None")
- */
-router.post("/emptyTile", async (req, res) => {
-  // try to find an existing empty tile
-  const emptyTile = await Tile.findOne({ layer: "None" });
-  if (emptyTile) {
-    res.send(emptyTile);
-  } else {
-    const newTile = new Tile({ name: "emptyTile", layer: "None", image: null });
-    newTile.save().then((tile) => res.send(tile));
-  }
-});
-
-/**
  * req.body contains attributes of tile
  * .name
  * .layer
  * .image : string representing image, base 64 encoded
  */
 router.post("/newTile", (req, res) => {
-  // console.log("/newTile called");
   if (typeof req.body.image !== "string") {
     throw new Error(
       "Can only handle images encoded as strings. Got type: " + typeof req.body.image
@@ -214,8 +199,6 @@ router.post("/save", async (req, res) => {
     return;
   }
   const levelId = editLogic.editState.players[req.user._id].levelId;
-  console.log("playerDict: ", editLogic.editState.players[req.user._id]);
-  console.log("save levelId: " + levelId);
   const levelInEditState = editLogic.editState.levels[levelId];
   const level = await Level.findOne({ _id: levelId });
   for (let i = 0; i < attributesOfLevel.length; i++) {

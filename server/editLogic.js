@@ -1,6 +1,10 @@
 const constants = require("../constants.js");
 const tileSize = constants.tileSize;
 const tileSizeOnCanvas = constants.tileSizeOnCanvas;
+const canvasToAbstractRatio = constants.canvasToAbstractRatio;
+
+const logicUtilities = require("../logicUtilities.js");
+const toAbstractCors = logicUtilities.toAbstractCors;
 
 // keys used in level-editor; initialize keys to not-pressed-down
 const keys = ["w", "a", "s", "d", "e", "SHIFT"];
@@ -67,14 +71,6 @@ const registerMouseMove = (playerId, newX, newY) => {
   if (!(playerId in editState.players)) return;
   editState.players[playerId].mouseX = Math.floor(newX);
   editState.players[playerId].mouseY = Math.floor(newY);
-};
-
-const toAbstractCors = (canX, canY, camX, camY) => {
-  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
-  return {
-    x: Math.floor(canX / canvasToAbstractRatio + camX),
-    y: Math.floor(canY / canvasToAbstractRatio + camY),
-  };
 };
 
 const playerMouseOnChar = (playerId) => {
@@ -155,7 +151,6 @@ const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
     // we have to add this level.
     editState.levels[levelId] = level;
   }
-  const canvasToAbstractRatio = tileSizeOnCanvas / tileSize;
   editState.players[playerId] = {
     levelId: levelId,
     camX: Math.floor(level.startX - canvasWidth / canvasToAbstractRatio / 2),
@@ -307,7 +302,6 @@ const resizeLevel = (playerId, deltas) => {
 const clipCamera = (playerId) => {
   const player = editState.players[playerId];
   const level = editState.levels[player.levelId];
-  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
   player.camX = Math.min(
     player.camX,
     Math.floor(level.cols * tileSize - player.canvasWidth / canvasToAbstractRatio)
@@ -371,7 +365,6 @@ const updateTiles = () => {
       const level = editState.levels[player.levelId];
       if (!player.isDraggingChar) {
         const tileIdToPlace = player.keyDownMap["SHIFT"] ? null : player.currentTile;
-        const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
         const mouseXAbs = player.camX + player.mouseX / canvasToAbstractRatio;
         const mouseYAbs = player.camY + player.mouseY / canvasToAbstractRatio;
         if (

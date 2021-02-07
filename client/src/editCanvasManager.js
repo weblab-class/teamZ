@@ -13,16 +13,16 @@ import { toCanvasCors, toAbstractCors, isTileOnCanvas } from "../../logicUtiliti
  * @param {*} canvas the canvas element
  * @param {*} instructions a dictionary containing instructions
  *                         sent by logic.instructionsForPlayer
- *                           camX: player.camX,
- *                           camY: player.camY,
- *                           mouseX: player.mouseX,
- *                           mouseY: player.mouseY,
+ *                           camX:
+ *                           camY:
+ *                           mouseX:
+ *                           mouseY:
  *                           sliceRowStart:
  *                           sliceColStart:
  *                           sliceRows:
  *                           sliceCols:
- *                           slice: row major order of slice
- * @param {*} tiles dict maps tileId to tile obj
+ *                           slice:
+ * @param {*} tiles {tileId: {image: CanvasImageSource, ...}}
  */
 const drawTiles = (canvas, instructions, tiles) => {
   // safely assume slice contains all the tiles we need.
@@ -66,8 +66,13 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
+/**
+ * Draws the character on the edit page canvas given instructions.
+ * @param {*} canvas canvas
+ * @param {*} instructions dictionary containing rendering instructions, sent from editLogic
+ * @param {*} charSpriteImage CanvasImageSource of char sprite, facing right
+ */
 const drawChar = (canvas, instructions, charSpriteImage) => {
-  // first, draw character.
   const charCanvasCors = toCanvasCors(
     instructions.startX,
     instructions.startY,
@@ -92,6 +97,14 @@ const drawChar = (canvas, instructions, charSpriteImage) => {
   }
 };
 
+/**
+ * Draws on the canvas on the edit page.
+ * @param {*} canvas canvas
+ * @param {*} instructions dictionary containing rendering instructions, sent from editLogic
+ * @param {*} tiles {tileId: {image: CanvasImageSource, ...}}
+ * @param {*} charSpriteImage CanvasImageSource of char sprite, facing right
+ * @param {*} backgroundImage CanvasImageSource of background image
+ */
 export const drawEditCanvas = (canvas, instructions, tiles, charSpriteImage, backgroundImage) => {
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;

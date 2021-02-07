@@ -11,18 +11,8 @@ import { toAbstractCors, toCanvasCors, isTileOnCanvas } from "../../logicUtiliti
 /**
  * Draws all tiles on the level editor canvas given instructions.
  * @param {*} canvas the canvas element
- * @param {*} instructions a dictionary containing instructions
- *                         sent by logic.instructionsForPlayer
- *                           camX: player.camX,
- *                           camY: player.camY,
- *                           mouseX: player.mouseX,
- *                           mouseY: player.mouseY,
- *                           sliceRowStart: 0, //TODO
- *                           sliceColStart: 0, //TODO
- *                           sliceRows: 0, //TODO
- *                           sliceCols: 0, //TODO
- *                           slice: [], //TODO: row major order of slice
- * @param {*} tiles dict maps tileId to tile obj
+ * @param {*} instructions dictionary containing rendering instructions, sent from playLogic
+ * @param {*} tiles {tileId: {image: CanvasImageSource, ...}}
  */
 const drawTiles = (canvas, instructions, tiles) => {
   const iSlice = (row, col) => {
@@ -53,6 +43,13 @@ const drawTiles = (canvas, instructions, tiles) => {
   }
 };
 
+/**
+ * Draws the character on the play page canvas given instructions.
+ * @param {*} canvas canvas
+ * @param {*} instructions dictionary containing rendering instructions, sent from playLogic
+ * @param {*} charSpriteImage CanvasImageSource of char sprite, facing right
+ * @param {*} charSpriteImageFlipped CanvasImageSource of char sprite, facing left
+ */
 const drawChar = (canvas, instructions, charSpriteImage, charSpriteImageFlipped) => {
   const charCanvasCors = toCanvasCors(
     instructions.x,
@@ -70,6 +67,15 @@ const drawChar = (canvas, instructions, charSpriteImage, charSpriteImageFlipped)
   );
 };
 
+/**
+ * Draws on the canvas on the play page.
+ * @param {*} canvas canvas
+ * @param {*} instructions dictionary containing rendering instructions, sent from playLogic
+ * @param {*} tiles {tileId: {image: CanvasImageSource, ...}}
+ * @param {*} charSpriteImage CanvasImageSource of char sprite, facing right
+ * @param {*} charSpriteImageFlipped CanvasImageSource of char sprite, facing left
+ * @param {*} backgroundImage CanvasImageSource of background image
+ */
 export const drawPlayCanvas = (
   canvas,
   instructions,

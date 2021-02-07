@@ -1,6 +1,11 @@
 const constants = require("../constants.js");
 const tileSize = constants.tileSize;
 const tileSizeOnCanvas = constants.tileSizeOnCanvas;
+const canvasToAbstractRatio = constants.canvasToAbstractRatio;
+
+const logicUtilities = require("../logicUtilities.js");
+const toAbstractCors = logicUtilities.toAbstractCors;
+
 const gravity = 0.7;
 const maxWalkSpeed = tileSize / 4;
 const maxAirSpeed = tileSize;
@@ -389,7 +394,6 @@ const updatePlayerPositions = () => {
 const clipCamera = (playerId) => {
   const player = playState.players[playerId];
   const level = playState.levels[player.levelId];
-  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
   player.camX = Math.min(
     player.camX,
     Math.floor(level.cols * tileSize - player.canvasWidth / canvasToAbstractRatio)
@@ -411,7 +415,6 @@ const clipCamera = (playerId) => {
  */
 const centerCamera = (playerId) => {
   const player = playState.players[playerId];
-  const canvasToAbstractRatio = Math.floor(tileSizeOnCanvas / tileSize);
   const cameraAbstractWidth = Math.floor(player.canvasWidth / canvasToAbstractRatio);
   const cameraAbstractHeight = Math.floor(player.canvasHeight / canvasToAbstractRatio);
   const charCenterX = player.x + tileSize / 2;

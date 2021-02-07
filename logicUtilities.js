@@ -8,7 +8,7 @@ const constants = require("./constants.js");
  * @param {*} camY y cor of camera
  * @return a dictionary with attributes `x` and `y` containing the desired canvas coordinates.
  */
-export const toCanvasCors = (absX, absY, camX, camY) => {
+const toCanvasCors = (absX, absY, camX, camY) => {
   const retX = (absX - camX) * constants.canvasToAbstractRatio;
   const retY = (absY - camY) * constants.canvasToAbstractRatio;
   return { x: retX, y: retY };
@@ -22,7 +22,7 @@ export const toCanvasCors = (absX, absY, camX, camY) => {
  * @param {*} camY y cor of camera
  * @return a dictionary with attributes `x` and `y` containing the desired abstract coordinates.
  */
-export const toAbstractCors = (canX, canY, camX, camY) => {
+const toAbstractCors = (canX, canY, camX, camY) => {
   return {
     x: Math.floor(canX / constants.canvasToAbstractRatio + camX),
     y: Math.floor(canY / constants.canvasToAbstractRatio + camY),
@@ -43,7 +43,7 @@ const isPixelOnCanvas = (x, y, canvasWidth, canvasHeight) => {
  * @param {*} canvasHeight height of canvas
  * @return boolean: aforementioned value
  */
-export const isTileOnCanvas = (row, col, camX, camY, canvasWidth, canvasHeight) => {
+const isTileOnCanvas = (row, col, camX, camY, canvasWidth, canvasHeight) => {
   const topLeftTileCanvas = toCanvasCors(
     col * constants.tileSize,
     row * constants.tileSize,
@@ -62,4 +62,10 @@ export const isTileOnCanvas = (row, col, camX, camY, canvasWidth, canvasHeight) 
     isPixelOnCanvas(topLeftTileCanvas.x, bottomRightTileCanvas.y, canvasWidth, canvasHeight) ||
     isPixelOnCanvas(bottomRightTileCanvas.x, topLeftTileCanvas.y, canvasWidth, canvasHeight)
   );
+};
+
+module.exports = {
+  toAbstractCors,
+  toCanvasCors,
+  isTileOnCanvas,
 };

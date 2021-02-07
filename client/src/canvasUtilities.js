@@ -1,4 +1,5 @@
 import { tileSize, tileSizeOnCanvas } from "../../constants.js";
+import { isTileOnCanvas, toCanvasCors, toAbstractCors } from "../../logicUtilities";
 
 /**
  * Clears a canvas
