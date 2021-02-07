@@ -69,6 +69,9 @@ router.post("/initsocket", (req, res) => {
 // | write your API methods below!|
 // |------------------------------|
 
+/**
+ * For development purposes: wipes all MongoDB data
+ */
 router.post("/wipe", async (req, res) => {
   await Tile.deleteMany({});
   await Pattern.deleteMany({});
@@ -76,21 +79,28 @@ router.post("/wipe", async (req, res) => {
   res.send(true);
 });
 
+/**
+ * Removes user from editLogic state
+ */
 router.post("/removePlayer", (req, res) => {
   if (req.user) editLogic.removePlayer(req.user._id);
   res.send({});
 });
 
+/**
+ * Removes user from playLogic state
+ */
 router.post("/removePlayerFromGame", (req, res) => {
   if (req.user) playLogic.removePlayer(req.user._id);
   res.send({});
 });
 
 /**
+ * Creates a new tile.
  * req.body contains attributes of tile
- * .name
- * .layer
- * .image : string representing image, base 64 encoded
+ * .name: name of tile
+ * .layer: layer of tile, must be "Platform" or "Background"
+ * .image: base64 encoded string of tile image
  */
 router.post("/newTile", (req, res) => {
   if (typeof req.body.image !== "string") {
@@ -123,7 +133,9 @@ router.post("/newTile", (req, res) => {
 });
 
 /**
- * req.body.image is string
+ * Uploads an image.
+ * req.body.image is base64 encoded string representing an image.
+ * Sends back the _id of newly created Pattern document.
  */
 router.post("/newImage", (req, res) => {
   if (typeof req.body.image !== "string") {
@@ -149,7 +161,9 @@ router.post("/newImage", (req, res) => {
 });
 
 /**
- * req.query.tileIds is a list of tileIds
+ * req.query.tileIds is a list of tileIds corresponding to tiles to fetch.
+ * Sends a dictionary: {tileId: {_id, name, layer, image}},
+ * where image is the base64 encoded string of the image associated with the corresponding tile
  */
 router.post("/tilesWithId", async (req, res) => {
   console.log("user name and id: " + req.user.googleid + ", " + req.user.name);
@@ -157,8 +171,6 @@ router.post("/tilesWithId", async (req, res) => {
   const ret = {};
   for (let i = 0; i < tileIdList.length; i++) {
     const tileId = tileIdList[i];
-    // fetch tile, do ret[tileId] = tileObject, and after looping, send back ret
-    // tileObject has to contain actual image
     const tile = await Tile.findOne({ _id: tileId });
     const pattern = await Pattern.findOne({ _id: tile.image });
     const imageName = pattern.image;
@@ -175,8 +187,8 @@ router.post("/tilesWithId", async (req, res) => {
 });
 
 /**
- * req.body.patternId
- * res sends back image string
+ * req.body.patternId: _id associated with the the desired Pattern
+ * res sends back base64 encoded image string associated with the desired Pattern
  */
 router.post("/fetchImage", async (req, res) => {
   const pattern = await Pattern.findOne({ _id: req.body.patternId });
@@ -186,14 +198,17 @@ router.post("/fetchImage", async (req, res) => {
 });
 
 /**
- * req.body contains attributes of the level (i.e. title, rows, cols, etc)
+ * Creates a new level based on req.body,
+ * which should contain attributes of the level (i.e. title, rows, cols, etc)
  */
 router.post("/newLevel", (req, res) => {
-  // request should have attributes of level
   const newLevel = new Level(Object.assign({}, { ...req.body }, { creator: req.user._id }));
   newLevel.save().then((level) => res.send(level));
 });
 
+/**
+ * Saves the level that the user is currently editing.
+ */
 router.post("/save", async (req, res) => {
   if (!(req.user._id in editLogic.editState.players)) {
     return;
@@ -212,22 +227,16 @@ router.post("/save", async (req, res) => {
 });
 
 /**
- * request consists of levelId
+ * Adds the user to the edit state of level with req.body.levelId
  */
 router.post("/joinLevel", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
-  const levelCopy = {};
-  for (let i = 0; i < attributesOfLevel.length; i++) {
-    const attr = attributesOfLevel[i];
-    levelCopy[attr] = level[attr];
-  }
-  // assume level has all fields required as specified in editLogic
-  editLogic.addPlayer(req.user._id, levelCopy, req.body.canvasWidth, req.body.canvasHeight);
+  editLogic.addPlayer(req.user._id, level.toObject(), req.body.canvasWidth, req.body.canvasHeight);
   res.send({});
 });
 
 /**
- * request consists of levelId
+ * Adds the user to the play state of level with req.body.levelId
  */
 router.post("/joinGame", async (req, res) => {
   const level = await Level.findOne({ _id: req.body.levelId });
@@ -242,7 +251,6 @@ router.post("/joinGame", async (req, res) => {
       iPop++;
     }
   }
-  // assume level has all fields required as specified in editLogic
   playLogic.addPlayer(
     req.user._id,
     level,
@@ -254,7 +262,8 @@ router.post("/joinGame", async (req, res) => {
 });
 
 /**
- * req.query is the query
+ * req.query contains the query for Level.
+ * Sends back Levels that fit the query, with the creator field populated
  */
 router.get("/levels", (req, res) => {
   Level.find({ ...req.query })

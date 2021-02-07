@@ -6,6 +6,7 @@ const canvasToAbstractRatio = constants.canvasToAbstractRatio;
 const logicUtilities = require("../logicUtilities.js");
 const toAbstractCors = logicUtilities.toAbstractCors;
 
+// some platforming-physics constants
 const gravity = 0.7;
 const maxWalkSpeed = tileSize / 4;
 const maxAirSpeed = tileSize;
@@ -22,17 +23,40 @@ const keys = ["w", "a", "s", "d"];
 const playState = {
   // ........
   // non-player-specific information:
-  levels: {}, // maps levelId to level information consisting of
-  // rows: 0,
-  // cols: 0,
-  // gridTiles: [], // row-major array of dictionaries of the form:
-  //                // {_id: , layer: "..."}
-  // availableTiles: {}, // set of available tileIds
-  // startX: 0, // abstract cors of start position
-  // startY: 0,
-  // ........
+  levels: {
+    /**
+     * levelId:
+     * { rows -- #rows of level
+     *   cols -- #cols of level
+     *   gridTiles -- the grid tiles of the level, in the format of a row-major 1D array
+     *                of dictionaries {_id, layer} *note this is different from gridTiles in editLogic
+     *   availableTiles -- the *set* of the available tiles of the level
+     *   startX -- abstract x cor of start position
+     *   startY
+     *   }
+     */
+  },
   // player-specific information:
-  players: {},
+  players: {
+    /**
+     * playerId:
+     * { levelId -- id of level player is currently editing
+     *   camX
+     *   camY -- coordinates of top left corner of camera of player
+     *   x -- cor of player char
+     *   y
+     *   xspeed -- speed of player char in x dir
+     *   yspeed
+     *   isRestarting: Boolean
+     *   restartTimer: Number: how long has the player been restarting?
+     *   isFacingRight: Boolean
+     *   canvasWidth
+     *   canvasHeight -- number of pixels vertically in canvas
+     *   keyDownMap -- dictionary mapping a keyboard key to boolean -- is player holding down
+     *                                                     that key at the moment?
+     *   }
+     */
+  },
   // players is dict mapping id of user, containing...
   /* { levelId -- id of level player is currently editing
        camX
@@ -200,6 +224,7 @@ const diamondFromTopLeft = (x, y) => {
   ret.left = { x: x, y: y + tileSize / 2 };
   return ret;
 };
+
 /**
  * returns dict describing player cors
  * @param {*} playerId
@@ -389,7 +414,8 @@ const updatePlayerPositions = () => {
 };
 
 /**
- * mutates player camera position to be good e.g. not offscreen
+ * Mutates player camera position to be within bounds.
+ * @param {*} playerId _id of player
  */
 const clipCamera = (playerId) => {
   const player = playState.players[playerId];
@@ -410,8 +436,8 @@ const clipCamera = (playerId) => {
 };
 
 /**
- * centers player camera on char
- * @param {*} playerId
+ * Centers player camera on char
+ * @param {*} playerId _id of player
  */
 const centerCamera = (playerId) => {
   const player = playState.players[playerId];
@@ -431,6 +457,10 @@ const updateCameras = () => {
   });
 };
 
+/**
+ * Updates the restarting state of player
+ * @param {*} playerId _id of player
+ */
 const updatePlayerRestart = (playerId) => {
   const player = playState.players[playerId];
   const level = playState.levels[player.levelId];
@@ -455,7 +485,6 @@ const updatePlayerRestarts = () => {
     updatePlayerRestart(playerId);
   });
 };
-// ... update ...
 
 /**
  * called each frame. updates the game state
@@ -502,7 +531,7 @@ const getSlice = (playerId) => {
 
 /**
  * Returns instructions for player to render stuff at client side.
- * @param {*} playerId
+ * @param {*} playerId _id of player
  */
 const instructionsForPlayer = (playerId) => {
   const player = playState.players[playerId];
@@ -527,6 +556,9 @@ const instructionsForPlayer = (playerId) => {
   return ret;
 };
 
+/**
+ * @return {*} {playerId: {...instructionsForPlayer(playerId)}}
+ */
 const getInstructions = () => {
   const ret = {};
   Object.keys(playState.players).forEach((key) => {

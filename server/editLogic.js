@@ -13,40 +13,44 @@ const keys = ["w", "a", "s", "d", "e", "SHIFT"];
 const editState = {
   // ........
   // non-player-specific information:
-  levels: {}, // maps levelId to level information consisting of
-  // title, rows, cols, gridTiles, availableTiles, etc
-  // title: "",
-  // desc
-  // don't need to store creator, since that won't change. might store collaborators later
-  // rows: 0,
-  // cols: 0,
-  // gridTiles: [], // row-major array of the ids of tiles
-  // availableTiles: [], // list of available tileIds
-  // startX: 0, // abstract cors of start position
-  // startY: 0,
-  // charSprite
-  // background
-  // isPublished
-  // ........
-  // player-specific information:
-  players: {},
-  // players is dict mapping id of user, containing...
-  /* { levelId -- id of level player is currently editing
-       camX
-       camY -- coordinates of top left corner of camera of player
-       canvasWidth
-       canvasHeight -- number of pixels vertically in canvas
-       currentTile -- objectIds. can easily access tile properties through availableTiles dictionary
-       keyDownMap -- dictionary mapping a keyboard key to boolean -- is player holding down
-                                                         that key at the moment?
-       mouseX -- xcor of mouse relative to canvas
-       mouseY
-       mouseDown -- is player's mouse down?
-       isDraggingChar -- is player dragging the character and changing its start cors?
-       isEditing -- can the player scroll / place tiles, or are they in the 
-                    settings / add tiles view?
-     }
-   */
+  levels: {
+    /**
+     * levelId:
+     * { title -- title of level
+     *   description -- description of level
+     *   * Don't need to store creator, since that won't ever change. might store collaborators later
+     *   rows -- #rows of level
+     *   cols -- #cols of level
+     *   gridTiles -- the grid tiles of the level, in the format of a row-major 1D array of tileIds
+     *   availableTiles -- a list of the available tiles of the level
+     *   startX -- abstract x cor of start position
+     *   startY
+     *   charSprite -- _id of Pattern corresponding to charSprite
+     *   background -- _id of Pattern corresponding to background
+     *   isPublished -- Boolean: is the level published?
+     *   }
+     */
+  },
+  players: {
+    /**
+     * playerId:
+     * { levelId -- id of level player is currently editing
+     *   camX
+     *   camY -- coordinates of top left corner of camera of player
+     *   canvasWidth
+     *   canvasHeight -- number of pixels vertically in canvas
+     *   currentTile -- objectIds. can easily access tile properties through availableTiles dictionary
+     *   keyDownMap -- dictionary mapping a keyboard key to boolean -- is player holding down
+     *                                                     that key at the moment?
+     *   mouseX -- xcor of mouse relative to canvas
+     *   mouseY
+     *   mouseDown -- is player's mouse down?
+     *   isDraggingChar -- is player dragging the character and changing its start cors?
+     *   isEditing -- can the player scroll / place tiles, or are they in the
+     *                settings / add tiles view?
+     *   }
+     */
+  },
 };
 
 // ... functions called by events (not once per frame) ...
@@ -199,9 +203,9 @@ const modifyLevel = (playerId, newValues) => {
 };
 
 /**
- *
- * @param {*} playerId
- * @param {*} deltas a dictionary containing left, right, up, down for resize
+ * Resizes level associated with player playerId
+ * @param {*} playerId _id of player
+ * @param {*} deltas a dictionary containing left, right, up, down : dimension changes for resize.
  */
 const resizeLevel = (playerId, deltas) => {
   if (!(playerId in editState.players)) return;
@@ -297,7 +301,7 @@ const resizeLevel = (playerId, deltas) => {
 // ... helper functions for update ...
 
 /**
- * mutates player camera to be good.
+ * Mutates player camera to be within bounds
  */
 const clipCamera = (playerId) => {
   const player = editState.players[playerId];
@@ -446,7 +450,7 @@ const getSlice = (playerId) => {
 
 /**
  * Returns instructions for player to render stuff at client side.
- * @param {*} playerId
+ * @param {*} playerId _id of player
  */
 const instructionsForPlayer = (playerId) => {
   const player = editState.players[playerId];
@@ -479,6 +483,9 @@ const instructionsForPlayer = (playerId) => {
   return ret;
 };
 
+/**
+ * @return {*} {playerId: {...instructionsForPlayer(playerId)}}
+ */
 const getInstructions = () => {
   const ret = {};
   Object.keys(editState.players).forEach((key) => {

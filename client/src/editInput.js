@@ -49,13 +49,11 @@ const handleMouseUp = (e) => {
 };
 
 /**
- * adds a *window* listener for any keydowns.
- *
- * THIS IS GLOBAL
- *
- * That this means *any time* you press an arrow key you'll move if you're on the site
- * */
-
+ * Initializes input for the edit page
+ * @param {*} information {canvas: the canvas element on the edit page}
+ * @return a callback () => void to remove the inputs that were initialized by
+ * the invocation of this function.
+ */
 export const initInput = (information) => {
   const mouseMoveFn = (e) => {
     handleMouseMove(e, information.canvas);
