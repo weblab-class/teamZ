@@ -166,7 +166,6 @@ router.post("/newImage", (req, res) => {
  * where image is the base64 encoded string of the image associated with the corresponding tile
  */
 router.post("/tilesWithId", async (req, res) => {
-  console.log("user name and id: " + req.user.googleid + ", " + req.user.name);
   const tileIdList = req.body.tileIds;
   const ret = {};
   for (let i = 0; i < tileIdList.length; i++) {

@@ -1,81 +1,75 @@
 import socketIOClient from "socket.io-client";
 import { post } from "./utilities";
+import { SOCKET_MESSAGE_TYPES } from "../../constants";
 const endpoint = window.location.hostname + ":" + window.location.port;
 export const socket = socketIOClient(endpoint);
 socket.on("connect", () => {
   post("/api/initsocket", { socketid: socket.id });
 });
 
-// these fns will be called when certain events happen.
-// and will give the appropriate message to the server socket.
+// these functions below emit messages to server socket.
 
-/** send a message to the server with the move you made */
-// export const move = (dir) => {
-//   socket.emit("move", dir);
-// };
 export const keyDown = (key) => {
-  socket.emit("keyDown", key);
+  socket.emit(SOCKET_MESSAGE_TYPES.EDIT_KEY_DOWN, key);
 };
 
 export const keyUp = (key) => {
-  socket.emit("keyUp", key);
+  socket.emit(SOCKET_MESSAGE_TYPES.EDIT_KEY_UP, key);
 };
 
 // cors has x and y attribute
 export const mouseMove = (cors) => {
-  socket.emit("mouseMove", cors);
+  socket.emit(SOCKET_MESSAGE_TYPES.EDIT_MOUSE_MOVE, cors);
 };
 
 export const mouseDown = () => {
-  socket.emit("mouseDown");
+  socket.emit(SOCKET_MESSAGE_TYPES.EDIT_MOUSE_DOWN);
 };
 
 export const mouseUp = () => {
-  socket.emit("mouseUp");
+  socket.emit(SOCKET_MESSAGE_TYPES.EDIT_MOUSE_UP);
 };
 
 export const addTile = (tileId) => {
-  socket.emit("addTile", tileId);
+  socket.emit(SOCKET_MESSAGE_TYPES.ADD_TILE, tileId);
 };
 
 export const enableEdit = () => {
-  socket.emit("enableEdit");
+  socket.emit(SOCKET_MESSAGE_TYPES.ENABLE_EDIT);
 };
 
 export const disableEdit = () => {
-  console.log("disableEdit called");
-  socket.emit("disableEdit");
+  socket.emit(SOCKET_MESSAGE_TYPES.DISABLE_EDIT);
 };
 
 export const changeTile = (tileId) => {
-  socket.emit("changeTile", tileId);
+  socket.emit(SOCKET_MESSAGE_TYPES.CHANGE_TILE, tileId);
 };
 
 export const modifyLevel = (newValues) => {
-  socket.emit("modifyLevel", newValues);
+  socket.emit(SOCKET_MESSAGE_TYPES.EDIT_MODIFY_LEVEL, newValues);
 };
 
 export const modifyPlayer = (newValues) => {
-  socket.emit("modifyPlayer", newValues);
+  socket.emit(SOCKET_MESSAGE_TYPES.EDIT_MODIFY_PLAYER, newValues);
 };
 
 export const resizeLevel = (deltas) => {
-  console.log("resizing called client socket: ", deltas);
-  socket.emit("resizeLevel", deltas);
+  socket.emit(SOCKET_MESSAGE_TYPES.RESIZE_LEVEL, deltas);
 };
 
 export const playKeyDown = (key) => {
-  socket.emit("playKeyDown", key);
+  socket.emit(SOCKET_MESSAGE_TYPES.PLAY_KEY_DOWN, key);
 };
 
 export const playKeyUp = (key) => {
-  socket.emit("playKeyUp", key);
+  socket.emit(SOCKET_MESSAGE_TYPES.PLAY_KEY_UP, key);
 };
 
 export const playModifyPlayer = (newValues) => {
-  socket.emit("playModifyPlayer", newValues);
+  socket.emit(SOCKET_MESSAGE_TYPES.PLAY_MODIFY_PLAYER, newValues);
 };
 
 export const playRestartPlayer = () => {
-  socket.emit("playRestartPlayer");
+  socket.emit(SOCKET_MESSAGE_TYPES.PLAY_RESTART_PLAYER);
 };

@@ -9,7 +9,7 @@ import { Link } from "@reach/router";
 import "../../utilities.css";
 import "./Play.css";
 
-import { tileSize, tileSizeOnCanvas } from "../../../../constants";
+import { tileSize, tileSizeOnCanvas, SOCKET_MESSAGE_TYPES } from "../../../../constants";
 
 // page for playing a level
 class Play extends Component {
@@ -33,7 +33,6 @@ class Play extends Component {
   }
 
   componentDidMount() {
-    // api calls here
     post("/api/joinGame", {
       levelId: this.props.levelId,
       canvasWidth: this.canvas ? this.canvas.width : 32,
@@ -42,7 +41,7 @@ class Play extends Component {
       const clearInputFn = initInput();
       this.setState({ clearInputFn: clearInputFn });
     });
-    socket.on("playUpdate", (update) => {
+    socket.on(SOCKET_MESSAGE_TYPES.PLAY_UPDATE, (update) => {
       this.processUpdate(update);
     });
   }
@@ -50,7 +49,7 @@ class Play extends Component {
   componentWillUnmount() {
     this.state.clearInputFn();
     post("/api/removePlayerFromGame");
-    socket.off("update");
+    socket.off(SOCKET_MESSAGE_TYPES.PLAY_UPDATE);
   }
 
   getCanvas = () => {

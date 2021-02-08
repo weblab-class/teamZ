@@ -11,6 +11,7 @@ import {
   modifyPlayer,
 } from "../../client-socket";
 import { drawEditCanvas } from "../../editCanvasManager";
+import { SOCKET_MESSAGE_TYPES } from "../../../../constants";
 import { initInput } from "../../editInput.js";
 import { Link } from "@reach/router";
 
@@ -40,7 +41,7 @@ class Edit extends Component {
       charSpriteImage: null,
       background: null,
       backgroundImage: null,
-      currentTile: "no current tile", // tileId of currentTile
+      currentTile: null, // tileId of currentTile
       title: "",
       description: "",
       rows: 0,
@@ -52,7 +53,6 @@ class Edit extends Component {
   }
 
   componentDidMount() {
-    // api calls here
     post("/api/joinLevel", {
       levelId: this.props.levelId,
       canvasWidth: this.canvas ? this.canvas.width : 32,
@@ -61,7 +61,7 @@ class Edit extends Component {
       const clearInputFn = initInput({ canvas: this.getCanvas() });
       this.clearInputFn = clearInputFn;
     });
-    socket.on("update", (update) => {
+    socket.on(SOCKET_MESSAGE_TYPES.EDIT_UPDATE, (update) => {
       this.processUpdate(update);
     });
   }
@@ -69,7 +69,7 @@ class Edit extends Component {
   componentWillUnmount() {
     this.clearInputFn();
     post("/api/removePlayer");
-    socket.off("update");
+    socket.off(SOCKET_MESSAGE_TYPES.EDIT_UPDATE);
   }
 
   getCanvas = () => {
@@ -247,7 +247,6 @@ class Edit extends Component {
             <canvas
               ref={(canvas) => {
                 if (!canvas) {
-                  console.log("no canvas edit");
                   return;
                 }
                 this.canvas = canvas;

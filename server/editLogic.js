@@ -140,17 +140,14 @@ const addTile = (playerId, tileId) => {
  * @param {*} canvasHeight
  */
 const addPlayer = (playerId, level, canvasWidth, canvasHeight) => {
-  // console.log("addPlayer is called in editLogic");
-  //hard code creator-only for now:
-  console.log("add player playerId: ", playerId);
-  console.log("level creator: ", level.creator);
-  if (playerId.toString() !== level.creator.toString()) return;
+  if (playerId.toString() !== level.creator.toString()) return; // remove this line to allow collaboration.
   const keyDownMap = {};
   for (let i = 0; i < keys.length; i++) {
     keyDownMap[keys[i]] = false;
   }
   const levelId = level._id;
-  // check if level already exists in editState. if so, EASY!
+  // check if level already exists in editState.
+  // if so, we don't need to add `level`, since the level in editLogic is most up-to-date ver. of level.
   if (!(levelId in editState.levels)) {
     // we have to add this level.
     editState.levels[levelId] = level;
@@ -419,6 +416,13 @@ const update = () => {
   updateStartPosition();
 };
 
+/**
+ * Returns a dictionary containing information about a rectangular subarray of
+ * tiles that the player needs for rendering. Note that this rectangular subarray
+ * is the stuff that fits on the player's canvas; there's no need to send all the tiles
+ * on the grid, since the tiles outside the canvas won't be seen anyways.
+ * @param {*} playerId
+ */
 const getSlice = (playerId) => {
   const player = editState.players[playerId];
   const level = editState.levels[player.levelId];

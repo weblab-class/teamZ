@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import { TILE_TYPES } from "../../../../constants";
 import "../../utilities.css";
 import "./TileDesignerModal.css";
 
@@ -10,7 +10,7 @@ class TileDesignerModal extends Component {
      * One prop passed to TileDesignerModal is a callback `onSubmit`,
      * which takes three arguments:
      *   -  name: String // name of tile
-     *   -  layer: String // one of "Platform" or "Background"
+     *   -  layer: String // one of TILE_TYPES.PLATFORM or TILE_TYPES.BACKGROUND
      *   -  image: String // base64 encoding of tile image
      * Call `onSubmit` like so: `this.props.onSubmit(name, layer, image)`.
      * `onSubmit` should be called when the user performs an action that translates to
@@ -29,7 +29,7 @@ class TileDesignerModal extends Component {
     super(props);
     this.state = {
       name: "",
-      layer: "Platform",
+      layer: TILE_TYPES.PLATFORM,
       image: null,
     };
   }
@@ -73,8 +73,8 @@ class TileDesignerModal extends Component {
                 this.setState({ layer: e.target.value });
               }}
             >
-              <option value="Platform">Platform</option>
-              <option value="Background">Background</option>
+              <option value={TILE_TYPES.PLATFORM}>Platform</option>
+              <option value={TILE_TYPES.BACKGROUND}>Background</option>
             </select>
           </div>
           <div className="u-monoFont u-midFont u-marginTop u-marginBottom">

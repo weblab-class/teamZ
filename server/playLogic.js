@@ -213,7 +213,7 @@ const hitTest = (levelId, absX, absY) => {
   // now we know row and col are legit.
   const tile = level.gridTiles[row * level.cols + col];
   if (tile === null) return false;
-  return tile.layer === "Platform" && tile._id in level.availableTilesSet;
+  return tile.layer === constants.TILE_TYPES.PLATFORM && tile._id in level.availableTilesSet;
 };
 
 const diamondFromTopLeft = (x, y) => {

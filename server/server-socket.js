@@ -1,5 +1,6 @@
 const editLogic = require("./editLogic");
 const playLogic = require("./playLogic");
+const constants = require("../constants");
 
 let io;
 
@@ -41,15 +42,15 @@ const sendGameState = () => {
   editLogic.update();
   playLogic.update();
   if (count % updatePeriod === 0) {
-    const instructions = editLogic.getInstructions();
-    Object.keys(instructions).forEach((playerId) => {
+    const editInstructions = editLogic.getInstructions();
+    Object.keys(editInstructions).forEach((playerId) => {
       const sock = getSocketFromUserID(playerId);
-      if (sock) sock.emit("update", instructions[playerId]);
+      if (sock) sock.emit(constants.SOCKET_MESSAGE_TYPES.EDIT_UPDATE, editInstructions[playerId]);
     });
     const playInstructions = playLogic.getInstructions();
     Object.keys(playInstructions).forEach((playerId) => {
       const sock = getSocketFromUserID(playerId);
-      if (sock) sock.emit("playUpdate", playInstructions[playerId]);
+      if (sock) sock.emit(constants.SOCKET_MESSAGE_TYPES.PLAY_UPDATE, playInstructions[playerId]);
     });
   }
   count = (count + 1) % updatePeriod;
@@ -65,68 +66,67 @@ module.exports = {
         const user = getUserFromSocketID(socket.id);
         removeUser(user, socket);
       });
-      socket.on("keyDown", (key) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.EDIT_KEY_DOWN, (key) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerKeyDown(user._id, key);
       });
-      socket.on("keyUp", (key) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.EDIT_KEY_UP, (key) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerKeyUp(user._id, key);
       });
-      socket.on("mouseMove", (cors) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.EDIT_MOUSE_MOVE, (cors) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerMouseMove(user._id, cors.x, cors.y);
       });
-      socket.on("mouseDown", () => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.EDIT_MOUSE_DOWN, () => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerMouseDown(user._id);
       });
-      socket.on("mouseUp", () => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.EDIT_MOUSE_UP, () => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.registerMouseUp(user._id);
       });
-      socket.on("enableEdit", () => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.ENABLE_EDIT, () => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.enableEdit(user._id);
       });
-      socket.on("disableEdit", () => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.DISABLE_EDIT, () => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.disableEdit(user._id);
       });
-      socket.on("addTile", (tileId) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.ADD_TILE, (tileId) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.addTile(user._id, tileId);
       });
-      socket.on("changeTile", (tileId) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.CHANGE_TILE, (tileId) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.changeTile(user._id, tileId);
       });
-      socket.on("modifyLevel", (newValues) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.EDIT_MODIFY_LEVEL, (newValues) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.modifyLevel(user._id, newValues);
       });
-      socket.on("modifyPlayer", (newValues) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.EDIT_MODIFY_PLAYER, (newValues) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.modifyPlayer(user._id, newValues);
       });
-      socket.on("resizeLevel", (deltas) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.RESIZE_LEVEL, (deltas) => {
         const user = getUserFromSocketID(socket.id);
         if (user) editLogic.resizeLevel(user._id, deltas);
       });
-      socket.on("playKeyDown", (key) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.PLAY_KEY_DOWN, (key) => {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.registerKeyDown(user._id, key);
       });
-      socket.on("playKeyUp", (key) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.PLAY_KEY_UP, (key) => {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.registerKeyUp(user._id, key);
       });
-      socket.on("playModifyPlayer", (newValues) => {
+      socket.on(constants.SOCKET_MESSAGE_TYPES.PLAY_MODIFY_PLAYER, (newValues) => {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.modifyPlayer(user._id, newValues);
       });
-      socket.on("playRestartPlayer", () => {
-        console.log("server socket received playRestartPlayer message");
+      socket.on(constants.SOCKET_MESSAGE_TYPES.PLAY_RESTART_PLAYER, () => {
         const user = getUserFromSocketID(socket.id);
         if (user) playLogic.restartPlayer(user._id);
       });

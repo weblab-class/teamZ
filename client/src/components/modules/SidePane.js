@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import { TILE_TYPES } from "../../../../constants";
 import "../../utilities.css";
 import "./SidePane.css";
 
@@ -16,7 +16,7 @@ class SidePane extends Component {
     //  -  setCurrentTile
     //  -  displayTileDesigner
     this.state = {
-      layer: "Platform",
+      layer: TILE_TYPES.PLATFORM,
     };
   }
 
@@ -39,7 +39,6 @@ class SidePane extends Component {
               height={tileButtonSize}
               ref={(canvas) => {
                 if (!canvas) {
-                  console.log("no canvas");
                   return;
                 } else {
                   const context = canvas.getContext("2d");
@@ -67,7 +66,12 @@ class SidePane extends Component {
         <div
           className="u-clickable u-clickableMid u-chocoThemed layerSwitchButton u-flexColumn"
           onClick={(e) => {
-            this.setState({ layer: this.state.layer === "Platform" ? "Background" : "Platform" });
+            this.setState({
+              layer:
+                this.state.layer === TILE_TYPES.PLATFORM
+                  ? TILE_TYPES.BACKGROUND
+                  : TILE_TYPES.PLATFORM,
+            });
           }}
         >
           {this.state.layer}
@@ -83,7 +87,6 @@ class SidePane extends Component {
             height="120"
             ref={(canvas) => {
               if (!canvas) {
-                console.log("no canvas (currentTile)");
                 return;
               } else {
                 const context = canvas.getContext("2d");
